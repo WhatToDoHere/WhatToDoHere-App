@@ -1,12 +1,42 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { useEffect } from 'react';
+import { StyleSheet, View } from 'react-native';
 
-export default function Page() {
+import { Link } from 'expo-router';
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+
+SplashScreen.preventAutoHideAsync();
+
+export default function App() {
+  const [loaded, error] = useFonts({
+    'Opposit-Bold': require('../assets/fonts/Opposit-Bold.ttf'),
+    'Opposit-Light': require('../assets/fonts/Opposit-Light.ttf'),
+    'Opposit-Medium': require('../assets/fonts/Opposit-Medium.ttf'),
+    'Opposit-Regular': require('../assets/fonts/Opposit-Regular.ttf'),
+    'Pretendard-Bold': require('../assets/fonts/Pretendard-Bold.otf'),
+    'Pretendard-Light': require('../assets/fonts/Pretendard-Light.otf'),
+    'Pretendard-Medium': require('../assets/fonts/Pretendard-Medium.otf'),
+    'Pretendard-Regular': require('../assets/fonts/Pretendard-Regular.otf'),
+  });
+
+  useEffect(() => {
+    if (loaded || error) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded, error]);
+
+  if (!loaded && !error) {
+    return null;
+  }
+
   return (
-    <View style={styles.container}>
-      <View style={styles.main}>
-        <Text style={styles.title}>Hello World</Text>
-        <Text style={styles.subtitle}>This is the first page of your app.</Text>
-      </View>
+    <View style={styles.main}>
+      <Link style={{ fontSize: 40, marginBottom: 10 }} href="/home">
+        Home
+      </Link>
+      <Link style={{ fontSize: 40 }} href="/login">
+        Login
+      </Link>
     </View>
   );
 }
@@ -22,6 +52,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     maxWidth: 960,
     marginHorizontal: 'auto',
+    fontSize: 40,
   },
   title: {
     fontSize: 64,
