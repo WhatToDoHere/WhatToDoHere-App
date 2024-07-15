@@ -2,12 +2,13 @@
   "expo": {
     "name": "WhatToDoHere",
     "slug": "WhatToDoHere",
+    "scheme": "WhatToDoHere",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./src/assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./src/assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -17,19 +18,20 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./src/assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.moonstrnck.WhatToDoHere"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./src/assets/favicon.png"
     },
     "extra": {
       "eas": {
         "projectId": "1d4d505d-bb55-4b8d-b007-289a9140f265"
       }
     },
-    "owner": "moonstrnck"
+    "owner": "moonstrnck",
+    "plugins": ["expo-router"]
   }
 }
