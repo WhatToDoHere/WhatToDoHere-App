@@ -32,6 +32,56 @@
       }
     },
     "owner": "moonstrnck",
-    "plugins": ["expo-router"]
+    "plugins": [
+      "expo-router",
+      [
+        "expo-font",
+        {
+          "font": "./src/assets/fonts/Opposit-Bold.ttf"
+        }
+      ],
+      [
+        "expo-font",
+        {
+          "font": "./src/assets/fonts/Opposit-Light.ttf"
+        }
+      ],
+      [
+        "expo-font",
+        {
+          "font": "./src/assets/fonts/Opposit-Medium.ttf"
+        }
+      ],
+      [
+        "expo-font",
+        {
+          "font": "./src/assets/fonts/Opposit-Regular.ttf"
+        }
+      ],
+      [
+        "expo-font",
+        {
+          "font": "./src/assets/fonts/Pretendard-Bold.otf"
+        }
+      ],
+      [
+        "expo-font",
+        {
+          "font": "./src/assets/fonts/Pretendard-Light.otf"
+        }
+      ],
+      [
+        "expo-font",
+        {
+          "font": "./src/assets/fonts/Pretendard-Medium.otf"
+        }
+      ],
+      [
+        "expo-font",
+        {
+          "font": "./src/assets/fonts/Pretendard-Regular.otf"
+        }
+      ]
+    ]
   }
 }
