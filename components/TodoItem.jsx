@@ -6,7 +6,7 @@ export default function TodoItem({
   details,
   image,
   onCheckBoxToggle,
-  openModal,
+  openTodoEditor,
 }) {
   const [checked, setChecked] = useState(false);
 
@@ -16,7 +16,7 @@ export default function TodoItem({
   };
 
   const handleTodoEdit = () => {
-    openModal({ title, details, image });
+    openTodoEditor({ title, details, image });
   };
 
   return (

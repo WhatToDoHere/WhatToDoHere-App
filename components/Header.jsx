@@ -1,5 +1,6 @@
 import { Link } from 'expo-router';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { router } from 'expo-router';
 
 export default function Header({ isLoggedIn }) {
   return (
@@ -8,7 +9,10 @@ export default function Header({ isLoggedIn }) {
         📍WhatToDoHere
       </Link>
       {isLoggedIn ? (
-        <TouchableOpacity style={styles.profileIcon}></TouchableOpacity>
+        <TouchableOpacity
+          style={styles.profileIcon}
+          onPress={() => router.push({ pathname: '/home/users' })}
+        ></TouchableOpacity>
       ) : (
         <TouchableOpacity>
           <Text style={styles.loginButton}>Log in</Text>

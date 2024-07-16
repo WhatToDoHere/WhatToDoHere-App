@@ -14,8 +14,8 @@ export default function LocationItem({
   locationTitle,
   locationAddress,
   todos,
-  onEdit,
-  openModal,
+  openLocationEditor,
+  openTodoEditor,
 }) {
   const [expanded, setExpanded] = useState(false);
   const rotation = useState(new Animated.Value(0))[0];
@@ -66,7 +66,10 @@ export default function LocationItem({
           <Text style={styles.address}>📍 {locationAddress}</Text>
         </View>
         <View style={styles.headerButtons}>
-          <TouchableOpacity onPress={onEdit} style={styles.editButton}>
+          <TouchableOpacity
+            onPress={openLocationEditor}
+            style={styles.editButton}
+          >
             <Image
               source={require('../assets/icons/icon-edit.png')}
               style={styles.editIcon}
@@ -88,8 +91,8 @@ export default function LocationItem({
             details={todo.details}
             image={todo.image}
             onCheckBoxToggle={() => handleCheckBoxToggle(index)}
-            openModal={() =>
-              openModal(todo, (newTitle, newDetails, newImage) =>
+            openTodoEditor={() =>
+              openTodoEditor(todo, (newTitle, newDetails, newImage) =>
                 handleTodoEdit(index, newTitle, newDetails, newImage),
               )
             }

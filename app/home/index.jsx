@@ -13,7 +13,7 @@ export default function HomeScreen() {
   const [modalImage, setModalImage] = useState('');
   const [currentTodo, setCurrentTodo] = useState(null);
 
-  const openModal = (todo, onTodoEdit) => {
+  const openTodoEditor = (todo, onTodoEdit) => {
     setCurrentTodo({ ...todo, onTodoEdit });
     setModalTitle(todo.title);
     setModalDetails(todo.details);
@@ -32,7 +32,7 @@ export default function HomeScreen() {
     <View style={styles.container}>
       <Header isLoggedIn={isLoggedIn} />
 
-      <LocationList openModal={openModal}></LocationList>
+      <LocationList openTodoEditor={openTodoEditor}></LocationList>
 
       <TouchableOpacity style={styles.addButton}>
         {/* <MaterialIcons name="add" size={24} color="white" /> */}

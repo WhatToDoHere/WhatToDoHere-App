@@ -5,7 +5,7 @@ export default function LoginScreen() {
   const router = useRouter();
 
   const handleLogin = () => {
-    router.push('/home');
+    router.push('./home');
   };
 
   return (
@@ -16,7 +16,7 @@ export default function LoginScreen() {
         onPress={handleLogin}
       >
         <Image
-          source={require('../../assets/icons/icon-google.png')}
+          source={require('../assets/icons/icon-google.png')}
           style={styles.googleIcon}
         />
         <Text style={[styles.text, styles.whiteText]}>Sign in with Google</Text>

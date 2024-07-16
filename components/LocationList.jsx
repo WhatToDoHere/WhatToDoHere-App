@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
+import { router } from 'expo-router';
+
 import LocationItem from './LocationItem';
 
-export default function LocationList({ openModal }) {
+export default function LocationList({ openTodoEditor }) {
   const [locations, setLocations] = useState([
     {
       title: 'Home',
@@ -54,8 +56,11 @@ export default function LocationList({ openModal }) {
     },
   ]);
 
-  const handleEdit = (index) => {
-    console.log(`Edit location at index ${index}`);
+  const openLocationEditor = (index) => {
+    router.push({
+      pathname: '/home/locationEditor',
+      params: locations[index],
+    });
   };
 
   return (
@@ -66,8 +71,8 @@ export default function LocationList({ openModal }) {
           locationTitle={location.title}
           locationAddress={location.address}
           todos={location.todos}
-          onEdit={() => handleEdit(index)}
-          openModal={openModal}
+          openLocationEditor={() => openLocationEditor(index)}
+          openTodoEditor={openTodoEditor}
         />
       ))}
     </ScrollView>
