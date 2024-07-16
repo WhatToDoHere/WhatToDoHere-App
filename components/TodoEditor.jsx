@@ -1,4 +1,4 @@
-import React from 'react';
+import { useRef, useState, useEffect } from 'react';
 import {
   View,
   Modal,
@@ -21,10 +21,10 @@ export default function TodoEditor({
   onSave,
   onCancel,
 }) {
-  const slideAnim = React.useRef(new Animated.Value(0)).current;
-  const [modalVisible, setModalVisible] = React.useState(isVisible);
+  const slideAnim = useRef(new Animated.Value(0)).current;
+  const [modalVisible, setModalVisible] = useState(isVisible);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isVisible) {
       setModalVisible(true);
       Animated.timing(slideAnim, {

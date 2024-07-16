@@ -58,7 +58,7 @@ export default function LocationList({ openTodoEditor }) {
 
   const openLocationEditor = (index) => {
     router.push({
-      pathname: '/home/locationEditor',
+      pathname: '/home/location',
       params: locations[index],
     });
   };
