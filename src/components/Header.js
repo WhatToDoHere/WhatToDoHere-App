@@ -1,9 +1,12 @@
+import { Link } from 'expo-router';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 export default function Header({ isLoggedIn }) {
   return (
     <View style={styles.header}>
-      <Text style={styles.title}>📍WhatToDoHere</Text>
+      <Link href="/" style={styles.title}>
+        📍WhatToDoHere
+      </Link>
       {isLoggedIn ? (
         <TouchableOpacity style={styles.profileIcon}></TouchableOpacity>
       ) : (

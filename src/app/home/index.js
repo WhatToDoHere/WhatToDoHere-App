@@ -1,22 +1,54 @@
-import React from 'react';
-import { View, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
-import { router } from 'expo-router';
+import { useState } from 'react';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 
 import Header from '../../components/Header';
 import LocationList from '../../components/LocationList';
+import TodoEditor from '../../components/TodoEditor';
 
 export default function HomeScreen() {
   const isLoggedIn = true;
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modalTitle, setModalTitle] = useState('');
+  const [modalDetails, setModalDetails] = useState('');
+  const [modalImage, setModalImage] = useState('');
+  const [currentTodo, setCurrentTodo] = useState(null);
+
+  const openModal = (todo, onTodoEdit) => {
+    setCurrentTodo({ ...todo, onTodoEdit });
+    setModalTitle(todo.title);
+    setModalDetails(todo.details);
+    setModalImage(todo.image);
+    setIsModalVisible(true);
+  };
+
+  const handleSave = () => {
+    if (currentTodo && currentTodo.onTodoEdit) {
+      currentTodo.onTodoEdit(modalTitle, modalDetails, modalImage);
+    }
+    setIsModalVisible(false);
+  };
 
   return (
     <View style={styles.container}>
       <Header isLoggedIn={isLoggedIn} />
 
-      <LocationList></LocationList>
+      <LocationList openModal={openModal}></LocationList>
 
       <TouchableOpacity style={styles.addButton}>
         {/* <MaterialIcons name="add" size={24} color="white" /> */}
       </TouchableOpacity>
+
+      <TodoEditor
+        isVisible={isModalVisible}
+        title={modalTitle}
+        details={modalDetails}
+        image={modalImage}
+        onChangeTitle={setModalTitle}
+        onChangeDetails={setModalDetails}
+        onChangeImage={setModalImage}
+        onSave={handleSave}
+        onCancel={() => setIsModalVisible(false)}
+      />
     </View>
   );
 }

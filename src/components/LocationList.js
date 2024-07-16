@@ -2,27 +2,59 @@ import React, { useState } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import LocationItem from './LocationItem';
 
-const LocationList = () => {
+export default function LocationList({ openModal }) {
   const [locations, setLocations] = useState([
     {
       title: 'Home',
       address: '123 Home St.',
-      todos: ['Clean the house', 'Do the laundry'],
+      todos: [
+        {
+          title: '알고리즘 풀기',
+          details: 'Sweep and mop the floors.',
+          image: 'https://example.com/clean-house.jpg',
+        },
+        {
+          title: '세탁기 돌리기',
+          details: 'Wash and fold clothes.',
+          image: 'https://example.com/do-laundry.jpg',
+        },
+      ],
     },
     {
       title: 'Work',
       address: '456 Work Ave.',
-      todos: ['Finish project', 'Email client'],
+      todos: [
+        {
+          title: '회의록 작성하기',
+          details: 'Complete the project documentation.',
+          image: 'https://example.com/finish-project.jpg',
+        },
+        {
+          title: '클라이언트에게 이메일 보내기',
+          details: 'Send the project updates to the client.',
+          image: 'https://example.com/email-client.jpg',
+        },
+      ],
     },
     {
       title: 'Gym',
       address: '789 Gym Rd.',
-      todos: ['Workout', 'Swim'],
+      todos: [
+        {
+          title: 'Workout',
+          details: 'Complete the strength training routine.',
+          image: 'https://example.com/workout.jpg',
+        },
+        {
+          title: 'Swim',
+          details: 'Swim 30 laps.',
+          image: 'https://example.com/swim.jpg',
+        },
+      ],
     },
   ]);
 
   const handleEdit = (index) => {
-    // 수정 로직
     console.log(`Edit location at index ${index}`);
   };
 
@@ -35,16 +67,15 @@ const LocationList = () => {
           locationAddress={location.address}
           todos={location.todos}
           onEdit={() => handleEdit(index)}
+          openModal={openModal}
         />
       ))}
     </ScrollView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     padding: 20,
   },
 });
-
-export default LocationList;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -15,6 +15,7 @@ export default function LocationItem({
   locationAddress,
   todos,
   onEdit,
+  openModal,
 }) {
   const [expanded, setExpanded] = useState(false);
   const rotation = useState(new Animated.Value(0))[0];
@@ -53,8 +54,8 @@ export default function LocationItem({
     console.log(`Checkbox toggled for todo at index ${index}`);
   };
 
-  const handleTodoEdit = (index, newText) => {
-    console.log(`Text edited for todo at index ${index}: ${newText}`);
+  const handleTodoEdit = (index, newTitle, newDetails, newImage) => {
+    todos[index] = { title: newTitle, details: newDetails, image: newImage };
   };
 
   return (
@@ -83,9 +84,15 @@ export default function LocationItem({
         {todos.map((todo, index) => (
           <TodoItem
             key={index}
-            text={todo}
+            title={todo.title}
+            details={todo.details}
+            image={todo.image}
             onCheckBoxToggle={() => handleCheckBoxToggle(index)}
-            onTextEdit={(newText) => handleTodoEdit(index, newText)}
+            openModal={() =>
+              openModal(todo, (newTitle, newDetails, newImage) =>
+                handleTodoEdit(index, newTitle, newDetails, newImage),
+              )
+            }
           />
         ))}
       </Animated.View>
@@ -96,7 +103,7 @@ export default function LocationItem({
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    paddingBottom: 5,
+    paddingBottom: 0,
     marginVertical: 10,
     backgroundColor: '#D0E9BC',
     borderRadius: 20,
@@ -107,6 +114,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 2,
     elevation: 3,
+    overflow: 'hidden',
   },
   header: {
     flexDirection: 'row',
@@ -155,11 +163,7 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   todoList: {
+    marginTop: 15,
     overflow: 'hidden',
-  },
-  todoItem: {
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
   },
 });
