@@ -64,13 +64,13 @@ export default function SwitchSelector({ options, selected, onSelect }) {
 
 const styles = StyleSheet.create({
   switchContainer: {
+    position: 'relative',
     flexDirection: 'row',
+    width: '100%',
+    height: 40,
     padding: 5,
     overflow: 'hidden',
-    position: 'relative',
-    width: '100%',
-    height: 38,
-    borderRadius: 20,
+    borderRadius: 10,
     backgroundColor: '#EEEEEE',
   },
   animatedBackground: {
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     top: 5,
     height: '100%',
     backgroundColor: '#fff',
-    borderRadius: 20,
+    borderRadius: 10,
   },
   option: {
     flex: 1,
@@ -88,6 +88,7 @@ const styles = StyleSheet.create({
   },
   optionText: {
     fontSize: 14,
+    fontFamily: 'Pretendard-Regular',
   },
   selectedOptionText: {
     color: '#202020',

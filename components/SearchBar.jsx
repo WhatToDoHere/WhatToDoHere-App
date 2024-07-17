@@ -23,7 +23,7 @@ export default function SearchBar({
     <View style={[styles.searchContainer, style]}>
       <Image
         source={require('../assets/icons/icon-search.png')}
-        style={styles.icon}
+        style={styles.searchIcon}
       />
       <TextInput
         style={styles.searchInput}
@@ -40,7 +40,7 @@ export default function SearchBar({
         <TouchableOpacity onPress={handleClear} style={styles.clearButton}>
           <Image
             source={require('../assets/icons/icon-clear.png')}
-            style={styles.icon}
+            style={styles.clearIcon}
           />
         </TouchableOpacity>
       )}
@@ -52,15 +52,10 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 20,
-    backgroundColor: '#fff',
     paddingHorizontal: 10,
     paddingVertical: 5,
-  },
-  icon: {
-    width: 15,
-    height: 15,
-    marginRight: 10,
+    borderRadius: 10,
+    backgroundColor: '#fff',
   },
   searchInput: {
     flex: 1,
@@ -68,5 +63,14 @@ const styles = StyleSheet.create({
   },
   clearButton: {
     marginLeft: 10,
+  },
+  searchIcon: {
+    width: 15,
+    height: 15,
+    marginRight: 10,
+  },
+  clearIcon: {
+    width: 15,
+    height: 15,
   },
 });

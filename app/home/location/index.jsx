@@ -2,16 +2,17 @@ import { useState } from 'react';
 import {
   StyleSheet,
   Text,
-  TextInput,
   View,
-  TouchableOpacity,
+  Image,
   ScrollView,
+  TouchableOpacity,
   Pressable,
 } from 'react-native';
 import { Stack, useLocalSearchParams, useNavigation } from 'expo-router';
 
 import SearchBar from '../../../components/SearchBar';
 import SwitchSelector from '../../../components/SwitchSelector';
+import TitleInput from '../../../components/TitleInput';
 
 export default function LocationEditor() {
   const { address } = useLocalSearchParams();
@@ -19,6 +20,7 @@ export default function LocationEditor() {
 
   const [alertOption, setAlertOption] = useState('도착할 때');
   const [privacyOption, setPrivacyOption] = useState('공개');
+  const [locationTitle, setLocationTitle] = useState('바닐라 코딩');
 
   return (
     <ScrollView style={styles.container}>
@@ -55,8 +57,14 @@ export default function LocationEditor() {
         }}
       />
       <View style={styles.contents}>
-        <TextInput style={styles.locationTitle} value="바닐라 코딩" />
-        <Text style={styles.sectionTitle}>Location</Text>
+        <TitleInput value={locationTitle} onChangeText={setLocationTitle} />
+        <View style={styles.titleContainer}>
+          <Image
+            source={require('../../../assets/icons/icon-location.png')}
+            style={[styles.sectionIcon, styles.locationIcon]}
+          />
+          <Text style={styles.sectionTitle}>Location</Text>
+        </View>
         <View style={styles.map}>
           <Pressable
             onPress={() => {
@@ -72,15 +80,35 @@ export default function LocationEditor() {
           </Pressable>
         </View>
         <Text style={styles.address}>📍 {address}</Text>
-        <Text style={styles.sectionTitle}>WiFi</Text>
-        <Text>Vanilla_coding</Text>
-        <Text style={styles.sectionTitle}>Alert</Text>
+        <View style={styles.titleContainer}>
+          <Image
+            source={require('../../../assets/icons/icon-wifi.png')}
+            style={[styles.sectionIcon, styles.wifiIcon]}
+          />
+          <Text style={styles.sectionTitle}>WiFi</Text>
+        </View>
+        <View style={styles.textBox}>
+          <Text style={styles.ssid}>Vanilla_coding</Text>
+        </View>
+        <View style={styles.titleContainer}>
+          <Image
+            source={require('../../../assets/icons/icon-alert.png')}
+            style={[styles.sectionIcon, styles.alertIcon]}
+          />
+          <Text style={styles.sectionTitle}>Alert</Text>
+        </View>
         <SwitchSelector
           options={['도착할 때', '떠날 때']}
           selected={alertOption}
           onSelect={(option) => setAlertOption(option)}
         />
-        <Text style={styles.sectionTitle}>Privacy</Text>
+        <View style={styles.titleContainer}>
+          <Image
+            source={require('../../../assets/icons/icon-privacy.png')}
+            style={[styles.sectionIcon, styles.privacyIcon]}
+          />
+          <Text style={styles.sectionTitle}>Privacy</Text>
+        </View>
         <SwitchSelector
           options={['공개', '비공개']}
           selected={privacyOption}
@@ -114,9 +142,33 @@ const styles = StyleSheet.create({
     fontFamily: 'Opposit-Regular',
     fontSize: 20,
   },
-  sectionTitle: {
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginTop: 30,
     marginBottom: 15,
+  },
+  sectionIcon: {
+    marginRight: 10,
+  },
+  locationIcon: {
+    width: 14,
+    height: 16,
+  },
+  wifiIcon: {
+    width: 16,
+    height: 12,
+  },
+  alertIcon: {
+    width: 14,
+    height: 15,
+  },
+  privacyIcon: {
+    width: 18,
+    height: 18,
+  },
+  sectionTitle: {
+    marginTop: 4,
     fontFamily: 'Opposit-Bold',
     fontSize: 18,
     fontWeight: 'bold',
@@ -126,19 +178,34 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     height: 300,
-    marginBottom: 20,
-    borderRadius: 20,
+    marginBottom: 15,
+    borderRadius: 10,
     backgroundColor: '#303030',
   },
   searchBar: {
     width: '94%',
-    marginTop: 10,
+    marginTop: 12,
     shadowColor: '#000',
     shadowOffset: { width: 2, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
   },
   address: {
-    marginBottom: 16,
+    marginBottom: 15,
+    fontFamily: 'Pretendard-Regular',
+    fontSize: 16,
+  },
+  textBox: {
+    justifyContent: 'center',
+    width: '100%',
+    height: 40,
+    borderRadius: 10,
+    backgroundColor: '#303030',
+  },
+  ssid: {
+    paddingHorizontal: 20,
+    fontFamily: 'Pretendard-Regular',
+    fontSize: 14,
+    color: '#fff',
   },
 });

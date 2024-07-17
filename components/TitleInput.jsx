@@ -3,7 +3,7 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Text,
+  Image,
 } from 'react-native';
 
 export default function TitleInput({ value, onChangeText, placeholder }) {
@@ -20,7 +20,10 @@ export default function TitleInput({ value, onChangeText, placeholder }) {
           onPress={() => onChangeText('')}
           style={styles.clearButton}
         >
-          <Text style={styles.clearButtonText}>✕</Text>
+          <Image
+            source={require('../assets/icons/icon-clear.png')}
+            style={styles.clearIcon}
+          />
         </TouchableOpacity>
       )}
     </View>
@@ -31,20 +34,18 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderBottomWidth: 1,
-    borderColor: '#ccc',
+    height: 35,
   },
   input: {
     flex: 1,
-    paddingTop: 10,
     fontFamily: 'Opposit-Regular',
     fontSize: 20,
   },
   clearButton: {
     padding: 10,
   },
-  clearButtonText: {
-    fontSize: 18,
-    color: '#888',
+  clearIcon: {
+    width: 15,
+    height: 15,
   },
 });
