@@ -9,7 +9,7 @@ import {
 import { Stack, useNavigation } from 'expo-router';
 
 import SearchBar from '../../../components/SearchBar';
-import SearchResultList from '../../../components/searchResultList';
+import SearchResultList from '../../../components/SearchResultList';
 
 import LOCATION_DATA from '../../../constants/location';
 
