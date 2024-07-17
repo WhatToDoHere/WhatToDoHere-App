@@ -10,11 +10,8 @@ export default function LootLayout() {
         options={{ presentation: 'modal' }}
       />
       <Stack.Screen name="users/index" />
-      <Stack.Screen
-        name="users/completedTodo"
-        options={{ presentation: 'modal' }}
-      />
-      <Stack.Screen name="users/friends" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="users/completedTodo" />
+      <Stack.Screen name="users/friends" />
       <Stack.Screen
         name="users/addFriend"
         options={{ presentation: 'modal' }}
