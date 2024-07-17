@@ -6,12 +6,18 @@ export default function LootLayout() {
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="location/index" options={{ presentation: 'modal' }} />
       <Stack.Screen
-        name="location/locationSearch"
+        name="location/searchLocation"
         options={{ presentation: 'modal' }}
       />
+      <Stack.Screen name="users/index" />
       <Stack.Screen
-        name="users/index"
-        // options={{ headerTitle: '', headerBackTitleVisible: false }}
+        name="users/completedTodo"
+        options={{ presentation: 'modal' }}
+      />
+      <Stack.Screen name="users/friends" options={{ presentation: 'modal' }} />
+      <Stack.Screen
+        name="users/addFriend"
+        options={{ presentation: 'modal' }}
       />
     </Stack>
   );

@@ -68,7 +68,7 @@ export default function LocationEditor() {
         <View style={styles.map}>
           <Pressable
             onPress={() => {
-              navigation.navigate('location/locationSearch');
+              navigation.navigate('location/searchLocation');
             }}
           >
             <SearchBar

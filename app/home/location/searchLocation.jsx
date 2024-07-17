@@ -1,14 +1,30 @@
+import { useState } from 'react';
 import {
-  ScrollView,
   StyleSheet,
   Text,
   View,
+  ScrollView,
   TouchableOpacity,
 } from 'react-native';
 import { Stack, useNavigation } from 'expo-router';
 
-export default function LocationSearch() {
+import SearchBar from '../../../components/SearchBar';
+import SearchResultList from '../../../components/searchResultList';
+
+import LOCATION_DATA from '../../../constants/location';
+
+export default function SearchLocation() {
   const navigation = useNavigation();
+  const [filteredItems, setFilteredItems] = useState(LOCATION_DATA);
+
+  const handleSearch = (text) => {
+    const filtered = LOCATION_DATA.filter(
+      (item) =>
+        item.title.toLowerCase().includes(text.toLowerCase()) ||
+        item.description.toLowerCase().includes(text.toLowerCase()),
+    );
+    setFilteredItems(filtered);
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -45,8 +61,13 @@ export default function LocationSearch() {
           ),
         }}
       />
-      <View>
-        <Text>locationSearch</Text>
+      <View style={styles.contents}>
+        <SearchBar
+          placeholder="검색어를 입력하세요"
+          onSearch={handleSearch}
+          style={styles.searchBar}
+        />
+        <SearchResultList items={filteredItems} />
       </View>
     </ScrollView>
   );
@@ -69,5 +90,8 @@ const styles = StyleSheet.create({
   },
   contents: {
     paddingBottom: 100,
+  },
+  searchBar: {
+    marginBottom: 20,
   },
 });
