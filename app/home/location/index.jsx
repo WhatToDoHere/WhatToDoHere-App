@@ -57,7 +57,11 @@ export default function LocationEditor() {
         }}
       />
       <View style={styles.contents}>
-        <TitleInput value={locationTitle} onChangeText={setLocationTitle} />
+        <TitleInput
+          value={locationTitle}
+          placeholder={'위치 별칭'}
+          onChangeText={setLocationTitle}
+        />
         <View style={styles.titleContainer}>
           <Image
             source={require('../../../assets/icons/icon-location.png')}

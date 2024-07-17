@@ -38,11 +38,13 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
+    lineHeight: 30,
     fontFamily: 'Opposit-Regular',
     fontSize: 20,
   },
   clearButton: {
     padding: 10,
+    paddingTop: 15,
   },
   clearIcon: {
     width: 15,
