@@ -1,9 +1,12 @@
 import { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+
+import { useNavigation } from 'expo-router';
 
 import Header from '../../components/Header';
 import LocationList from '../../components/LocationList';
 import TodoEditor from '../../components/TodoEditor';
+import AddLocationButton from '../../components/AddLocationButton';
 
 export default function HomeScreen() {
   const isLoggedIn = true;
@@ -21,11 +24,17 @@ export default function HomeScreen() {
     setIsModalVisible(true);
   };
 
+  const navigation = useNavigation();
+
   const handleSave = () => {
     if (currentTodo && currentTodo.onTodoEdit) {
       currentTodo.onTodoEdit(modalTitle, modalDetails, modalImage);
     }
     setIsModalVisible(false);
+  };
+
+  const handleAdd = () => {
+    navigation.navigate('location/index');
   };
 
   return (
@@ -34,9 +43,7 @@ export default function HomeScreen() {
 
       <LocationList openTodoEditor={openTodoEditor}></LocationList>
 
-      <TouchableOpacity style={styles.addButton}>
-        {/* <MaterialIcons name="add" size={24} color="white" /> */}
-      </TouchableOpacity>
+      <AddLocationButton onPress={handleAdd} />
 
       <TodoEditor
         isVisible={isModalVisible}
@@ -61,21 +68,5 @@ const styles = StyleSheet.create({
   scrollView: {
     paddingHorizontal: 20,
     paddingVertical: 10,
-  },
-  addButton: {
-    position: 'absolute',
-    right: 20,
-    bottom: 20,
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: '#202020',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    elevation: 5,
   },
 });
