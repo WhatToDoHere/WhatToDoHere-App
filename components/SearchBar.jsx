@@ -54,12 +54,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 10,
     paddingVertical: 5,
+    borderWidth: 1,
+    borderColor: '#eee',
     borderRadius: 10,
     backgroundColor: '#fff',
   },
   searchInput: {
     flex: 1,
     paddingVertical: 5,
+    fontFamily: 'Pretendard-Regular',
   },
   clearButton: {
     marginLeft: 10,
