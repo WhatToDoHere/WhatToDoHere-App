@@ -1,18 +1,23 @@
 import { Link } from 'expo-router';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 
-export default function Header({ isLoggedIn }) {
+export default function Header({ userInfo }) {
   return (
     <View style={styles.header}>
       <Link href="/" style={styles.title}>
         📍WhatToDoHere
       </Link>
-      {isLoggedIn ? (
+      {userInfo ? (
         <TouchableOpacity
           style={styles.profileIcon}
           onPress={() => router.push({ pathname: '/home/users' })}
-        ></TouchableOpacity>
+        >
+          <Image
+            source={{ uri: userInfo.photoURL }}
+            style={styles.profileImage}
+          />
+        </TouchableOpacity>
       ) : (
         <TouchableOpacity>
           <Text style={styles.loginButton}>Log in</Text>
@@ -40,6 +45,11 @@ const styles = StyleSheet.create({
     height: 35,
     borderRadius: 35,
     backgroundColor: 'tomato',
+    overflow: 'hidden',
+  },
+  profileImage: {
+    width: '100%',
+    height: '100%',
   },
   loginButton: {
     fontSize: 18,

@@ -9,10 +9,13 @@ import {
 } from 'react-native';
 import { Stack, useNavigation } from 'expo-router';
 
+import { useAtom } from 'jotai';
+import { userInfoAtom } from '../../../atoms';
+
 export default function Profile() {
   const navigation = useNavigation();
+  const [userInfo] = useAtom(userInfoAtom);
 
-  const userName = '김바코';
   const menuItems = [
     {
       id: 1,
@@ -57,8 +60,17 @@ export default function Profile() {
         }}
       />
       <View style={styles.userHeader}>
-        <View style={styles.userIcon}></View>
-        <Text style={styles.welcomeText}>{userName}님, 안녕하세요!</Text>
+        {userInfo && (
+          <>
+            <Image
+              source={{ uri: userInfo.photoURL }}
+              style={styles.userIcon}
+            />
+            <Text style={styles.welcomeText}>
+              Hello, {userInfo.displayName} 👋
+            </Text>
+          </>
+        )}
       </View>
       <ScrollView>
         <View style={styles.contents}>
@@ -72,7 +84,7 @@ export default function Profile() {
                 style={styles.link}
               >
                 <View style={styles.menuItem}>
-                  <Image source={item.icon} style={styles.icon} />
+                  <Image source={item.icon} style={styles.menuIcon} />
                   <Text style={styles.title}>{item.title}</Text>
                 </View>
               </Pressable>
@@ -109,18 +121,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingVertical: 30,
+    paddingTop: 20,
+    paddingBottom: 30,
   },
   userIcon: {
     width: 40,
     height: 40,
-    marginRight: 10,
+    marginRight: 20,
     borderRadius: 20,
-    backgroundColor: '#82C58D',
   },
   welcomeText: {
-    fontFamily: 'Pretendard-Regular',
-    fontSize: 18,
+    fontFamily: 'Opposit-Bold',
+    fontSize: 24,
     color: '#202020',
   },
   menu: {
@@ -136,7 +148,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: '#eee',
   },
-  icon: {
+  menuIcon: {
     width: 30,
     height: 30,
     marginRight: 10,

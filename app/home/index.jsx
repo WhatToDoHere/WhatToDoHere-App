@@ -3,13 +3,16 @@ import { View, StyleSheet } from 'react-native';
 
 import { useNavigation } from 'expo-router';
 
+import { useAtom } from 'jotai';
+import { userInfoAtom } from '../../atoms';
+
 import Header from '../../components/Header';
 import LocationList from '../../components/LocationList';
 import TodoEditor from '../../components/TodoEditor';
 import AddLocationButton from '../../components/AddLocationButton';
 
 export default function HomeScreen() {
-  const isLoggedIn = true;
+  const [userInfo] = useAtom(userInfoAtom);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [modalDetails, setModalDetails] = useState('');
@@ -39,7 +42,7 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <Header isLoggedIn={isLoggedIn} />
+      <Header userInfo={userInfo} />
 
       <LocationList openTodoEditor={openTodoEditor}></LocationList>
 
