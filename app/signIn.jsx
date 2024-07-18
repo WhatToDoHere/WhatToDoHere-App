@@ -1,11 +1,8 @@
 import { View, Text, Image, StyleSheet, Pressable } from 'react-native';
-import { useRouter } from 'expo-router';
 
-export default function LoginScreen() {
-  const router = useRouter();
-
-  const handleLogin = () => {
-    router.push('./home');
+export default function SignInScreen({ promptAsync }) {
+  const handleSignIn = () => {
+    promptAsync();
   };
 
   return (
@@ -13,7 +10,7 @@ export default function LoginScreen() {
       <Text style={styles.title}>WhatToDoHere</Text>
       <Pressable
         style={[styles.button, styles.googleLogin]}
-        onPress={handleLogin}
+        onPress={handleSignIn}
       >
         <Image
           source={require('../assets/icons/icon-google.png')}
@@ -23,7 +20,7 @@ export default function LoginScreen() {
       </Pressable>
       <Pressable
         style={[styles.button, styles.gusetLogin]}
-        onPress={handleLogin}
+        onPress={handleSignIn}
       >
         <Text style={styles.text}>Guest</Text>
       </Pressable>
@@ -38,11 +35,11 @@ const styles = StyleSheet.create({
     fontSize: 44,
   },
   button: {
-    minWidth: 265,
-    minHeight: 50,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    minWidth: 265,
+    minHeight: 50,
     paddingVertical: 14,
     paddingHorizontal: 32,
     marginBottom: 15,

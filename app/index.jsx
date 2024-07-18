@@ -1,10 +1,25 @@
 import { useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
 
-import { Link } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
+import * as Google from 'expo-auth-session/providers/google';
+import * as WebBrowser from 'expo-web-browser';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import {
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  signInWithCredential,
+} from 'firebase/auth';
+import { auth } from '../firebaseConfig';
+
+import { useAtom } from 'jotai';
+import { userInfoAtom } from '../atoms';
+
+import SignInScreen from './signIn';
+
+WebBrowser.maybeCompleteAuthSession();
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
@@ -19,47 +34,44 @@ export default function App() {
     'Pretendard-Regular': require('../assets/fonts/Pretendard-Regular.otf'),
   });
 
+  const router = useRouter();
+  const [, setUserInfo] = useAtom(userInfoAtom);
+
   useEffect(() => {
     if (loaded || error) {
       SplashScreen.hideAsync();
     }
   }, [loaded, error]);
 
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+  });
+
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const { id_token } = response.params;
+      const credential = GoogleAuthProvider.credential(id_token);
+
+      signInWithCredential(auth, credential);
+    }
+  }, [response]);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        await AsyncStorage.setItem('user', JSON.stringify(user));
+
+        setUserInfo(user);
+        router.replace('/home');
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   if (!loaded && !error) {
     return null;
   }
 
-  return (
-    <View style={styles.main}>
-      <Link style={{ fontSize: 40, marginBottom: 10 }} href="/home">
-        Home
-      </Link>
-      <Link style={{ fontSize: 40 }} href="/login">
-        Login
-      </Link>
-    </View>
-  );
+  return <SignInScreen promptAsync={promptAsync} />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    padding: 24,
-  },
-  main: {
-    flex: 1,
-    justifyContent: 'center',
-    maxWidth: 960,
-    marginHorizontal: 'auto',
-    fontSize: 40,
-  },
-  title: {
-    fontSize: 64,
-    fontWeight: 'bold',
-  },
-  subtitle: {
-    fontSize: 36,
-    color: '#38434D',
-  },
-});
