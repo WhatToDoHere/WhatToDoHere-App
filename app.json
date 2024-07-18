@@ -5,10 +5,10 @@
     "scheme": "WhatToDoHere",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./src/assets/icon.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./src/assets/splash.png",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -18,13 +18,13 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./src/assets/adaptive-icon.png",
+        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.moonstrnck.WhatToDoHere"
     },
     "web": {
-      "favicon": "./src/assets/favicon.png"
+      "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
@@ -37,49 +37,49 @@
       [
         "expo-font",
         {
-          "font": "./src/assets/fonts/Opposit-Bold.ttf"
+          "font": "./assets/fonts/Opposit-Bold.ttf"
         }
       ],
       [
         "expo-font",
         {
-          "font": "./src/assets/fonts/Opposit-Light.ttf"
+          "font": "./assets/fonts/Opposit-Light.ttf"
         }
       ],
       [
         "expo-font",
         {
-          "font": "./src/assets/fonts/Opposit-Medium.ttf"
+          "font": "./assets/fonts/Opposit-Medium.ttf"
         }
       ],
       [
         "expo-font",
         {
-          "font": "./src/assets/fonts/Opposit-Regular.ttf"
+          "font": "./assets/fonts/Opposit-Regular.ttf"
         }
       ],
       [
         "expo-font",
         {
-          "font": "./src/assets/fonts/Pretendard-Bold.otf"
+          "font": "./assets/fonts/Pretendard-Bold.otf"
         }
       ],
       [
         "expo-font",
         {
-          "font": "./src/assets/fonts/Pretendard-Light.otf"
+          "font": "./assets/fonts/Pretendard-Light.otf"
         }
       ],
       [
         "expo-font",
         {
-          "font": "./src/assets/fonts/Pretendard-Medium.otf"
+          "font": "./assets/fonts/Pretendard-Medium.otf"
         }
       ],
       [
         "expo-font",
         {
-          "font": "./src/assets/fonts/Pretendard-Regular.otf"
+          "font": "./assets/fonts/Pretendard-Regular.otf"
         }
       ]
     ]
