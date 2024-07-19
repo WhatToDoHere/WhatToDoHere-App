@@ -27,7 +27,9 @@
     "expo-crypto": "~13.0.2",
     "expo-web-browser": "~13.0.3",
     "@react-native-async-storage/async-storage": "1.23.1",
-    "expo-application": "~5.9.1"
+    "expo-application": "~5.9.1",
+    "react-native-maps": "1.14.0",
+    "expo-location": "~17.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
