@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -10,17 +10,39 @@ import {
 } from 'react-native';
 import { Stack, useLocalSearchParams, useNavigation } from 'expo-router';
 
+import MapView, { Marker } from 'react-native-maps';
+import * as Location from 'expo-location';
+
 import SearchBar from '../../../components/SearchBar';
 import SwitchSelector from '../../../components/SwitchSelector';
 import TitleInput from '../../../components/TitleInput';
 
+import { useAtom } from 'jotai';
+import { locationAtom } from '../../../atoms';
+
+import { getFullAddress } from '../../../utils/geocoding';
+
 export default function LocationEditor() {
   const { address } = useLocalSearchParams();
   const navigation = useNavigation();
+  const [region, setRegion] = useAtom(locationAtom);
 
   const [alertOption, setAlertOption] = useState('도착할 때');
   const [privacyOption, setPrivacyOption] = useState('공개');
   const [locationTitle, setLocationTitle] = useState('바닐라 코딩');
+  const [regionAddress, setRegionAddress] = useState('');
+
+  console.log(region);
+  useEffect(() => {
+    if (!region) {
+      Alert.alert('오류', '현재 위치를 가져오지 못했습니다.');
+    } else {
+      (async () => {
+        const address = await getFullAddress(region.latitude, region.longitude);
+        setRegionAddress(address);
+      })();
+    }
+  }, [region]);
 
   return (
     <ScrollView style={styles.container}>
@@ -69,21 +91,24 @@ export default function LocationEditor() {
           />
           <Text style={styles.sectionTitle}>Location</Text>
         </View>
-        <View style={styles.map}>
+        <View style={styles.mapContainer}>
           <Pressable
+            style={styles.searchBarContainer}
             onPress={() => {
               navigation.navigate('location/searchLocation');
             }}
           >
             <SearchBar
-              style={styles.searchBar}
               placeholder="위치 검색"
               onSearch={(text) => console.log('검색:', text)}
               editable={false}
             />
           </Pressable>
+          <MapView style={styles.map} initialRegion={region}>
+            <Marker coordinate={region} />
+          </MapView>
         </View>
-        <Text style={styles.address}>📍 {address}</Text>
+        <Text style={styles.address}>📍 {regionAddress}</Text>
         <View style={styles.titleContainer}>
           <Image
             source={require('../../../assets/icons/icon-wifi.png')}
@@ -178,16 +203,27 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#202020',
   },
-  map: {
-    alignItems: 'center',
+  mapContainer: {
+    position: 'relative',
     width: '100%',
     height: 300,
     marginBottom: 15,
     borderRadius: 10,
     backgroundColor: '#303030',
   },
-  searchBar: {
+  map: {
+    alignItems: 'center',
+    width: '100%',
+    height: '100%',
+    borderRadius: 10,
+  },
+  searchBarContainer: {
+    zIndex: 1,
+    position: 'absolute',
+    top: 5,
+    left: '50%',
     width: '94%',
+    marginLeft: '-47%',
     marginTop: 12,
     shadowColor: '#000',
     shadowOffset: { width: 2, height: 2 },
@@ -204,12 +240,12 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 40,
     borderRadius: 10,
-    backgroundColor: '#303030',
+    backgroundColor: '#EEEEEE',
   },
   ssid: {
     paddingHorizontal: 20,
     fontFamily: 'Pretendard-Regular',
     fontSize: 14,
-    color: '#fff',
+    color: '#202020',
   },
 });
