@@ -12,9 +12,17 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "jsEngine": "hermes",
+    "experiments": {
+      "turboModules": true
+    },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.moonstrnck.WhatToDoHere"
+      "bundleIdentifier": "com.moonstrnck.WhatToDoHere",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "We need your location to provide better services.",
+        "NSLocationAlwaysUsageDescription": "We need your location to provide better services."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -34,6 +42,13 @@
     "owner": "moonstrnck",
     "plugins": [
       "expo-router",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow WhatToDoHere to use your location.",
+          "isIosBackgroundLocationEnabled": true
+        }
+      ],
       [
         "expo-font",
         {
