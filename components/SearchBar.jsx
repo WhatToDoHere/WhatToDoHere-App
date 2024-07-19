@@ -7,12 +7,7 @@ import {
   Image,
 } from 'react-native';
 
-export default function SearchBar({
-  placeholder,
-  onSearch,
-  style,
-  editable = true,
-}) {
+export default function SearchBar({ placeholder, onSearch, editable = true }) {
   const [searchText, setSearchText] = useState('');
 
   const handleClear = () => {
@@ -20,7 +15,7 @@ export default function SearchBar({
   };
 
   return (
-    <View style={[styles.searchContainer, style]}>
+    <View style={styles.searchContainer}>
       <Image
         source={require('../assets/icons/icon-search.png')}
         style={styles.searchIcon}

@@ -16,6 +16,7 @@ export default function LocationItem({
   todos,
   openLocationEditor,
   openTodoEditor,
+  backgroundColor,
 }) {
   const [expanded, setExpanded] = useState(false);
   const rotation = useState(new Animated.Value(0))[0];
@@ -59,7 +60,7 @@ export default function LocationItem({
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor }]}>
       <View style={[styles.header, expanded && styles.headerExpanded]}>
         <View style={styles.headerTextContainer}>
           <Text style={styles.title}>{locationTitle}</Text>
@@ -110,11 +111,11 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     backgroundColor: '#FDFCD8',
     borderRadius: 20,
+    shadowColor: '#303030',
     borderWidth: 1,
-    borderColor: '#ddd',
-    shadowColor: '#000',
+    borderColor: '#303030',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.5,
     shadowRadius: 2,
     elevation: 3,
     overflow: 'hidden',
@@ -140,9 +141,9 @@ const styles = StyleSheet.create({
   },
   address: {
     marginTop: 8,
-    fontFamily: 'Opposit-Bold',
-    fontSize: 14,
-    color: '#202020',
+    fontFamily: 'Opposit-Regular',
+    fontSize: 13,
+    color: '#707070',
   },
   headerButtons: {
     flexDirection: 'row',

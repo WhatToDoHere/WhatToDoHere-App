@@ -56,6 +56,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: 'Opposit-Regular',
-    fontSize: 15,
+    fontSize: 14,
+    color: '#202020',
   },
 });
