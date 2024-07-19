@@ -40,6 +40,8 @@
     </array>
     <key>CFBundleVersion</key>
     <string>1</string>
+    <key>GMSApiKey</key>
+    <string>AIzaSyBbZSX0NlWMStP718UEyJevmHF7Aa9w1is</string>
     <key>LSRequiresIPhoneOS</key>
     <true/>
     <key>NSAppTransportSecurity</key>
@@ -49,6 +51,12 @@
       <key>NSAllowsLocalNetworking</key>
       <true/>
     </dict>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>Allow WhatToDoHere to use your location.</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>We need your location to provide better services.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>We need your location to provide better services.</string>
     <key>NSUserActivityTypes</key>
     <array>
       <string>$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route</string>
@@ -56,6 +64,11 @@
       <string>$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route</string>
       <string>$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route</string>
       <string>$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route</string>
+      <string>$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route</string>
+    </array>
+    <key>UIBackgroundModes</key>
+    <array>
+      <string>location</string>
     </array>
     <key>UILaunchStoryboardName</key>
     <string>SplashScreen</string>
