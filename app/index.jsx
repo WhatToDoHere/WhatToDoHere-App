@@ -1,10 +1,12 @@
 import { useEffect } from 'react';
+import { Alert } from 'react-native';
 
 import { useRouter } from 'expo-router';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
+import * as Location from 'expo-location';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {
@@ -12,10 +14,10 @@ import {
   onAuthStateChanged,
   signInWithCredential,
 } from 'firebase/auth';
-import { auth } from '../firebaseConfig';
+import auth from '../firebaseConfig';
 
 import { useAtom } from 'jotai';
-import { userInfoAtom } from '../atoms';
+import { userInfoAtom, locationAtom } from '../atoms';
 
 import SignInScreen from './signIn';
 
@@ -36,6 +38,7 @@ export default function App() {
 
   const router = useRouter();
   const [, setUserInfo] = useAtom(userInfoAtom);
+  const [, setLocation] = useAtom(locationAtom);
 
   useEffect(() => {
     if (loaded || error) {
@@ -60,13 +63,45 @@ export default function App() {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         await AsyncStorage.setItem('user', JSON.stringify(user));
-
+        console.log(user);
         setUserInfo(user);
         router.replace('/home');
+      } else {
+        console.log('no user');
       }
     });
 
     return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert(
+          '위치 권한이 필요합니다. 기기 설정에서 위치 권한을 활성화해주세요.',
+          [{ text: '확인' }],
+        );
+
+        return;
+      }
+
+      try {
+        let location = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.High,
+        });
+
+        setLocation({
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        });
+      } catch (error) {
+        console.error('Error getting location:', error);
+        Alert.alert('오류', '현재 위치를 가져오지 못했습니다,');
+      }
+    })();
   }, []);
 
   if (!loaded && !error) {
