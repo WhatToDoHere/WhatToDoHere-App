@@ -9,10 +9,18 @@ export const getFullAddress = async (latitude, longitude) => {
     });
     if (reverseGeocode.length > 0) {
       const address = reverseGeocode[0];
-      const parts = [address.region, address.city, address.name];
+
+      const parts = [
+        address.region,
+        address.city,
+        address.street,
+        address.streetNumber,
+        address.name,
+      ];
 
       const uniqueParts = [...new Set(parts.filter((part) => part))];
-      return uniqueParts.join(' ');
+
+      return removeDuplicateWords(uniqueParts.join(' '));
     }
     return '';
   } catch (error) {
@@ -20,4 +28,14 @@ export const getFullAddress = async (latitude, longitude) => {
     Alert.alert('오류', '주소를 가져오지 못했습니다.');
     return '';
   }
+};
+
+const removeDuplicateWords = (addressString) => {
+  const words = addressString.split(' ');
+
+  const uniqueWords = [...new Set(words)];
+
+  const finalAddress = uniqueWords.join(' ');
+
+  return finalAddress;
 };

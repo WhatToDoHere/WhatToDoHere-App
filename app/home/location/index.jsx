@@ -7,11 +7,12 @@ import {
   ScrollView,
   TouchableOpacity,
   Pressable,
+  Alert,
 } from 'react-native';
 import { Stack, useLocalSearchParams, useNavigation } from 'expo-router';
 
-import MapView, { Marker } from 'react-native-maps';
-import * as Location from 'expo-location';
+import MapView, { Marker, Circle } from 'react-native-maps';
+import WifiManager from 'react-native-wifi-reborn';
 
 import SearchBar from '../../../components/SearchBar';
 import SwitchSelector from '../../../components/SwitchSelector';
@@ -31,8 +32,8 @@ export default function LocationEditor() {
   const [privacyOption, setPrivacyOption] = useState('공개');
   const [locationTitle, setLocationTitle] = useState('바닐라 코딩');
   const [regionAddress, setRegionAddress] = useState('');
+  const [ssid, setSsid] = useState('');
 
-  console.log(region);
   useEffect(() => {
     if (!region) {
       Alert.alert('오류', '현재 위치를 가져오지 못했습니다.');
@@ -43,6 +44,29 @@ export default function LocationEditor() {
       })();
     }
   }, [region]);
+
+  useEffect(() => {
+    const fetchSSID = async () => {
+      try {
+        const ssid = await WifiManager.getCurrentWifiSSID();
+        console.log(ssid);
+        setSsid(ssid);
+      } catch (error) {
+        console.error('Error getting SSID:', error);
+      }
+    };
+
+    fetchSSID();
+  }, []);
+
+  const handleMarkerDragEnd = (event) => {
+    const { latitude, longitude } = event.nativeEvent.coordinate;
+    setRegion({
+      ...region,
+      latitude,
+      longitude,
+    });
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -105,7 +129,17 @@ export default function LocationEditor() {
             />
           </Pressable>
           <MapView style={styles.map} initialRegion={region}>
-            <Marker coordinate={region} />
+            <Marker
+              coordinate={region}
+              draggable
+              onDragEnd={handleMarkerDragEnd}
+            />
+            <Circle
+              center={region}
+              radius={300}
+              strokeColor="rgba(0,0,255,0.5)"
+              fillColor="rgba(0,0,255,0.1)"
+            />
           </MapView>
         </View>
         <Text style={styles.address}>📍 {regionAddress}</Text>
@@ -117,7 +151,7 @@ export default function LocationEditor() {
           <Text style={styles.sectionTitle}>WiFi</Text>
         </View>
         <View style={styles.textBox}>
-          <Text style={styles.ssid}>Vanilla_coding</Text>
+          <Text style={styles.ssid}>{ssid || 'WiFi 정보 없음'}</Text>
         </View>
         <View style={styles.titleContainer}>
           <Image
