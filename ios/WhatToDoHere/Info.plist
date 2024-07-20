@@ -40,8 +40,6 @@
     </array>
     <key>CFBundleVersion</key>
     <string>1</string>
-    <key>GMSApiKey</key>
-    <string>AIzaSyBbZSX0NlWMStP718UEyJevmHF7Aa9w1is</string>
     <key>LSRequiresIPhoneOS</key>
     <true/>
     <key>NSAppTransportSecurity</key>
@@ -65,9 +63,14 @@
       <string>$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route</string>
       <string>$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route</string>
       <string>$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route</string>
+      <string>$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route</string>
+      <string>$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route</string>
+      <string>$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route</string>
+      <string>$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route</string>
     </array>
     <key>UIBackgroundModes</key>
     <array>
+      <string>fetch</string>
       <string>location</string>
     </array>
     <key>UILaunchStoryboardName</key>
@@ -96,5 +99,7 @@
     <string>Light</string>
     <key>UIViewControllerBasedStatusBarAppearance</key>
     <false/>
+    <key>We need your Wi-Fi network information.</key>
+    <string>이 앱은 Wi-Fi 네트워크 정보를 사용합니다.</string>
   </dict>
 </plist>

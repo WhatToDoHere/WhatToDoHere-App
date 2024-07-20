@@ -42,6 +42,7 @@
     "owner": "moonstrnck",
     "plugins": [
       "expo-router",
+      "react-native-wifi-reborn",
       [
         "expo-location",
         {
