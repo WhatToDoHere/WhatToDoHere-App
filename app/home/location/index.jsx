@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { Stack, useLocalSearchParams, useNavigation } from 'expo-router';
 
-import MapView, { Marker, Circle } from 'react-native-maps';
+import MapView, { Marker, Circle, PROVIDER_GOOGLE } from 'react-native-maps';
 import WifiManager from 'react-native-wifi-reborn';
 
 import SearchBar from '../../../components/SearchBar';
@@ -128,7 +128,11 @@ export default function LocationEditor() {
               editable={false}
             />
           </Pressable>
-          <MapView style={styles.map} initialRegion={region}>
+          <MapView
+            style={styles.map}
+            initialRegion={region}
+            provider={PROVIDER_GOOGLE}
+          >
             <Marker
               coordinate={region}
               draggable
