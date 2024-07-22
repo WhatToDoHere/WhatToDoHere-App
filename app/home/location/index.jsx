@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   StyleSheet,
   Text,
@@ -19,20 +19,55 @@ import SwitchSelector from '../../../components/SwitchSelector';
 import TitleInput from '../../../components/TitleInput';
 
 import { useAtom } from 'jotai';
-import { locationAtom } from '../../../atoms';
+import { currentLocationAtom, selectedLocationAtom } from '../../../atoms';
 
 import { getFullAddress } from '../../../utils/geocoding';
 
 export default function LocationEditor() {
   const { address } = useLocalSearchParams();
   const navigation = useNavigation();
-  const [region, setRegion] = useAtom(locationAtom);
+  const [currentLocation] = useAtom(currentLocationAtom);
+  const [selectedLocation, setSelectedLocation] = useAtom(selectedLocationAtom);
 
+  const [region, setRegion] = useState(currentLocation);
   const [alertOption, setAlertOption] = useState('도착할 때');
   const [privacyOption, setPrivacyOption] = useState('공개');
   const [locationTitle, setLocationTitle] = useState('바닐라 코딩');
   const [regionAddress, setRegionAddress] = useState('');
   const [ssid, setSsid] = useState('');
+
+  const mapRef = useRef(null);
+
+  useEffect(() => {
+    if (currentLocation) {
+      const newRegion = {
+        ...currentLocation,
+      };
+
+      setRegion(newRegion);
+      setSelectedLocation(null);
+    }
+
+    return () => {
+      setSelectedLocation(null);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (currentLocation && !selectedLocation) {
+      const newRegion = { ...currentLocation };
+      setRegion(newRegion);
+    }
+  }, [currentLocation, selectedLocation]);
+
+  useEffect(() => {
+    if (selectedLocation && mapRef.current) {
+      const newRegion = { ...selectedLocation };
+      setRegion(newRegion);
+
+      mapRef.current.animateToRegion(newRegion, 1000);
+    }
+  }, [selectedLocation]);
 
   useEffect(() => {
     if (!region) {
@@ -40,6 +75,7 @@ export default function LocationEditor() {
     } else {
       (async () => {
         const address = await getFullAddress(region.latitude, region.longitude);
+
         setRegionAddress(address);
       })();
     }
@@ -49,7 +85,7 @@ export default function LocationEditor() {
     const fetchSSID = async () => {
       try {
         const ssid = await WifiManager.getCurrentWifiSSID();
-        console.log(ssid);
+
         setSsid(ssid);
       } catch (error) {
         console.error('Error getting SSID:', error);
@@ -61,11 +97,15 @@ export default function LocationEditor() {
 
   const handleMarkerDragEnd = (event) => {
     const { latitude, longitude } = event.nativeEvent.coordinate;
-    setRegion({
-      ...region,
+    const newRegion = {
       latitude,
       longitude,
-    });
+      latitudeDelta: 0.009,
+      longitudeDelta: 0.009,
+    };
+
+    setRegion(newRegion);
+    mapRef.current.animateToRegion(newRegion, 1000);
   };
 
   return (
@@ -129,8 +169,10 @@ export default function LocationEditor() {
             />
           </Pressable>
           <MapView
+            ref={mapRef}
             style={styles.map}
             initialRegion={region}
+            region={region}
             provider={PROVIDER_GOOGLE}
           >
             <Marker
@@ -141,8 +183,9 @@ export default function LocationEditor() {
             <Circle
               center={region}
               radius={300}
-              strokeColor="rgba(0,0,255,0.5)"
-              fillColor="rgba(0,0,255,0.1)"
+              strokeWidth={2}
+              strokeColor="rgba(47, 147, 240, 0.8)"
+              fillColor="rgba(47, 147, 240, 0.3)"
             />
           </MapView>
         </View>
@@ -244,7 +287,7 @@ const styles = StyleSheet.create({
   mapContainer: {
     position: 'relative',
     width: '100%',
-    height: 300,
+    height: 350,
     marginBottom: 15,
     borderRadius: 10,
     backgroundColor: '#303030',
@@ -271,7 +314,8 @@ const styles = StyleSheet.create({
   address: {
     marginBottom: 15,
     fontFamily: 'Pretendard-Regular',
-    fontSize: 16,
+    fontSize: 15,
+    color: '#202020',
   },
   textBox: {
     justifyContent: 'center',

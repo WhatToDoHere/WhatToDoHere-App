@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { Alert } from 'react-native';
-
 import { useRouter } from 'expo-router';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
@@ -17,7 +16,7 @@ import {
 import auth from '../firebaseConfig';
 
 import { useAtom } from 'jotai';
-import { userInfoAtom, locationAtom } from '../atoms';
+import { userInfoAtom, currentLocationAtom } from '../atoms';
 
 import SignInScreen from './signIn';
 
@@ -38,7 +37,7 @@ export default function App() {
 
   const router = useRouter();
   const [, setUserInfo] = useAtom(userInfoAtom);
-  const [, setLocation] = useAtom(locationAtom);
+  const [, setCurrentLocation] = useAtom(currentLocationAtom);
 
   useEffect(() => {
     if (loaded || error) {
@@ -91,15 +90,15 @@ export default function App() {
           accuracy: Location.Accuracy.High,
         });
 
-        setLocation({
+        setCurrentLocation({
           latitude: location.coords.latitude,
           longitude: location.coords.longitude,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
+          latitudeDelta: 0.009,
+          longitudeDelta: 0.009,
         });
       } catch (error) {
         console.error('Error getting location:', error);
-        Alert.alert('오류', '현재 위치를 가져오지 못했습니다,');
+        Alert.alert('오류', '현재 위치를 가져오지 못했습니다.');
       }
     })();
   }, []);
