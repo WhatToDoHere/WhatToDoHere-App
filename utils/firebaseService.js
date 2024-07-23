@@ -2,16 +2,14 @@ import { firestore } from '../firebaseConfig';
 import {
   doc,
   getDoc,
-  getDocs,
   setDoc,
   addDoc,
   updateDoc,
   collection,
-  query,
-  where,
+  arrayUnion,
 } from 'firebase/firestore';
 
-export const saveUserToFirestore = async (user) => {
+export const saveUserToFirestore = async (user, updateLocations) => {
   try {
     const userDocRef = doc(firestore, 'users', user.uid);
     const userDoc = await getDoc(userDocRef);
@@ -31,16 +29,22 @@ export const saveUserToFirestore = async (user) => {
           latitude: null,
           longitude: null,
           address: '위치를 추가해주세요!',
-          privacy: '비공개',
+          ssid: null,
+          alertType: 'arrival',
+          privacy: 'private',
           userId: user.uid,
+          deleted: false,
         },
         {
           alias: 'Company',
           latitude: null,
           longitude: null,
           address: '위치를 추가해주세요!',
-          privacy: '비공개',
+          ssid: null,
+          alertType: 'arrival',
+          privacy: 'private',
           userId: user.uid,
+          deleted: false,
         },
       ];
 
@@ -51,6 +55,13 @@ export const saveUserToFirestore = async (user) => {
 
       const locationIds = locationRefs.map((ref) => ref.id);
       await updateDoc(userDocRef, { locations: locationIds });
+
+      const newLocations = locationRefs.map((ref, index) => ({
+        id: ref.id,
+        ...locations[index],
+      }));
+
+      updateLocations((prevLocations) => [...prevLocations, ...newLocations]);
 
       console.log('사용자 정보 저장 완료');
     } else {
@@ -64,20 +75,72 @@ export const saveUserToFirestore = async (user) => {
 
 export const getLocationsByUserId = async (userId) => {
   try {
-    const q = query(
-      collection(firestore, 'locations'),
-      where('userId', '==', userId),
-    );
-    const querySnapshot = await getDocs(q);
-    const locations = [];
+    const userDocRef = doc(firestore, 'users', userId);
+    const userDoc = await getDoc(userDocRef);
 
-    querySnapshot.forEach((doc) => {
-      locations.push({ id: doc.id, ...doc.data() });
-    });
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      const locationIds = userData.locations || [];
+      const locations = [];
 
-    return locations;
+      for (const id of locationIds) {
+        const locationDoc = await getDoc(doc(firestore, 'locations', id));
+
+        if (locationDoc.exists()) {
+          locations.push({ id: locationDoc.id, ...locationDoc.data() });
+        }
+      }
+
+      return locations;
+    } else {
+      throw new Error('사용자 정보가 존재하지 않습니다.');
+    }
   } catch (error) {
     console.error('Error fetching locations:', error);
+
     throw error;
   }
+};
+
+export const getUserLocationCount = async (userId) => {
+  const userDocRef = doc(firestore, 'users', userId);
+  const userDoc = await getDoc(userDocRef);
+
+  if (userDoc.exists()) {
+    const userData = userDoc.data();
+
+    return userData.locations ? userData.locations.length : 0;
+  } else {
+    return 0;
+  }
+};
+
+export const addLocation = async (userId, locationData, updateLocations) => {
+  const userDocRef = doc(firestore, 'users', userId);
+
+  const newLocationId = doc(collection(firestore, 'locations')).id;
+  await setDoc(doc(firestore, 'locations', newLocationId), locationData);
+  await updateDoc(userDocRef, {
+    locations: arrayUnion(newLocationId),
+  });
+
+  updateLocations((prevLocations) => [
+    ...prevLocations,
+    { id: newLocationId, ...locationData },
+  ]);
+};
+
+export const updateLocation = async (
+  locationId,
+  locationData,
+  updateLocations,
+) => {
+  const locationDocRef = doc(firestore, 'locations', locationId);
+  await updateDoc(locationDocRef, locationData);
+
+  updateLocations((prevLocations) =>
+    prevLocations.map((location) =>
+      location.id === locationId ? { ...location, ...locationData } : location,
+    ),
+  );
 };
