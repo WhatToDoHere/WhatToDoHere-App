@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     width: 35,
     height: 35,
     borderRadius: 35,
-    backgroundColor: 'tomato',
+    backgroundColor: '#EEEEEE',
     overflow: 'hidden',
   },
   profileImage: {

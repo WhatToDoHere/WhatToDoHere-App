@@ -41,6 +41,9 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     fontFamily: 'Opposit-Regular',
     fontSize: 20,
+    textShadowColor: 'rgba(241, 88, 88, 0.9)',
+    textShadowOffset: { width: -1, height: 2 },
+    textShadowRadius: 10,
   },
   clearButton: {
     padding: 10,
