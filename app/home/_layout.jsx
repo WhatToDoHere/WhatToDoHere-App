@@ -16,6 +16,7 @@ export default function LootLayout() {
         name="users/addFriend"
         options={{ presentation: 'modal' }}
       />
+      <Stack.Screen name="todo/index" options={{ presentation: 'modal' }} />
     </Stack>
   );
 }

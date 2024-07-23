@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 
+import { useNavigation } from 'expo-router';
+
 export default function TodoItem({
   title,
   details,
@@ -9,14 +11,15 @@ export default function TodoItem({
   openTodoEditor,
 }) {
   const [checked, setChecked] = useState(false);
+  const navigation = useNavigation();
 
   const handleCheckBoxToggle = () => {
     setChecked(!checked);
     onCheckBoxToggle();
   };
 
-  const handleTodoEdit = () => {
-    openTodoEditor({ title, details, image });
+  const handleEditTodo = () => {
+    navigation.navigate('todo/index');
   };
 
   return (
@@ -31,7 +34,7 @@ export default function TodoItem({
           style={styles.checkBoxImage}
         />
       </TouchableOpacity>
-      <TouchableOpacity onPress={handleTodoEdit} style={styles.textContainer}>
+      <TouchableOpacity onPress={handleEditTodo} style={styles.textContainer}>
         <Text style={styles.title}>{title}</Text>
       </TouchableOpacity>
     </View>
@@ -55,6 +58,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
+    marginTop: 2,
     fontFamily: 'Opposit-Regular',
     fontSize: 14,
     color: '#202020',
