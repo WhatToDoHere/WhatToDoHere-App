@@ -1,18 +1,21 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 
 import { useNavigation } from 'expo-router';
 
 import { useAtom } from 'jotai';
-import { userInfoAtom } from '../../atoms';
+import { userInfoAtom, locationsAtom } from '../../atoms';
 
 import Header from '../../components/Header';
 import LocationList from '../../components/LocationList';
 import TodoEditor from '../../components/TodoEditor';
 import AddLocationButton from '../../components/AddLocationButton';
 
+import { getLocationsByUserId } from '../../utils/firebaseService';
+
 export default function HomeScreen() {
   const [userInfo] = useAtom(userInfoAtom);
+  const [locations, setLocations] = useAtom(locationsAtom);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [modalDetails, setModalDetails] = useState('');
@@ -36,17 +39,29 @@ export default function HomeScreen() {
     setIsModalVisible(false);
   };
 
-  const handleAdd = () => {
-    navigation.navigate('location/index');
+  useEffect(() => {
+    const fetchLocations = async () => {
+      if (userInfo) {
+        const fetchedLocations = await getLocationsByUserId(userInfo.uid);
+
+        setLocations(fetchedLocations);
+      }
+    };
+
+    fetchLocations();
+  }, [userInfo, setLocations]);
+
+  const handleAddLocation = () => {
+    navigation.navigate('location/index', { mode: 'add' });
   };
 
   return (
     <View style={styles.container}>
       <Header userInfo={userInfo} />
 
-      <LocationList openTodoEditor={openTodoEditor}></LocationList>
+      <LocationList locations={locations}></LocationList>
 
-      <AddLocationButton onPress={handleAdd} />
+      <AddLocationButton onPress={handleAddLocation} />
 
       <TodoEditor
         isVisible={isModalVisible}
