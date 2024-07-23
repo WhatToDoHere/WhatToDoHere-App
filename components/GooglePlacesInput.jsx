@@ -5,7 +5,7 @@ import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplet
 import { useAtom } from 'jotai';
 import { currentLocationAtom } from '../atoms';
 
-import { getFullAddress } from '../utils/geocoding';
+import { getFullAddress } from '../utils/location';
 import { fetchPlaceDetails } from '../utils/api';
 
 export default function GooglePlacesInput({ onPlaceSelected }) {
