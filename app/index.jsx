@@ -13,12 +13,14 @@ import {
   onAuthStateChanged,
   signInWithCredential,
 } from 'firebase/auth';
-import auth from '../firebaseConfig';
+import { auth } from '../firebaseConfig';
 
 import { useAtom } from 'jotai';
-import { userInfoAtom, currentLocationAtom } from '../atoms';
+import { userInfoAtom, currentLocationAtom, locationsAtom } from '../atoms';
 
 import SignInScreen from './signIn';
+
+import { saveUserToFirestore } from '../utils/firebaseService';
 
 WebBrowser.maybeCompleteAuthSession();
 SplashScreen.preventAutoHideAsync();
@@ -37,6 +39,7 @@ export default function App() {
 
   const router = useRouter();
   const [, setUserInfo] = useAtom(userInfoAtom);
+  const [, setLocations] = useAtom(locationsAtom);
   const [, setCurrentLocation] = useAtom(currentLocationAtom);
 
   useEffect(() => {
@@ -64,6 +67,8 @@ export default function App() {
         await AsyncStorage.setItem('user', JSON.stringify(user));
         console.log(user);
         setUserInfo(user);
+
+        await saveUserToFirestore(user, setLocations);
         router.replace('/home');
       } else {
         console.log('no user');
