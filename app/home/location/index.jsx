@@ -19,46 +19,92 @@ import SwitchSelector from '../../../components/SwitchSelector';
 import TitleInput from '../../../components/TitleInput';
 
 import { useAtom } from 'jotai';
-import { currentLocationAtom, selectedLocationAtom } from '../../../atoms';
+import {
+  currentLocationAtom,
+  selectedLocationAtom,
+  userInfoAtom,
+  locationsAtom,
+} from '../../../atoms';
 
-import { getFullAddress } from '../../../utils/geocoding';
+import { getFullAddress } from '../../../utils/location';
+import {
+  getUserLocationCount,
+  addLocation,
+  updateLocation,
+} from '../../../utils/firebaseService';
 
-export default function LocationEditor() {
-  const { address } = useLocalSearchParams();
+export default function LocationForm() {
   const navigation = useNavigation();
+  const { mode, location } = useLocalSearchParams();
+
   const [currentLocation] = useAtom(currentLocationAtom);
   const [selectedLocation, setSelectedLocation] = useAtom(selectedLocationAtom);
+  const [userInfo] = useAtom(userInfoAtom);
+  const [, setLocations] = useAtom(locationsAtom);
 
-  const [region, setRegion] = useState(currentLocation);
+  const [region, setRegion] = useState(null);
   const [alertOption, setAlertOption] = useState('도착할 때');
-  const [privacyOption, setPrivacyOption] = useState('공개');
-  const [locationTitle, setLocationTitle] = useState('바닐라 코딩');
+  const [privacyOption, setPrivacyOption] = useState('비공개');
+  const [locationTitle, setLocationTitle] = useState('');
   const [regionAddress, setRegionAddress] = useState('');
   const [ssid, setSsid] = useState('');
 
   const mapRef = useRef(null);
 
   useEffect(() => {
-    if (currentLocation) {
-      const newRegion = {
-        ...currentLocation,
-      };
+    const initialize = async () => {
+      if (mode === 'edit' && location) {
+        const parsedLocation = JSON.parse(location);
 
-      setRegion(newRegion);
-      setSelectedLocation(null);
-    }
+        setLocationTitle(parsedLocation.alias);
+        const newRegion = {
+          latitude: parsedLocation.latitude || currentLocation.latitude,
+          longitude: parsedLocation.longitude || currentLocation.longitude,
+          latitudeDelta: 0.009,
+          longitudeDelta: 0.009,
+        };
+        setRegion(newRegion);
+        setAlertOption(
+          parsedLocation.alertType === 'departure' ? '떠날 때' : '도착할 때',
+        );
+        setPrivacyOption(
+          parsedLocation.privacy === 'public' ? '공개' : '비공개',
+        );
+        setSsid(
+          parsedLocation.ssid ||
+            (!parsedLocation.latitude && !parsedLocation.longitude
+              ? await WifiManager.getCurrentWifiSSID()
+              : 'WiFi 정보 없음'),
+        );
+      } else {
+        const locationCount = await getUserLocationCount(userInfo.uid);
+
+        setLocationTitle(`Location ${locationCount + 1}`);
+
+        const newRegion = {
+          latitude: currentLocation.latitude,
+          longitude: currentLocation.longitude,
+          latitudeDelta: 0.009,
+          longitudeDelta: 0.009,
+        };
+
+        setRegion(newRegion);
+        setSsid(await WifiManager.getCurrentWifiSSID());
+      }
+    };
+
+    initialize();
 
     return () => {
       setSelectedLocation(null);
     };
-  }, []);
+  }, [mode, location, currentLocation, userInfo.uid]);
 
   useEffect(() => {
-    if (currentLocation && !selectedLocation) {
-      const newRegion = { ...currentLocation };
-      setRegion(newRegion);
-    }
-  }, [currentLocation, selectedLocation]);
+    navigation.setOptions({
+      title: mode === 'add' ? '위치 추가' : '위치 설정',
+    });
+  }, [mode]);
 
   useEffect(() => {
     if (selectedLocation && mapRef.current) {
@@ -70,30 +116,20 @@ export default function LocationEditor() {
   }, [selectedLocation]);
 
   useEffect(() => {
-    if (!region) {
-      Alert.alert('오류', '현재 위치를 가져오지 못했습니다.');
-    } else {
+    if (region && region.latitude && region.longitude) {
       (async () => {
-        const address = await getFullAddress(region.latitude, region.longitude);
-
-        setRegionAddress(address);
+        try {
+          const address = await getFullAddress(
+            region.latitude,
+            region.longitude,
+          );
+          setRegionAddress(address);
+        } catch (error) {
+          console.error('Error getting address:', error);
+        }
       })();
     }
   }, [region]);
-
-  useEffect(() => {
-    const fetchSSID = async () => {
-      try {
-        const ssid = await WifiManager.getCurrentWifiSSID();
-
-        setSsid(ssid);
-      } catch (error) {
-        console.error('Error getting SSID:', error);
-      }
-    };
-
-    fetchSSID();
-  }, []);
 
   const handleMarkerDragEnd = (event) => {
     const { latitude, longitude } = event.nativeEvent.coordinate;
@@ -108,11 +144,33 @@ export default function LocationEditor() {
     mapRef.current.animateToRegion(newRegion, 1000);
   };
 
+  const handleSave = async () => {
+    const locationData = {
+      alias: locationTitle,
+      latitude: region.latitude,
+      longitude: region.longitude,
+      address: regionAddress,
+      ssid,
+      alertType: alertOption === '도착할 때' ? 'arrival' : 'departure',
+      privacy: privacyOption === '공개' ? 'public' : 'private',
+      userId: userInfo.uid,
+    };
+
+    if (mode === 'add') {
+      await addLocation(userInfo.uid, locationData, setLocations);
+    } else if (mode === 'edit') {
+      const parsedLocation = JSON.parse(location);
+      await updateLocation(parsedLocation.id, locationData, setLocations);
+    }
+
+    Alert.alert('완료', '위치가 저장되었습니다.');
+    navigation.goBack();
+  };
+
   return (
     <ScrollView style={styles.container}>
       <Stack.Screen
         options={{
-          title: '위치 설정',
           headerStyle: {
             fontFamily: 'Pretendard-Regular',
             fontSize: 10,
@@ -132,11 +190,7 @@ export default function LocationEditor() {
             </TouchableOpacity>
           ),
           headerRight: () => (
-            <TouchableOpacity
-              onPress={() => {
-                console.log('위치 저장');
-              }}
-            >
+            <TouchableOpacity onPress={handleSave}>
               <Text style={styles.headerRight}>저장</Text>
             </TouchableOpacity>
           ),
@@ -162,32 +216,30 @@ export default function LocationEditor() {
               navigation.navigate('location/searchLocation');
             }}
           >
-            <SearchBar
-              placeholder="위치 검색"
-              onSearch={(text) => console.log('검색:', text)}
-              editable={false}
-            />
+            <SearchBar placeholder="위치 검색" editable={false} />
           </Pressable>
-          <MapView
-            ref={mapRef}
-            style={styles.map}
-            initialRegion={region}
-            region={region}
-            provider={PROVIDER_GOOGLE}
-          >
-            <Marker
-              coordinate={region}
-              draggable
-              onDragEnd={handleMarkerDragEnd}
-            />
-            <Circle
-              center={region}
-              radius={300}
-              strokeWidth={2}
-              strokeColor="rgba(47, 147, 240, 0.8)"
-              fillColor="rgba(47, 147, 240, 0.3)"
-            />
-          </MapView>
+          {region && (
+            <MapView
+              ref={mapRef}
+              style={styles.map}
+              initialRegion={region}
+              region={region}
+              provider={PROVIDER_GOOGLE}
+            >
+              <Circle
+                center={region}
+                radius={300}
+                strokeWidth={2}
+                strokeColor="rgba(47, 147, 240, 0.8)"
+                fillColor="rgba(47, 147, 240, 0.3)"
+              />
+              <Marker
+                coordinate={region}
+                draggable
+                onDragEnd={handleMarkerDragEnd}
+              />
+            </MapView>
+          )}
         </View>
         <Text style={styles.address}>📍 {regionAddress}</Text>
         <View style={styles.titleContainer}>
@@ -220,7 +272,7 @@ export default function LocationEditor() {
           <Text style={styles.sectionTitle}>Privacy</Text>
         </View>
         <SwitchSelector
-          options={['공개', '비공개']}
+          options={['비공개', '공개']}
           selected={privacyOption}
           onSelect={(option) => setPrivacyOption(option)}
         />
@@ -246,11 +298,6 @@ const styles = StyleSheet.create({
   },
   contents: {
     paddingBottom: 100,
-  },
-  locationTitle: {
-    paddingTop: 10,
-    fontFamily: 'Opposit-Regular',
-    fontSize: 20,
   },
   titleContainer: {
     flexDirection: 'row',
@@ -306,7 +353,7 @@ const styles = StyleSheet.create({
     width: '94%',
     marginLeft: '-47%',
     marginTop: 12,
-    shadowColor: '#000',
+    shadowColor: '#202020',
     shadowOffset: { width: 2, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 3,

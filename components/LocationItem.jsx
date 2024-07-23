@@ -7,20 +7,21 @@ import {
   Image,
   Animated,
 } from 'react-native';
+import { useNavigation } from 'expo-router';
 
 import TodoItem from './TodoItem';
 
 export default function LocationItem({
+  location,
   locationTitle,
   locationAddress,
   todos,
-  openLocationEditor,
-  openTodoEditor,
   backgroundColor,
 }) {
   const [expanded, setExpanded] = useState(false);
   const rotation = useState(new Animated.Value(0))[0];
   const animation = useState(new Animated.Value(0))[0];
+  const navigation = useNavigation();
 
   const toggleExpand = () => {
     const toValue = expanded ? 0 : 1;
@@ -59,16 +60,27 @@ export default function LocationItem({
     todos[index] = { title: newTitle, details: newDetails, image: newImage };
   };
 
+  const handleEditLocation = () => {
+    navigation.navigate('location/index', {
+      mode: 'edit',
+      location: JSON.stringify(location),
+    });
+  };
+
+  const handleAddTodo = () => {
+    navigation.navigate('todo/index');
+  };
+
   return (
     <View style={[styles.container, { backgroundColor }]}>
       <View style={[styles.header, expanded && styles.headerExpanded]}>
         <View style={styles.headerTextContainer}>
-          <Text style={styles.title}>{locationTitle}</Text>
+          <Text style={styles.locationTitle}>{locationTitle}</Text>
           <Text style={styles.address}>📍 {locationAddress}</Text>
         </View>
         <View style={styles.headerButtons}>
           <TouchableOpacity
-            onPress={openLocationEditor}
+            onPress={handleEditLocation}
             style={styles.editButton}
           >
             <Image
@@ -99,6 +111,18 @@ export default function LocationItem({
             }
           />
         ))}
+        <View style={styles.addTodoItem}>
+          <TouchableOpacity
+            onPress={handleAddTodo}
+            style={styles.addTodoContainer}
+          >
+            <Image
+              source={require('../assets/icons/icon-checkbox-gray.png')}
+              style={styles.checkBox}
+            />
+            <Text style={styles.addTodoText}>{'What to do here?'}</Text>
+          </TouchableOpacity>
+        </View>
       </Animated.View>
     </View>
   );
@@ -133,7 +157,7 @@ const styles = StyleSheet.create({
   headerTextContainer: {
     flex: 1,
   },
-  title: {
+  locationTitle: {
     fontFamily: 'Opposit-Bold',
     fontSize: 20,
     fontWeight: 'bold',
@@ -150,6 +174,8 @@ const styles = StyleSheet.create({
   },
   editButton: {
     marginLeft: 10,
+    paddingLeft: 10,
+    paddingBottom: 10,
   },
   toggleButton: {
     marginLeft: 10,
@@ -158,8 +184,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   editIcon: {
-    width: 24,
-    height: 24,
+    width: 20,
+    height: 20,
   },
   arrowIcon: {
     width: 12,
@@ -169,5 +195,23 @@ const styles = StyleSheet.create({
   todoList: {
     marginTop: 15,
     overflow: 'hidden',
+  },
+  addTodoItem: {},
+  checkBox: {
+    width: 14,
+    height: 14,
+    marginRight: 10,
+    marginVertical: 10,
+  },
+  addTodoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  addTodoText: {
+    flex: 1,
+    marginTop: 2,
+    fontFamily: 'Opposit-Regular',
+    fontSize: 14,
+    color: '#909090',
   },
 });
