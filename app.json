@@ -44,9 +44,16 @@
       "expo-router",
       "react-native-wifi-reborn",
       [
+        "expo-image-picker",
+        {
+          "photosPermission": "WhatToDoHere가 사용자의 사진에 접근하도록 허용합니다.",
+          "cameraPermission": "WhatToDoHere가 카메라를 사용하도록 허용합니다."
+        }
+      ],
+      [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "Allow WhatToDoHere to use your location.",
+          "locationAlwaysAndWhenInUsePermission": "WhatToDoHere가 사용자의 위치 정보를 사용하도록 허용합니다.",
           "isIosBackgroundLocationEnabled": true
         }
       ],
