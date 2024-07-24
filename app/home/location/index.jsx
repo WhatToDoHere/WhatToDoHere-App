@@ -337,7 +337,7 @@ const styles = StyleSheet.create({
     height: 350,
     marginBottom: 15,
     borderRadius: 10,
-    backgroundColor: '#303030',
+    backgroundColor: '#EEEEEE',
   },
   map: {
     alignItems: 'center',
