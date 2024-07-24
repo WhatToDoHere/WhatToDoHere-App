@@ -1,13 +1,16 @@
-import { firestore } from '../firebaseConfig';
+import { firestore, storage } from '../firebaseConfig';
 import {
   doc,
   getDoc,
+  getDocs,
   setDoc,
   addDoc,
   updateDoc,
   collection,
   arrayUnion,
+  serverTimestamp,
 } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 export const saveUserToFirestore = async (user, updateLocations) => {
   try {
@@ -87,7 +90,25 @@ export const getLocationsByUserId = async (userId) => {
         const locationDoc = await getDoc(doc(firestore, 'locations', id));
 
         if (locationDoc.exists()) {
-          locations.push({ id: locationDoc.id, ...locationDoc.data() });
+          const locationData = locationDoc.data();
+
+          const todosCollectionRef = collection(
+            firestore,
+            'locations',
+            id,
+            'todos',
+          );
+          const todosSnapshot = await getDocs(todosCollectionRef);
+          const todos = todosSnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+
+          locations.push({
+            id: locationDoc.id,
+            ...locationData,
+            todos: todos,
+          });
         }
       }
 
@@ -97,7 +118,6 @@ export const getLocationsByUserId = async (userId) => {
     }
   } catch (error) {
     console.error('Error fetching locations:', error);
-
     throw error;
   }
 };
@@ -143,4 +163,102 @@ export const updateLocation = async (
       location.id === locationId ? { ...location, ...locationData } : location,
     ),
   );
+};
+
+export const addTodo = async (locationId, todoData, updateLocations) => {
+  try {
+    const locationRef = doc(firestore, 'locations', locationId);
+    const todosCollectionRef = collection(locationRef, 'todos');
+
+    const newTodoRef = await addDoc(todosCollectionRef, {
+      ...todoData,
+      completed: false,
+      createdAt: serverTimestamp(),
+    });
+
+    const newTodoId = newTodoRef.id;
+
+    updateLocations((prevLocations) => {
+      return prevLocations.map((location) => {
+        if (location.id === locationId) {
+          return {
+            ...location,
+            todos: [
+              ...(location.todos || []),
+              { id: newTodoId, ...todoData, completed: false },
+            ],
+          };
+        }
+        return location;
+      });
+    });
+
+    return newTodoId;
+  } catch (error) {
+    console.error('Error adding todo:', error);
+    throw error;
+  }
+};
+
+export const updateTodo = async (
+  locationId,
+  todoId,
+  todoData,
+  updateLocations,
+) => {
+  try {
+    const todoRef = doc(firestore, 'locations', locationId, 'todos', todoId);
+    await updateDoc(todoRef, todoData);
+
+    updateLocations((prevLocations) => {
+      return prevLocations.map((location) => {
+        if (location.id === locationId) {
+          return {
+            ...location,
+            todos: location.todos.map((todo) => {
+              if (todo.id === todoId) {
+                return { ...todo, ...todoData };
+              }
+              return todo;
+            }),
+          };
+        }
+        return location;
+      });
+    });
+  } catch (error) {
+    console.error('Error updating todo:', error);
+    throw error;
+  }
+};
+
+export const uploadImage = async (uri) => {
+  try {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    const filename = uri.substring(uri.lastIndexOf('/') + 1);
+    const storageRef = ref(storage, `todo_images/${filename}`);
+
+    await uploadBytes(storageRef, blob);
+    return await getDownloadURL(storageRef);
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    throw error;
+  }
+};
+
+export const getTodo = async (locationId, todoId) => {
+  try {
+    const todoRef = doc(firestore, 'locations', locationId, 'todos', todoId);
+    const todoDoc = await getDoc(todoRef);
+
+    if (todoDoc.exists()) {
+      return { id: todoDoc.id, ...todoDoc.data() };
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error('Error getting todo:', error);
+    throw error;
+  }
 };
