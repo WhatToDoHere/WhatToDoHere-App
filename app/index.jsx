@@ -65,7 +65,6 @@ export default function App() {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         await AsyncStorage.setItem('user', JSON.stringify(user));
-        console.log(user);
         setUserInfo(user);
 
         await saveUserToFirestore(user, setLocations);

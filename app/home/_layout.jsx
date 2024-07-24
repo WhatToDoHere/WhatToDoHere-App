@@ -1,4 +1,4 @@
-import { Stack } from 'expo-router/stack';
+import { Stack } from 'expo-router';
 
 export default function LootLayout() {
   return (
@@ -9,6 +9,7 @@ export default function LootLayout() {
         name="location/searchLocation"
         options={{ presentation: 'modal' }}
       />
+      <Stack.Screen name="todo/index" options={{ presentation: 'modal' }} />
       <Stack.Screen name="users/index" />
       <Stack.Screen name="users/completedTodo" />
       <Stack.Screen name="users/friends" />
@@ -16,7 +17,6 @@ export default function LootLayout() {
         name="users/addFriend"
         options={{ presentation: 'modal' }}
       />
-      <Stack.Screen name="todo/index" options={{ presentation: 'modal' }} />
     </Stack>
   );
 }
