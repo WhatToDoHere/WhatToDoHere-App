@@ -3,23 +3,22 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 
 import { useNavigation } from 'expo-router';
 
-export default function TodoItem({
-  title,
-  details,
-  image,
-  onCheckBoxToggle,
-  openTodoEditor,
-}) {
-  const [checked, setChecked] = useState(false);
+export default function TodoItem({ todo, onCheckBoxToggle }) {
+  const [checked, setChecked] = useState(todo.completed);
   const navigation = useNavigation();
 
-  const handleCheckBoxToggle = () => {
-    setChecked(!checked);
-    onCheckBoxToggle();
+  const handleCheckBoxToggle = async () => {
+    const newCompletedState = !checked;
+    setChecked(newCompletedState);
+    await onCheckBoxToggle(todo.id, newCompletedState);
   };
 
   const handleEditTodo = () => {
-    navigation.navigate('todo/index');
+    navigation.navigate('todo/index', {
+      mode: 'edit',
+      locationId: todo.locationId,
+      todoId: todo.id,
+    });
   };
 
   return (
@@ -35,7 +34,7 @@ export default function TodoItem({
         />
       </TouchableOpacity>
       <TouchableOpacity onPress={handleEditTodo} style={styles.textContainer}>
-        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.title}>{todo.title}</Text>
       </TouchableOpacity>
     </View>
   );
