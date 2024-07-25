@@ -50,9 +50,9 @@
       <true/>
     </dict>
     <key>NSCameraUsageDescription</key>
-    <string>Allow WhatToDoHere to access your camera</string>
+    <string>WhatToDoHere가 카메라를 사용하도록 허용합니다.</string>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>Allow WhatToDoHere to use your location.</string>
+    <string>WhatToDoHere가 사용자의 위치 정보를 사용하도록 허용합니다.</string>
     <key>NSLocationAlwaysUsageDescription</key>
     <string>We need your location to provide better services.</string>
     <key>NSLocationWhenInUseUsageDescription</key>
@@ -60,9 +60,10 @@
     <key>NSMicrophoneUsageDescription</key>
     <string>Allow $(PRODUCT_NAME) to access your microphone</string>
     <key>NSPhotoLibraryUsageDescription</key>
-    <string>Allow WhatToDoHere to access your photos</string>
+    <string>WhatToDoHere가 사용자의 사진에 접근하도록 허용합니다.</string>
     <key>NSUserActivityTypes</key>
     <array>
+      <string>$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route</string>
       <string>$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route</string>
       <string>$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route</string>
       <string>$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route</string>
