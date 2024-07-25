@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     color: '#202020',
   },
   multilineInput: {
-    height: 100,
+    height: 80,
     textAlignVertical: 'top',
   },
   clearButton: {
