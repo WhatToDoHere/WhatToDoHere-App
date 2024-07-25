@@ -1,3 +1,4 @@
+import * as ImageManipulator from 'expo-image-manipulator';
 import { firestore, storage } from '../firebaseConfig';
 import {
   doc,
@@ -28,7 +29,7 @@ export const saveUserToFirestore = async (user, updateLocations) => {
 
       const locations = [
         {
-          alias: 'Home',
+          alias: 'Home🏡',
           latitude: null,
           longitude: null,
           address: '위치를 추가해주세요!',
@@ -39,7 +40,7 @@ export const saveUserToFirestore = async (user, updateLocations) => {
           deleted: false,
         },
         {
-          alias: 'Company',
+          alias: 'Company🏢',
           latitude: null,
           longitude: null,
           address: '위치를 추가해주세요!',
@@ -232,14 +233,28 @@ export const updateTodo = async (
   }
 };
 
+const compressImage = async (uri) => {
+  const result = await ImageManipulator.manipulateAsync(
+    uri,
+    [{ resize: { width: 800 } }],
+    { compress: 0.6, format: ImageManipulator.SaveFormat.JPEG },
+  );
+
+  return result.uri;
+};
+
 export const uploadImage = async (uri) => {
   try {
-    const response = await fetch(uri);
+    const compressedUri = await compressImage(uri);
+    const response = await fetch(compressedUri);
     const blob = await response.blob();
-    const filename = uri.substring(uri.lastIndexOf('/') + 1);
+    const filename = compressedUri.substring(
+      compressedUri.lastIndexOf('/') + 1,
+    );
     const storageRef = ref(storage, `todo_images/${filename}`);
 
     await uploadBytes(storageRef, blob);
+
     return await getDownloadURL(storageRef);
   } catch (error) {
     console.error('Error uploading image:', error);
@@ -259,6 +274,45 @@ export const getTodo = async (locationId, todoId) => {
     }
   } catch (error) {
     console.error('Error getting todo:', error);
+    throw error;
+  }
+};
+
+export const getTodosByLocationId = async (locationId) => {
+  try {
+    const todosCollectionRef = collection(
+      firestore,
+      'locations',
+      locationId,
+      'todos',
+    );
+    const todosDocs = await getDocs(todosCollectionRef);
+
+    return todosDocs.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  } catch (error) {
+    console.error('Error getting todos:', error);
+    throw error;
+  }
+};
+
+export const deleteTodo = async (locationId, todoId, updateLocations) => {
+  try {
+    const todoRef = doc(firestore, 'locations', locationId, 'todos', todoId);
+    await deleteDoc(todoRef);
+
+    updateLocations((prevLocations) => {
+      return prevLocations.map((location) => {
+        if (location.id === locationId) {
+          return {
+            ...location,
+            todos: location.todos.filter((todo) => todo.id !== todoId),
+          };
+        }
+        return location;
+      });
+    });
+  } catch (error) {
+    console.error('Error deleting todo:', error);
     throw error;
   }
 };
