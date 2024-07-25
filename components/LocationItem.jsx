@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,19 +9,33 @@ import {
 } from 'react-native';
 import { useNavigation } from 'expo-router';
 
+import { useAtom } from 'jotai';
+import { locationsAtom } from '../atoms';
+
 import TodoItem from './TodoItem';
 
-export default function LocationItem({
-  location,
-  locationTitle,
-  locationAddress,
-  todos,
-  backgroundColor,
-}) {
+import { updateTodo } from '../utils/firebaseService';
+import { TODO_ITEM_HEIGHT, ADD_TODO_ITEM_HEIGHT } from '../constants/todo';
+
+export default function LocationItem({ location, backgroundColor }) {
+  const [, setLocations] = useAtom(locationsAtom);
+
   const [expanded, setExpanded] = useState(false);
   const rotation = useState(new Animated.Value(0))[0];
   const animation = useState(new Animated.Value(0))[0];
   const navigation = useNavigation();
+
+  const calculateMaxHeight = () => {
+    const uncompletedTodosCount =
+      location.todos?.filter((todo) => !todo.completed).length || 0;
+    return uncompletedTodosCount * TODO_ITEM_HEIGHT + ADD_TODO_ITEM_HEIGHT;
+  };
+
+  const [maxHeight, setMaxHeight] = useState(calculateMaxHeight());
+
+  useEffect(() => {
+    setMaxHeight(calculateMaxHeight());
+  }, [location.todos]);
 
   const toggleExpand = () => {
     const toValue = expanded ? 0 : 1;
@@ -49,15 +63,20 @@ export default function LocationItem({
 
   const height = animation.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, 100],
+    outputRange: [0, maxHeight],
   });
 
-  const handleCheckBoxToggle = (index) => {
-    console.log(`Checkbox toggled for todo at index ${index}`);
-  };
-
-  const handleTodoEdit = (index, newTitle, newDetails, newImage) => {
-    todos[index] = { title: newTitle, details: newDetails, image: newImage };
+  const handleCheckBoxToggle = async (todoId, newCompletedState) => {
+    try {
+      await updateTodo(
+        location.id,
+        todoId,
+        { completed: newCompletedState },
+        setLocations,
+      );
+    } catch (error) {
+      console.error('Error updating todo:', error);
+    }
   };
 
   const handleEditLocation = () => {
@@ -68,60 +87,63 @@ export default function LocationItem({
   };
 
   const handleAddTodo = () => {
-    navigation.navigate('todo/index');
+    navigation.navigate('todo/index', {
+      mode: 'add',
+      locationId: location.id,
+    });
   };
 
   return (
     <View style={[styles.container, { backgroundColor }]}>
       <View style={[styles.header, expanded && styles.headerExpanded]}>
-        <View style={styles.headerTextContainer}>
-          <Text style={styles.locationTitle}>{locationTitle}</Text>
-          <Text style={styles.address}>📍 {locationAddress}</Text>
+        <View style={styles.headerFlexContainer}>
+          <Text style={styles.locationAlias}>{location.alias}</Text>
+          <View style={styles.headerButtons}>
+            <TouchableOpacity
+              onPress={handleEditLocation}
+              style={styles.editButton}
+            >
+              <Image
+                source={require('../assets/icons/icon-edit.png')}
+                style={styles.editIcon}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={toggleExpand}
+              style={styles.toggleButton}
+            >
+              <Animated.Image
+                source={require('../assets/icons/icon-accordion.png')}
+                style={[styles.arrowIcon, { transform: [{ rotate }] }]}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
-        <View style={styles.headerButtons}>
-          <TouchableOpacity
-            onPress={handleEditLocation}
-            style={styles.editButton}
-          >
-            <Image
-              source={require('../assets/icons/icon-edit.png')}
-              style={styles.editIcon}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={toggleExpand} style={styles.toggleButton}>
-            <Animated.Image
-              source={require('../assets/icons/icon-accordion.png')}
-              style={[styles.arrowIcon, { transform: [{ rotate }] }]}
-            />
-          </TouchableOpacity>
-        </View>
+        <Text style={styles.address}>📍 {location.address}</Text>
       </View>
-      <Animated.View style={[styles.todoList, { height }]}>
-        {todos.map((todo, index) => (
-          <TodoItem
-            key={index}
-            title={todo.title}
-            details={todo.details}
-            image={todo.image}
-            onCheckBoxToggle={() => handleCheckBoxToggle(index)}
-            openTodoEditor={() =>
-              openTodoEditor(todo, (newTitle, newDetails, newImage) =>
-                handleTodoEdit(index, newTitle, newDetails, newImage),
-              )
-            }
-          />
-        ))}
-        <View style={styles.addTodoItem}>
-          <TouchableOpacity
-            onPress={handleAddTodo}
-            style={styles.addTodoContainer}
-          >
-            <Image
-              source={require('../assets/icons/icon-checkbox-gray.png')}
-              style={styles.checkBox}
-            />
-            <Text style={styles.addTodoText}>{'What to do here?'}</Text>
-          </TouchableOpacity>
+      <Animated.View style={[styles.todoListContainer, { height }]}>
+        <View style={styles.todoListContent}>
+          {location.todos
+            ?.filter((todo) => !todo.completed)
+            .map((todo) => (
+              <TodoItem
+                key={todo.id}
+                todo={todo}
+                onCheckBoxToggle={handleCheckBoxToggle}
+              />
+            ))}
+          <View style={styles.addTodoItem}>
+            <TouchableOpacity
+              onPress={handleAddTodo}
+              style={styles.addTodoContainer}
+            >
+              <Image
+                source={require('../assets/icons/icon-checkbox-gray.png')}
+                style={styles.checkBox}
+              />
+              <Text style={styles.addTodoText}>{'What to do here?'}</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </Animated.View>
     </View>
@@ -131,40 +153,34 @@ export default function LocationItem({
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    paddingBottom: 0,
+    paddingBottom: 10,
     marginVertical: 10,
-    backgroundColor: '#FDFCD8',
     borderRadius: 20,
-    shadowColor: '#303030',
-    borderWidth: 1,
-    borderColor: '#303030',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.5,
-    shadowRadius: 2,
+    backgroundColor: '#FDFCD8',
+    shadowColor: 'rgb(0, 0, 0)',
+    shadowOffset: { width: 2, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
     elevation: 3,
-    overflow: 'hidden',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    paddingBottom: 15,
   },
   headerExpanded: {
     borderBottomWidth: 1,
-    borderBottomColor: '#fff',
+    borderBottomColor: '#9c9b9b67',
   },
-  headerTextContainer: {
-    flex: 1,
+  headerFlexContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
   },
-  locationTitle: {
+  locationAlias: {
     fontFamily: 'Opposit-Bold',
     fontSize: 20,
     fontWeight: 'bold',
     color: '#202020',
   },
   address: {
-    marginTop: 8,
+    marginTop: 2,
+    marginBottom: 15,
     fontFamily: 'Opposit-Regular',
     fontSize: 13,
     color: '#707070',
@@ -174,6 +190,7 @@ const styles = StyleSheet.create({
   },
   editButton: {
     marginLeft: 10,
+    marginTop: 2,
     paddingLeft: 10,
     paddingBottom: 10,
   },
@@ -192,11 +209,12 @@ const styles = StyleSheet.create({
     height: 6,
     marginTop: 6,
   },
-  todoList: {
-    marginTop: 15,
+  todoListContainer: {
     overflow: 'hidden',
   },
-  addTodoItem: {},
+  todoListContent: {
+    marginTop: 15,
+  },
   checkBox: {
     width: 14,
     height: 14,
