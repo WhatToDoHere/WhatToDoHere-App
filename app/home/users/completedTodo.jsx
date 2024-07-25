@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useMemo } from 'react';
 import {
   View,
   ScrollView,
@@ -8,17 +8,29 @@ import {
   Image,
 } from 'react-native';
 import { Stack, useNavigation } from 'expo-router';
-import { COMPLETED_TODOS } from '../../../constants/todo';
+import { useAtom } from 'jotai';
+import { locationsAtom, userInfoAtom } from '../../../atoms';
 
 export default function CompletedTodo() {
   const navigation = useNavigation();
-  const [completedTodos, setCompletedTodos] = useState(COMPLETED_TODOS);
+  const [locations] = useAtom(locationsAtom);
+  const [userInfo] = useAtom(userInfoAtom);
 
-  const handleToggleComplete = (todoId) => {
-    setCompletedTodos((prevTodos) =>
-      prevTodos.filter((todo) => todo.id !== todoId),
+  const completedTodos = useMemo(() => {
+    return locations.flatMap((location) =>
+      location.todos
+        ?.filter((todo) => todo.completed)
+        .map((todo) => ({
+          ...todo,
+          locationAlias: location.alias,
+          locationAddress: location.address,
+        })),
     );
-    // TODO: 이곳에 완료되지 않은 목록으로 다시 이동시키는 로직 추가
+  }, [locations]);
+
+  const handleToggleComplete = (locationId, todoId) => {
+    // TODO: 완료 상태를 토글하는 로직 구현
+    // updateTodo 함수를 호출하여 Firestore와 전역 상태를 업데이트
   };
 
   return (
@@ -51,7 +63,7 @@ export default function CompletedTodo() {
         {completedTodos.map((todo) => (
           <View key={todo.id} style={styles.todoItem}>
             <TouchableOpacity
-              onPress={() => handleToggleComplete(todo.id)}
+              onPress={() => handleToggleComplete(todo.locationId, todo.id)}
               style={styles.checkBox}
             >
               <Image
@@ -61,8 +73,10 @@ export default function CompletedTodo() {
             </TouchableOpacity>
             <View style={styles.todoTextContainer}>
               <Text style={styles.todoTitle}>{todo.title}</Text>
-              <Text style={styles.todoLocation}>📍 {todo.location}</Text>
-              {todo.friendName && (
+              <Text style={styles.todoLocation}>
+                📍 {todo.locationAlias} - {todo.locationAddress}
+              </Text>
+              {todo.assignedBy !== userInfo.uid && (
                 <View style={styles.todoFriend}>
                   <Text>✍🏻 </Text>
                   <View style={styles.friendTag}>
