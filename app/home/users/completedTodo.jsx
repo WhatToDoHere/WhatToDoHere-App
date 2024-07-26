@@ -8,12 +8,15 @@ import {
   Image,
 } from 'react-native';
 import { Stack, useNavigation } from 'expo-router';
+
 import { useAtom } from 'jotai';
 import { locationsAtom, userInfoAtom } from '../../../atoms';
 
+import { updateTodo } from '../../../utils/firebaseService';
+
 export default function CompletedTodo() {
   const navigation = useNavigation();
-  const [locations] = useAtom(locationsAtom);
+  const [locations, setLocations] = useAtom(locationsAtom);
   const [userInfo] = useAtom(userInfoAtom);
 
   const completedTodos = useMemo(() => {
@@ -22,15 +25,19 @@ export default function CompletedTodo() {
         ?.filter((todo) => todo.completed)
         .map((todo) => ({
           ...todo,
+          locationId: location.id,
           locationAlias: location.alias,
           locationAddress: location.address,
         })),
     );
   }, [locations]);
 
-  const handleToggleComplete = (locationId, todoId) => {
-    // TODO: 완료 상태를 토글하는 로직 구현
-    // updateTodo 함수를 호출하여 Firestore와 전역 상태를 업데이트
+  const handleToggleComplete = async (locationId, todoId) => {
+    try {
+      await updateTodo(locationId, todoId, { completed: false }, setLocations);
+    } catch (error) {
+      console.error('Error updating todo:', error);
+    }
   };
 
   return (
@@ -73,9 +80,16 @@ export default function CompletedTodo() {
             </TouchableOpacity>
             <View style={styles.todoTextContainer}>
               <Text style={styles.todoTitle}>{todo.title}</Text>
-              <Text style={styles.todoLocation}>
-                📍 {todo.locationAlias} - {todo.locationAddress}
-              </Text>
+              <View style={styles.todoLocationContainer}>
+                <Text style={styles.todoLocationAlias}>
+                  📍 {todo.locationAlias}
+                </Text>
+                {todo.locationAddress && (
+                  <Text style={styles.todoLocationAddress}>
+                    - {todo.locationAddress}
+                  </Text>
+                )}
+              </View>
               {todo.assignedBy !== userInfo.uid && (
                 <View style={styles.todoFriend}>
                   <Text>✍🏻 </Text>
@@ -137,8 +151,13 @@ const styles = StyleSheet.create({
     fontFamily: 'Pretendard-Regular',
     fontSize: 16,
   },
-  todoLocation: {
-    marginTop: 15,
+  todoLocationContainer: {
+    marginTop: 10,
+    fontSize: 13,
+    color: '#707070',
+  },
+  todoLocationAlias: {
+    fontFamily: 'Opposit-Bold',
     fontSize: 13,
     color: '#707070',
   },
