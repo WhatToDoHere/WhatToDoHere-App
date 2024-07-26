@@ -7,8 +7,8 @@
     "orInterfaceStyle": "light",
     "splash": {
       "imrientation": "portrait",
-    "icon": "./assets/icon.png",
-    "useage": "./assets/splash.png",
+      "icon": "./assets/icon.png",
+      "useage": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -17,6 +17,9 @@
       "turboModules": true
     },
     "ios": {
+      "entitlements": {
+        "com.apple.developer.networking.wifi-info": true
+      },
       "supportsTablet": true,
       "bundleIdentifier": "com.moonstrnck.WhatToDoHere",
       "infoPlist": {
