@@ -10,6 +10,10 @@ export default function LootLayout() {
         options={{ presentation: 'modal' }}
       />
       <Stack.Screen name="todo/index" options={{ presentation: 'modal' }} />
+      <Stack.Screen
+        name="todo/setReminderDetails"
+        options={{ presentation: 'modal' }}
+      />
       <Stack.Screen name="users/index" />
       <Stack.Screen name="users/completedTodo" />
       <Stack.Screen name="users/friends" />
