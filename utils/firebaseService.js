@@ -7,11 +7,14 @@ import {
   setDoc,
   addDoc,
   updateDoc,
+  deleteDoc,
   collection,
   arrayUnion,
   serverTimestamp,
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+
+import { REMINDER_TRIGGER } from '../constants/todo';
 
 export const saveUserToFirestore = async (user, updateLocations) => {
   try {
@@ -32,9 +35,8 @@ export const saveUserToFirestore = async (user, updateLocations) => {
           alias: 'Home🏡',
           latitude: null,
           longitude: null,
-          address: '위치를 추가해주세요!',
+          address: null,
           ssid: null,
-          alertType: 'arrival',
           privacy: 'private',
           userId: user.uid,
           deleted: false,
@@ -43,9 +45,8 @@ export const saveUserToFirestore = async (user, updateLocations) => {
           alias: 'Company🏢',
           latitude: null,
           longitude: null,
-          address: '위치를 추가해주세요!',
+          address: null,
           ssid: null,
-          alertType: 'arrival',
           privacy: 'private',
           userId: user.uid,
           deleted: false,
@@ -268,7 +269,16 @@ export const getTodo = async (locationId, todoId) => {
     const todoDoc = await getDoc(todoRef);
 
     if (todoDoc.exists()) {
-      return { id: todoDoc.id, ...todoDoc.data() };
+      const data = todoDoc.data();
+      return {
+        id: todoDoc.id,
+        ...data,
+        reminder: data.reminder || {
+          isEnabled: false,
+          trigger: REMINDER_TRIGGER.ARRIVE,
+          delayMinutes: 0,
+        },
+      };
     } else {
       return null;
     }
