@@ -63,9 +63,6 @@ export default function LocationForm() {
           longitudeDelta: 0.009,
         };
         setRegion(newRegion);
-        setAlertOption(
-          parsedLocation.alertType === 'departure' ? '떠날 때' : '도착할 때',
-        );
         setPrivacyOption(
           parsedLocation.privacy === 'public' ? '공개' : '비공개',
         );

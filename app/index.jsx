@@ -80,6 +80,7 @@ export default function App() {
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
+
       if (status !== 'granted') {
         Alert.alert(
           '위치 권한이 필요합니다. 기기 설정에서 위치 권한을 활성화해주세요.',
