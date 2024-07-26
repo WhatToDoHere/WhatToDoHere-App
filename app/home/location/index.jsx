@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { Stack, useLocalSearchParams, useNavigation } from 'expo-router';
 import MapView, { Marker, Circle, PROVIDER_GOOGLE } from 'react-native-maps';
-import WifiManager from 'react-native-wifi-reborn';
+import NetInfo from '@react-native-community/netinfo';
 
 import SearchBar from '../../../components/SearchBar';
 import SwitchSelector from '../../../components/SwitchSelector';
@@ -47,20 +47,13 @@ export default function LocationForm() {
   const [locationTitle, setLocationTitle] = useState('');
   const [regionAddress, setRegionAddress] = useState('');
   const [ssid, setSsid] = useState(null);
+  const [bssid, setBssid] = useState(null);
   const [isLoadingWifi, setIsLoadingWifi] = useState(false);
 
   const mapRef = useRef(null);
 
   const fetchWifiInfo = async () => {
     setIsLoadingWifi(true);
-    console.log(
-      isNearCurrentLocation(
-        region.latitude,
-        region.longitude,
-        currentLocation.latitude,
-        currentLocation.longitude,
-      ),
-    );
     try {
       if (
         isNearCurrentLocation(
@@ -70,14 +63,26 @@ export default function LocationForm() {
           currentLocation.longitude,
         )
       ) {
-        const currentSsid = await WifiManager.getCurrentWifiSSID();
-        setSsid(currentSsid || null);
+        await NetInfo.configure({
+          shouldFetchWiFiSSID: true,
+        });
+        const netInfo = await NetInfo.fetch();
+        console.log(netInfo);
+        if (netInfo.type === 'wifi' && netInfo.details) {
+          setSsid(netInfo.details.ssid || null);
+          setBssid(netInfo.details.bssid || null);
+        } else {
+          setSsid(null);
+          setBssid(null);
+        }
       } else {
         setSsid(null);
+        setBssid(null);
       }
     } catch (error) {
       console.error('Error fetching WiFi info:', error);
       setSsid(null);
+      setBssid(null);
     } finally {
       setIsLoadingWifi(false);
     }
@@ -111,10 +116,14 @@ export default function LocationForm() {
             currentLocation.longitude,
           )
         ) {
-          const currentSsid = await WifiManager.getCurrentWifiSSID();
-          setSsid(currentSsid || null);
+          const netInfo = await NetInfo.fetch();
+          if (netInfo.type === 'wifi' && netInfo.details) {
+            setSsid(netInfo.details.ssid || null);
+            setBssid(netInfo.details.bssid || null);
+          }
         } else {
           setSsid(null);
+          setBssid(null);
         }
       } else {
         const locationCount = await getUserLocationCount(userInfo.uid);
@@ -128,8 +137,11 @@ export default function LocationForm() {
         };
         setRegion(newRegion);
 
-        const currentSsid = await WifiManager.getCurrentWifiSSID();
-        setSsid(currentSsid || null);
+        const netInfo = await NetInfo.fetch();
+        if (netInfo.type === 'wifi' && netInfo.details) {
+          setSsid(netInfo.details.ssid || null);
+          setBssid(netInfo.details.bssid || null);
+        }
       }
     };
 
@@ -197,6 +209,7 @@ export default function LocationForm() {
       longitude: region.longitude,
       address: regionAddress,
       ssid: ssid !== null ? ssid : null,
+      bssid: bssid !== null ? bssid : null,
       privacy: privacyOption === '공개' ? 'public' : 'private',
       userId: userInfo.uid,
     };
