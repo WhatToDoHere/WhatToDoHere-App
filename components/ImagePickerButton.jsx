@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
   TouchableOpacity,
@@ -10,19 +10,19 @@ import {
   Linking,
   AppState,
   Pressable,
+  Dimensions,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
-export const ImagePickerButton = ({ onImageSelected, initialImage }) => {
+const { width } = Dimensions.get('window');
+
+export default function ImagePickerButton({ onImageSelected, initialImage }) {
   const [image, setImage] = useState(initialImage);
   const [modalVisible, setModalVisible] = useState(false);
+  const [fullScreenModalVisible, setFullScreenModalVisible] = useState(false);
   const [appState, setAppState] = useState(AppState.currentState);
-  const [buttonPosition, setButtonPosition] = useState({
-    x: 0,
-    y: 0,
-    width: 0,
-    height: 0,
-  });
+  const buttonRef = useRef(null);
+  const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
 
   useEffect(() => {
     if (initialImage) {
@@ -68,7 +68,17 @@ export const ImagePickerButton = ({ onImageSelected, initialImage }) => {
   }, [checkPermissions]);
 
   const pickImage = async () => {
-    setModalVisible(true);
+    if (image) {
+      setFullScreenModalVisible(true);
+    } else {
+      buttonRef.current.measure((fx, fy, width, height, px, py) => {
+        setModalPosition({
+          top: py + height - 100,
+          left: px + width - 50,
+        });
+        setModalVisible(true);
+      });
+    }
   };
 
   const handleImageLibrary = async () => {
@@ -122,14 +132,7 @@ export const ImagePickerButton = ({ onImageSelected, initialImage }) => {
 
   return (
     <View>
-      <Pressable
-        style={styles.imageButton}
-        onPress={pickImage}
-        onLayout={(event) => {
-          const { x, y, width, height } = event.nativeEvent.layout;
-          setButtonPosition({ x, y, width, height });
-        }}
-      >
+      <Pressable ref={buttonRef} style={styles.imageButton} onPress={pickImage}>
         {image ? (
           <View>
             <Image source={{ uri: image }} style={styles.imagePreview} />
@@ -166,8 +169,8 @@ export const ImagePickerButton = ({ onImageSelected, initialImage }) => {
               styles.modalContent,
               {
                 position: 'absolute',
-                top: buttonPosition.y + buttonPosition.height + 230,
-                left: buttonPosition.x + buttonPosition.width - 150,
+                top: modalPosition.top,
+                left: modalPosition.left,
               },
             ]}
           >
@@ -194,15 +197,31 @@ export const ImagePickerButton = ({ onImageSelected, initialImage }) => {
           </View>
         </TouchableOpacity>
       </Modal>
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={fullScreenModalVisible}
+        onRequestClose={() => setFullScreenModalVisible(false)}
+      >
+        <View style={styles.fullScreenModalContainer}>
+          <Image source={{ uri: image }} style={styles.fullScreenImage} />
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={() => setFullScreenModalVisible(false)}
+          >
+            <Text style={styles.closeButtonText}>닫기</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   imageButton: {
     position: 'relative',
-    width: '100%',
-    height: 300,
+    width: width * 0.4,
+    height: width * 0.4,
     backgroundColor: '#EEEEEE',
     borderRadius: 10,
   },
@@ -210,17 +229,14 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: '50%',
     top: '50%',
-    marginLeft: -15,
-    marginTop: -15,
-    width: 30,
-    height: 30,
+    marginLeft: -10,
+    marginTop: -10,
+    width: 20,
+    height: 20,
   },
   imagePreview: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
     width: '100%',
-    height: 300,
+    height: '100%',
     borderRadius: 10,
   },
   removeImageButton: {
@@ -230,15 +246,15 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   removeImageIcon: {
-    width: 30,
-    height: 30,
+    width: 25,
+    height: 25,
   },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0)',
   },
   modalContent: {
-    width: 150,
+    width: 170,
     borderRadius: 10,
     elevation: 5,
     backgroundColor: '#202020',
@@ -264,5 +280,26 @@ const styles = StyleSheet.create({
     width: 14,
     height: 12.38,
     marginTop: 2,
+  },
+  fullScreenModalContainer: {
+    flex: 1,
+    backgroundColor: 'black',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fullScreenImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 50,
+    right: 10,
+    padding: 10,
+  },
+  closeButtonText: {
+    color: 'white',
+    fontSize: 18,
   },
 });
