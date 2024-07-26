@@ -13,6 +13,8 @@ PODS:
     - ExpoModulesCore
   - EXManifests (0.14.3):
     - ExpoModulesCore
+  - EXNotifications (0.28.12):
+    - ExpoModulesCore
   - Expo (51.0.21):
     - ExpoModulesCore
   - expo-dev-client (4.0.20):
@@ -287,6 +289,9 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - EXTaskManager (11.8.2):
+    - ExpoModulesCore
+    - UMAppLoader
   - EXUpdatesInterface (0.16.2):
     - ExpoModulesCore
   - FBLazyVector (0.74.3)
@@ -1529,6 +1534,7 @@ PODS:
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
   - SocketRocket (0.7.0)
+  - UMAppLoader (4.6.0)
   - Yoga (0.0.0)
 
 DEPENDENCIES:
@@ -1540,6 +1546,7 @@ DEPENDENCIES:
   - EXJSONUtils (from `../node_modules/expo-json-utils/ios`)
   - EXLocation (from `../node_modules/expo-location/ios`)
   - EXManifests (from `../node_modules/expo-manifests/ios`)
+  - EXNotifications (from `../node_modules/expo-notifications/ios`)
   - Expo (from `../node_modules/expo`)
   - expo-dev-client (from `../node_modules/expo-dev-client/ios`)
   - expo-dev-launcher (from `../node_modules/expo-dev-launcher`)
@@ -1556,6 +1563,7 @@ DEPENDENCIES:
   - ExpoModulesCore (from `../node_modules/expo-modules-core`)
   - ExpoWebBrowser (from `../node_modules/expo-web-browser/ios`)
   - EXSplashScreen (from `../node_modules/expo-splash-screen/ios`)
+  - EXTaskManager (from `../node_modules/expo-task-manager/ios`)
   - EXUpdatesInterface (from `../node_modules/expo-updates-interface/ios`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - fmt (from `../node_modules/react-native/third-party-podspecs/fmt.podspec`)
@@ -1617,6 +1625,7 @@ DEPENDENCIES:
   - "RNCPicker (from `../node_modules/@react-native-picker/picker`)"
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNWifi (from `../node_modules/react-native-wifi-reborn`)
+  - UMAppLoader (from `../node_modules/unimodules-app-loader/ios`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -1645,6 +1654,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-location/ios"
   EXManifests:
     :path: "../node_modules/expo-manifests/ios"
+  EXNotifications:
+    :path: "../node_modules/expo-notifications/ios"
   Expo:
     :path: "../node_modules/expo"
   expo-dev-client:
@@ -1677,6 +1688,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-web-browser/ios"
   EXSplashScreen:
     :path: "../node_modules/expo-splash-screen/ios"
+  EXTaskManager:
+    :path: "../node_modules/expo-task-manager/ios"
   EXUpdatesInterface:
     :path: "../node_modules/expo-updates-interface/ios"
   FBLazyVector:
@@ -1796,6 +1809,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-screens"
   RNWifi:
     :path: "../node_modules/react-native-wifi-reborn"
+  UMAppLoader:
+    :path: "../node_modules/unimodules-app-loader/ios"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -1808,6 +1823,7 @@ SPEC CHECKSUMS:
   EXJSONUtils: 30c17fd9cc364d722c0946a550dfbf1be92ef6a4
   EXLocation: 43e9b582ca63a23c6f0a18d8cbe2145b3a388b55
   EXManifests: c1fab4c3237675e7b0299ea8df0bcb14baca4f42
+  EXNotifications: 3e0ca8264c1d41b1b7452b623f32eaa157db5b98
   Expo: 6ff8c293719c5e5d23204e3f5fc9f472b5d0fd32
   expo-dev-client: d24806e84d072563b0a26537c22ec902443e77d6
   expo-dev-launcher: 9ec4a77189b7ba5340c26399885887bec84e71f2
@@ -1824,6 +1840,7 @@ SPEC CHECKSUMS:
   ExpoModulesCore: 734c1802786b23c9598f4d15273753a779969368
   ExpoWebBrowser: 7595ccac6938eb65b076385fd23d035db9ecdc8e
   EXSplashScreen: fbf0ec78e9cee911df188bf17b4fe51d15a84b87
+  EXTaskManager: 9c3520305c3aa1b4a12a7c6d1e3f85f2779c06e9
   EXUpdatesInterface: 996527fd7d1a5d271eb523258d603f8f92038f24
   FBLazyVector: 7e977dd099937dc5458851233141583abba49ff2
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
@@ -1889,6 +1906,7 @@ SPEC CHECKSUMS:
   SDWebImage: 066c47b573f408f18caa467d71deace7c0f8280d
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
+  UMAppLoader: f17a5ee8e85b536ace0fc254b447a37ed198d57e
   Yoga: 04f1db30bb810187397fa4c37dd1868a27af229c
 
 PODFILE CHECKSUM: a02b66031da8c8e5502d664e878600c6099d4453

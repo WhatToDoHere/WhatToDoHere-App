@@ -4,11 +4,11 @@
     "slug": "WhatToDoHere",
     "scheme": "WhatToDoHere",
     "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "orInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "imrientation": "portrait",
+    "icon": "./assets/icon.png",
+    "useage": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -20,6 +20,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.moonstrnck.WhatToDoHere",
       "infoPlist": {
+        "UIBackgroundModes": ["location", "fetch", "remote-notification"],
         "NSLocationWhenInUseUsageDescription": "We need your location to provide better services.",
         "NSLocationAlwaysUsageDescription": "We need your location to provide better services."
       }
