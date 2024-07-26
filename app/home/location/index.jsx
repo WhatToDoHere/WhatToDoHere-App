@@ -8,9 +8,9 @@ import {
   TouchableOpacity,
   Pressable,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { Stack, useLocalSearchParams, useNavigation } from 'expo-router';
-
 import MapView, { Marker, Circle, PROVIDER_GOOGLE } from 'react-native-maps';
 import WifiManager from 'react-native-wifi-reborn';
 
@@ -26,7 +26,7 @@ import {
   locationsAtom,
 } from '../../../atoms';
 
-import { getFullAddress } from '../../../utils/location';
+import { getFullAddress, isNearCurrentLocation } from '../../../utils/location';
 import {
   getUserLocationCount,
   addLocation,
@@ -46,9 +46,42 @@ export default function LocationForm() {
   const [privacyOption, setPrivacyOption] = useState('비공개');
   const [locationTitle, setLocationTitle] = useState('');
   const [regionAddress, setRegionAddress] = useState('');
-  const [ssid, setSsid] = useState('');
+  const [ssid, setSsid] = useState(null);
+  const [isLoadingWifi, setIsLoadingWifi] = useState(false);
 
   const mapRef = useRef(null);
+
+  const fetchWifiInfo = async () => {
+    setIsLoadingWifi(true);
+    console.log(
+      isNearCurrentLocation(
+        region.latitude,
+        region.longitude,
+        currentLocation.latitude,
+        currentLocation.longitude,
+      ),
+    );
+    try {
+      if (
+        isNearCurrentLocation(
+          region.latitude,
+          region.longitude,
+          currentLocation.latitude,
+          currentLocation.longitude,
+        )
+      ) {
+        const currentSsid = await WifiManager.getCurrentWifiSSID();
+        setSsid(currentSsid || null);
+      } else {
+        setSsid(null);
+      }
+    } catch (error) {
+      console.error('Error fetching WiFi info:', error);
+      setSsid(null);
+    } finally {
+      setIsLoadingWifi(false);
+    }
+  };
 
   useEffect(() => {
     const initialize = async () => {
@@ -66,15 +99,25 @@ export default function LocationForm() {
         setPrivacyOption(
           parsedLocation.privacy === 'public' ? '공개' : '비공개',
         );
-        setSsid(
-          parsedLocation.ssid ||
-            (!parsedLocation.latitude && !parsedLocation.longitude
-              ? await WifiManager.getCurrentWifiSSID()
-              : 'WiFi 정보 없음'),
-        );
+
+        if (parsedLocation.ssid && parsedLocation.bssid) {
+          setSsid(parsedLocation.ssid);
+          setBssid(parsedLocation.bssid);
+        } else if (
+          isNearCurrentLocation(
+            newRegion.latitude,
+            newRegion.longitude,
+            currentLocation.latitude,
+            currentLocation.longitude,
+          )
+        ) {
+          const currentSsid = await WifiManager.getCurrentWifiSSID();
+          setSsid(currentSsid || null);
+        } else {
+          setSsid(null);
+        }
       } else {
         const locationCount = await getUserLocationCount(userInfo.uid);
-
         setLocationTitle(`Location ${locationCount + 1}`);
 
         const newRegion = {
@@ -83,9 +126,10 @@ export default function LocationForm() {
           latitudeDelta: 0.009,
           longitudeDelta: 0.009,
         };
-
         setRegion(newRegion);
-        setSsid(await WifiManager.getCurrentWifiSSID());
+
+        const currentSsid = await WifiManager.getCurrentWifiSSID();
+        setSsid(currentSsid || null);
       }
     };
 
@@ -95,6 +139,12 @@ export default function LocationForm() {
       setSelectedLocation(null);
     };
   }, [mode, location, currentLocation, userInfo.uid]);
+
+  useEffect(() => {
+    if (region) {
+      fetchWifiInfo();
+    }
+  }, [region]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -146,7 +196,7 @@ export default function LocationForm() {
       latitude: region.latitude,
       longitude: region.longitude,
       address: regionAddress,
-      ssid,
+      ssid: ssid !== null ? ssid : null,
       privacy: privacyOption === '공개' ? 'public' : 'private',
       userId: userInfo.uid,
     };
@@ -237,15 +287,38 @@ export default function LocationForm() {
           )}
         </View>
         <Text style={styles.address}>📍 {regionAddress}</Text>
-        <View style={styles.titleContainer}>
-          <Image
-            source={require('../../../assets/icons/icon-wifi.png')}
-            style={[styles.sectionIcon, styles.wifiIcon]}
-          />
-          <Text style={styles.sectionTitle}>WiFi</Text>
+        <View style={styles.wifiContainer}>
+          <View style={styles.titleContainer}>
+            <Image
+              source={require('../../../assets/icons/icon-wifi.png')}
+              style={[styles.sectionIcon, styles.wifiIcon]}
+            />
+            <Text style={styles.sectionTitle}>WiFi</Text>
+          </View>
+          <TouchableOpacity
+            onPress={fetchWifiInfo}
+            style={styles.refreshButton}
+          >
+            <Image
+              source={require('../../../assets/icons/icon-refresh.png')}
+              style={styles.refreshIcon}
+            />
+          </TouchableOpacity>
         </View>
         <View style={styles.textBox}>
-          <Text style={styles.ssid}>{ssid || 'WiFi 정보 없음'}</Text>
+          {isLoadingWifi ? (
+            <ActivityIndicator size="small" color="#707070" />
+          ) : (
+            <Text style={styles.ssid}>
+              {ssid !== null ? ssid : 'WiFi 정보 없음'}
+            </Text>
+          )}
+        </View>
+        <View style={styles.wifiInfo}>
+          <Text style={styles.wifiInfoEmoji}>⚠️</Text>
+          <Text style={styles.wifiInfoMessage}>
+            설정한 위치가 현재 위치일 때 WiFi 정보를 확인할 수 있어요.
+          </Text>
         </View>
         <View style={styles.titleContainer}>
           <Image
@@ -290,6 +363,36 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 30,
     marginBottom: 15,
+  },
+  wifiContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  refreshButton: {
+    marginTop: 5,
+    paddingLeft: 10,
+    paddingRight: 8,
+    paddingTop: 10,
+  },
+  refreshIcon: {
+    width: 26,
+    height: 26,
+  },
+  wifiInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  wifiInfoEmoji: {
+    marginRight: 5,
+    fontFamily: 'Pretendard-Regular',
+    fontSize: 12,
+  },
+  wifiInfoMessage: {
+    fontFamily: 'Pretendard-Regular',
+    fontSize: 12,
+    color: '#747474',
   },
   sectionIcon: {
     marginRight: 10,
