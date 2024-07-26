@@ -17,8 +17,6 @@ import { todoAtom } from '../../../atoms';
 import SwitchSelector from '../../../components/SwitchSelector';
 import TimePicker from '../../../components/TimePicker';
 
-import { REMINDER_TRIGGER } from '../../../constants/todo';
-
 export default function SetReminderDetails() {
   const navigation = useNavigation();
   const [todo, setTodo] = useAtom(todoAtom);
@@ -26,7 +24,9 @@ export default function SetReminderDetails() {
   const [isReminderEnabled, setIsReminderEnabled] = useState(
     todo.reminder.isEnabled,
   );
-  const [reminderTrigger, setReminderTrigger] = useState(todo.reminder.trigger);
+  const [reminderOnArrival, setReminderOnArrival] = useState(
+    todo.reminder.reminderOnArrival,
+  );
   const [selectedHours, setSelectedHours] = useState(
     Math.floor(todo.reminder.delayMinutes / 60),
   );
@@ -44,8 +44,7 @@ export default function SetReminderDetails() {
     if (!isReminderEnabled) {
       setPreviewMessage('알림 없음');
     } else {
-      const triggerText =
-        reminderTrigger === REMINDER_TRIGGER.ARRIVE ? '도착' : '출발';
+      const triggerText = reminderOnArrival ? '도착' : '출발';
       let timeText = '즉시';
       if (selectedHours > 0 || selectedMinutes > 0) {
         timeText = '';
@@ -59,7 +58,7 @@ export default function SetReminderDetails() {
       }
       setPreviewMessage(`${triggerText} ${timeText} 알림`);
     }
-  }, [isReminderEnabled, reminderTrigger, selectedHours, selectedMinutes]);
+  }, [isReminderEnabled, reminderOnArrival, selectedHours, selectedMinutes]);
 
   useEffect(() => {
     updatePreviewMessage();
@@ -81,7 +80,7 @@ export default function SetReminderDetails() {
       ...prevTodo,
       reminder: {
         isEnabled: isReminderEnabled,
-        trigger: reminderTrigger,
+        reminderOnArrival: reminderOnArrival,
         delayMinutes: selectedHours * 60 + selectedMinutes,
       },
     }));
@@ -135,10 +134,13 @@ export default function SetReminderDetails() {
                 <Text style={styles.sectionTitle}>Trigger</Text>
               </View>
               <SwitchSelector
-                options={[REMINDER_TRIGGER.ARRIVE, REMINDER_TRIGGER.LEAVE]}
-                selected={reminderTrigger}
-                onSelect={(option) => {
-                  setReminderTrigger(option);
+                options={[
+                  { label: '도착할 때', value: true },
+                  { label: '떠날 때', value: false },
+                ]}
+                selected={reminderOnArrival}
+                onSelect={(value) => {
+                  setReminderOnArrival(value);
                   updatePreviewMessage();
                 }}
               />

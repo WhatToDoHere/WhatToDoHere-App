@@ -14,8 +14,11 @@ export default function SwitchSelector({ options, selected, onSelect }) {
   const optionWidth = switchWidth / options.length + 10;
 
   useEffect(() => {
+    const selectedIndex = options.findIndex(
+      (option) => option.value === selected,
+    );
     Animated.timing(animatedValue, {
-      toValue: options.indexOf(selected),
+      toValue: selectedIndex,
       duration: 200,
       useNativeDriver: false,
     }).start();
@@ -44,17 +47,17 @@ export default function SwitchSelector({ options, selected, onSelect }) {
         <TouchableOpacity
           key={index}
           style={styles.option}
-          onPress={() => onSelect(option)}
+          onPress={() => onSelect && onSelect(option.value)}
         >
           <Text
             style={[
               styles.optionText,
-              selected === option
+              selected === option.value
                 ? styles.selectedOptionText
                 : styles.unselectedOptionText,
             ]}
           >
-            {option}
+            {option.label}
           </Text>
         </TouchableOpacity>
       ))}

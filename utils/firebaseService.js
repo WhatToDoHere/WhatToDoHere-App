@@ -14,8 +14,6 @@ import {
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
-import { REMINDER_TRIGGER } from '../constants/todo';
-
 export const saveUserToFirestore = async (user, updateLocations) => {
   try {
     const userDocRef = doc(firestore, 'users', user.uid);
@@ -275,7 +273,7 @@ export const getTodo = async (locationId, todoId) => {
         ...data,
         reminder: data.reminder || {
           isEnabled: false,
-          trigger: REMINDER_TRIGGER.ARRIVE,
+          reminderOnArrival: true,
           delayMinutes: 0,
         },
       };

@@ -258,9 +258,12 @@ export default function LocationForm() {
           <Text style={styles.sectionTitle}>Privacy</Text>
         </View>
         <SwitchSelector
-          options={['비공개', '공개']}
+          options={[
+            { label: '비공개', value: '비공개' },
+            { label: '공개', value: '공개' },
+          ]}
           selected={privacyOption}
-          onSelect={(option) => setPrivacyOption(option)}
+          onSelect={(value) => setPrivacyOption(value)}
         />
       </View>
     </ScrollView>

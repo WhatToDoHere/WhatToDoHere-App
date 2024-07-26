@@ -20,7 +20,6 @@ import {
   uploadImage,
   deleteTodo,
 } from '../../../utils/firebaseService';
-import { REMINDER_TRIGGER } from '../../../constants/todo';
 
 import CustomTextInput from '../../../components/CustomTextInput';
 import ImagePickerButton from '../../../components/ImagePickerButton';
@@ -51,7 +50,7 @@ export default function TodoForm() {
         image: null,
         reminder: {
           isEnabled: false,
-          trigger: REMINDER_TRIGGER.ARRIVE,
+          reminderOnArrival: true,
           delayMinutes: 0,
         },
         locationId: locationId,
@@ -99,8 +98,7 @@ export default function TodoForm() {
 
   const getPreviewMessage = () => {
     if (!todo.reminder.isEnabled) return '알림 없음';
-    const triggerText =
-      todo.reminder.trigger === REMINDER_TRIGGER.ARRIVE ? '도착' : '출발';
+    const triggerText = todo.reminder.reminderOnArrival ? '도착' : '출발';
     let timeText = '즉시';
     if (todo.reminder.delayMinutes > 0) {
       const hours = Math.floor(todo.reminder.delayMinutes / 60);
