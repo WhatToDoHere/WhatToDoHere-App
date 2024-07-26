@@ -37,7 +37,6 @@ export const saveUserToFirestore = async (user, updateLocations) => {
           ssid: null,
           privacy: 'private',
           userId: user.uid,
-          deleted: false,
         },
         {
           alias: 'Company🏢',
@@ -47,7 +46,6 @@ export const saveUserToFirestore = async (user, updateLocations) => {
           ssid: null,
           privacy: 'private',
           userId: user.uid,
-          deleted: false,
         },
       ];
 
