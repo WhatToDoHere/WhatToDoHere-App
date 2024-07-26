@@ -43,7 +43,6 @@ export default function LocationForm() {
   const [, setLocations] = useAtom(locationsAtom);
 
   const [region, setRegion] = useState(null);
-  const [alertOption, setAlertOption] = useState('도착할 때');
   const [privacyOption, setPrivacyOption] = useState('비공개');
   const [locationTitle, setLocationTitle] = useState('');
   const [regionAddress, setRegionAddress] = useState('');
@@ -151,7 +150,6 @@ export default function LocationForm() {
       longitude: region.longitude,
       address: regionAddress,
       ssid,
-      alertType: alertOption === '도착할 때' ? 'arrival' : 'departure',
       privacy: privacyOption === '공개' ? 'public' : 'private',
       userId: userInfo.uid,
     };
@@ -254,18 +252,6 @@ export default function LocationForm() {
         </View>
         <View style={styles.titleContainer}>
           <Image
-            source={require('../../../assets/icons/icon-alert.png')}
-            style={[styles.sectionIcon, styles.alertIcon]}
-          />
-          <Text style={styles.sectionTitle}>Alert</Text>
-        </View>
-        <SwitchSelector
-          options={['도착할 때', '떠날 때']}
-          selected={alertOption}
-          onSelect={(option) => setAlertOption(option)}
-        />
-        <View style={styles.titleContainer}>
-          <Image
             source={require('../../../assets/icons/icon-privacy.png')}
             style={[styles.sectionIcon, styles.privacyIcon]}
           />
@@ -316,10 +302,6 @@ const styles = StyleSheet.create({
     width: 16,
     height: 12,
   },
-  alertIcon: {
-    width: 14,
-    height: 15,
-  },
   privacyIcon: {
     width: 18,
     height: 18,
@@ -359,7 +341,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
   },
   address: {
-    marginBottom: 15,
+    marginBottom: 5,
     fontFamily: 'Pretendard-Regular',
     fontSize: 15,
     color: '#202020',

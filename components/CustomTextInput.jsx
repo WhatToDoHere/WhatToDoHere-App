@@ -6,7 +6,7 @@ import {
   Image,
 } from 'react-native';
 
-export function CustomTextInput({
+export default function CustomTextInput({
   value,
   onChangeText,
   placeholder,
@@ -50,6 +50,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     padding: 10,
+    height: 40,
     fontFamily: 'Pretendard-Regular',
     fontSize: 15,
     color: '#202020',

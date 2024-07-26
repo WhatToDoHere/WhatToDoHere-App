@@ -119,7 +119,9 @@ export default function LocationItem({ location, backgroundColor }) {
             </TouchableOpacity>
           </View>
         </View>
-        <Text style={styles.address}>📍 {location.address}</Text>
+        <Text style={styles.address}>
+          📍 {location.address ?? '위치를 설정해 주세요!'}
+        </Text>
       </View>
       <Animated.View style={[styles.todoListContainer, { height }]}>
         <View style={styles.todoListContent}>
