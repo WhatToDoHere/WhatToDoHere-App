@@ -20,10 +20,13 @@ import {
   uploadImage,
   deleteTodo,
 } from '../../../utils/firebaseService';
+import { DEFAULT_TODO_DATA } from '../../../constants/todo';
 
 import CustomTextInput from '../../../components/CustomTextInput';
 import ImagePickerButton from '../../../components/ImagePickerButton';
 import DeleteButton from '../../../components/DeleteButton';
+
+// import { sendTestNotification } from '../../../services/notificationService';
 
 export default function TodoForm() {
   const [userInfo] = useAtom(userInfoAtom);
@@ -34,6 +37,7 @@ export default function TodoForm() {
   const { mode, locationId, todoId } = useLocalSearchParams();
 
   useEffect(() => {
+    // sendTestNotification();
     const fetchTodoData = async () => {
       const fetchedTodo = await getTodo(locationId, todoId);
       if (fetchedTodo) {
@@ -45,18 +49,15 @@ export default function TodoForm() {
       fetchTodoData();
     } else {
       setTodo({
-        title: '',
-        memo: '',
-        image: null,
-        reminder: {
-          isEnabled: false,
-          reminderOnArrival: true,
-          delayMinutes: 0,
-        },
+        ...DEFAULT_TODO_DATA,
         locationId: locationId,
         assignedBy: userInfo.uid,
       });
     }
+
+    return () => {
+      setTodo(DEFAULT_TODO_DATA);
+    };
   }, [mode, locationId, todoId, setTodo, userInfo.uid]);
 
   const handleImageSelected = (imageUri) => {
