@@ -66,8 +66,9 @@ export default function LocationForm() {
         await NetInfo.configure({
           shouldFetchWiFiSSID: true,
         });
+
         const netInfo = await NetInfo.fetch();
-        console.log(netInfo);
+
         if (netInfo.type === 'wifi' && netInfo.details) {
           setSsid(netInfo.details.ssid || null);
           setBssid(netInfo.details.bssid || null);
@@ -288,18 +289,25 @@ export default function LocationForm() {
                 center={region}
                 radius={300}
                 strokeWidth={2}
-                strokeColor="rgba(47, 147, 240, 0.8)"
-                fillColor="rgba(47, 147, 240, 0.3)"
+                strokeColor="#b2d8fc"
+                fillColor="rgba(181, 219, 255, 0.5)"
               />
               <Marker
                 coordinate={region}
                 draggable
                 onDragEnd={handleMarkerDragEnd}
-              />
+              >
+                <Image
+                  source={require('../../../assets/icons/icon-map-pin.png')}
+                  style={styles.mapMarker}
+                />
+              </Marker>
             </MapView>
           )}
         </View>
-        <Text style={styles.address}>📍 {regionAddress}</Text>
+        <View style={styles.addressContainer}>
+          <Text style={styles.address}>📍 {regionAddress}</Text>
+        </View>
         <View style={styles.wifiContainer}>
           <View style={styles.titleContainer}>
             <Image
@@ -443,6 +451,10 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 10,
   },
+  mapMarker: {
+    width: 45,
+    height: 45,
+  },
   searchBarContainer: {
     zIndex: 1,
     position: 'absolute',
@@ -456,11 +468,21 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3,
   },
+  addressContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   address: {
     marginBottom: 5,
     fontFamily: 'Pretendard-Regular',
     fontSize: 15,
     color: '#202020',
+  },
+  pinIcon: {
+    width: 22,
+    height: 22,
+    marginTop: -6,
+    marginRight: 3,
   },
   textBox: {
     justifyContent: 'center',

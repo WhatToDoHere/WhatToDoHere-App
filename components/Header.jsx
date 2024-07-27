@@ -6,7 +6,11 @@ export default function Header({ userInfo }) {
   return (
     <View style={styles.header}>
       <Link href="/" style={styles.title}>
-        📍WhatToDoHere
+        <Image
+          source={require('../assets/icons/logo.png')}
+          style={styles.logoImage}
+        />
+        <Text style={styles.whatToDoHere}>WhatToDoHere</Text>
       </Link>
       {userInfo ? (
         <TouchableOpacity
@@ -36,9 +40,19 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
   },
   title: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  whatToDoHere: {
     fontSize: 28,
     fontWeight: 'bold',
     fontFamily: 'Opposit-Bold',
+  },
+  logoImage: {
+    width: 30,
+    height: 30,
+    marginTop: -2,
+    marginRight: 3,
   },
   profileIcon: {
     width: 35,
