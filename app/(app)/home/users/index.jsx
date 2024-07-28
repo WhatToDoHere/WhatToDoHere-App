@@ -10,7 +10,7 @@ import {
 import { Stack, useNavigation } from 'expo-router';
 
 import { useAtom } from 'jotai';
-import { userInfoAtom } from '../../../atoms';
+import { userInfoAtom } from '../../../../atoms';
 
 export default function Profile() {
   const navigation = useNavigation();
@@ -19,19 +19,19 @@ export default function Profile() {
   const menuItems = [
     {
       id: 1,
-      icon: require('../../../assets/icons/icon-completed.png'),
+      icon: require('../../../../assets/icons/icon-completed.png'),
       title: '완료 목록',
       link: 'users/completedTodo',
     },
     {
       id: 2,
-      icon: require('../../../assets/icons/icon-friends.png'),
+      icon: require('../../../../assets/icons/icon-friends.png'),
       title: '친구 목록',
       link: 'users/friends',
     },
     {
       id: 3,
-      icon: require('../../../assets/icons/icon-add-friend.png'),
+      icon: require('../../../../assets/icons/icon-add-friend.png'),
       title: '친구 추가',
       link: 'users/addFriend',
     },
@@ -50,7 +50,7 @@ export default function Profile() {
               }}
             >
               <Image
-                source={require('../../../assets/icons/icon-back.png')}
+                source={require('../../../../assets/icons/icon-back.png')}
                 style={styles.backIcon}
               />
             </TouchableOpacity>

@@ -2,10 +2,10 @@ import { useEffect } from 'react';
 import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Stack, useLocalSearchParams, useNavigation } from 'expo-router';
 
-import LocationList from '../../../components/LocationList';
-import AddLocationButton from '../../../components/AddLocationButton';
+import LocationList from '../../../../components/LocationList';
+import AddLocationButton from '../../../../components/AddLocationButton';
 
-import { FRIENDS_DATA } from '../../../constants/user';
+import { FRIENDS_DATA } from '../../../../constants/user';
 
 export default function FriendTodo() {
   const navigation = useNavigation();
@@ -39,7 +39,7 @@ export default function FriendTodo() {
               }}
             >
               <Image
-                source={require('../../../assets/icons/icon-back.png')}
+                source={require('../../../../assets/icons/icon-back.png')}
                 style={styles.backIcon}
               />
             </TouchableOpacity>

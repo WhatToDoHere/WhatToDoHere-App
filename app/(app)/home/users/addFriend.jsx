@@ -8,10 +8,10 @@ import {
 } from 'react-native';
 import { Stack, useNavigation } from 'expo-router';
 
-import SearchBar from '../../../components/SearchBar';
-import SearchResultList from '../../../components/SearchResultList';
+import SearchBar from '../../../../components/SearchBar';
+import SearchResultList from '../../../../components/SearchResultList';
 
-import { USER_DATA } from '../../../constants/user';
+import { USER_DATA } from '../../../../constants/user';
 
 export default function AddFriend() {
   const navigation = useNavigation();

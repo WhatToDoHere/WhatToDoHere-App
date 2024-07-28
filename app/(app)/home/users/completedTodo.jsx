@@ -10,9 +10,9 @@ import {
 import { Stack, useNavigation } from 'expo-router';
 
 import { useAtom } from 'jotai';
-import { locationsAtom, userInfoAtom } from '../../../atoms';
+import { locationsAtom, userInfoAtom } from '../../../../atoms';
 
-import { updateTodo } from '../../../utils/firebaseService';
+import { updateTodo } from '../../../../services/firebaseService';
 
 export default function CompletedTodo() {
   const navigation = useNavigation();
@@ -57,7 +57,7 @@ export default function CompletedTodo() {
               }}
             >
               <Image
-                source={require('../../../assets/icons/icon-back.png')}
+                source={require('..../../../assets/icons/icon-back.png')}
                 style={styles.backIcon}
               />
             </TouchableOpacity>
@@ -74,7 +74,7 @@ export default function CompletedTodo() {
               style={styles.checkBox}
             >
               <Image
-                source={require('../../../assets/icons/icon-checkbox-checked.png')}
+                source={require('../../../../assets/icons/icon-checkbox-checked.png')}
                 style={styles.checkBoxImage}
               />
             </TouchableOpacity>
@@ -86,6 +86,7 @@ export default function CompletedTodo() {
                 </Text>
                 {todo.locationAddress && (
                   <Text style={styles.todoLocationAddress}>
+                    {' '}
                     - {todo.locationAddress}
                   </Text>
                 )}
@@ -152,13 +153,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   todoLocationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginTop: 10,
     fontSize: 13,
     color: '#707070',
   },
   todoLocationAlias: {
+    marginTop: -3,
     fontFamily: 'Opposit-Bold',
     fontSize: 13,
+    color: '#707070',
+  },
+  todoLocationAddress: {
+    fontSize: 12,
     color: '#707070',
   },
   todoFriend: {

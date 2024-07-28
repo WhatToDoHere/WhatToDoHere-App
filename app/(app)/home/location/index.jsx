@@ -14,24 +14,27 @@ import { Stack, useLocalSearchParams, useNavigation } from 'expo-router';
 import MapView, { Marker, Circle, PROVIDER_GOOGLE } from 'react-native-maps';
 import NetInfo from '@react-native-community/netinfo';
 
-import SearchBar from '../../../components/SearchBar';
-import SwitchSelector from '../../../components/SwitchSelector';
-import TitleInput from '../../../components/TitleInput';
-
 import { useAtom } from 'jotai';
 import {
   currentLocationAtom,
   selectedLocationAtom,
   userInfoAtom,
   locationsAtom,
-} from '../../../atoms';
+} from '../../../../atoms';
 
-import { getFullAddress, isNearCurrentLocation } from '../../../utils/location';
+import SearchBar from '../../../../components/SearchBar';
+import SwitchSelector from '../../../../components/SwitchSelector';
+import TitleInput from '../../../../components/TitleInput';
+
+import {
+  getFullAddress,
+  isNearCurrentLocation,
+} from '../../../../utils/location';
 import {
   getUserLocationCount,
   addLocation,
   updateLocation,
-} from '../../../utils/firebaseService';
+} from '../../../../services/firebaseService';
 
 export default function LocationForm() {
   const navigation = useNavigation();
@@ -263,7 +266,7 @@ export default function LocationForm() {
         />
         <View style={styles.titleContainer}>
           <Image
-            source={require('../../../assets/icons/icon-location.png')}
+            source={require('../../../../assets/icons/icon-location.png')}
             style={[styles.sectionIcon, styles.locationIcon]}
           />
           <Text style={styles.sectionTitle}>Location</Text>
@@ -298,7 +301,7 @@ export default function LocationForm() {
                 onDragEnd={handleMarkerDragEnd}
               >
                 <Image
-                  source={require('../../../assets/icons/icon-map-pin.png')}
+                  source={require('../../../../assets/icons/icon-map-pin.png')}
                   style={styles.mapMarker}
                 />
               </Marker>
@@ -311,7 +314,7 @@ export default function LocationForm() {
         <View style={styles.wifiContainer}>
           <View style={styles.titleContainer}>
             <Image
-              source={require('../../../assets/icons/icon-wifi.png')}
+              source={require('../../../../assets/icons/icon-wifi.png')}
               style={[styles.sectionIcon, styles.wifiIcon]}
             />
             <Text style={styles.sectionTitle}>WiFi</Text>
@@ -321,7 +324,7 @@ export default function LocationForm() {
             style={styles.refreshButton}
           >
             <Image
-              source={require('../../../assets/icons/icon-refresh.png')}
+              source={require('../../../../assets/icons/icon-refresh.png')}
               style={styles.refreshIcon}
             />
           </TouchableOpacity>
@@ -343,7 +346,7 @@ export default function LocationForm() {
         </View>
         <View style={styles.titleContainer}>
           <Image
-            source={require('../../../assets/icons/icon-privacy.png')}
+            source={require('../../../../assets/icons/icon-privacy.png')}
             style={[styles.sectionIcon, styles.privacyIcon]}
           />
           <Text style={styles.sectionTitle}>Privacy</Text>

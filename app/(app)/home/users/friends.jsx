@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { Stack, useNavigation } from 'expo-router';
 
-import { FRIENDS_DATA } from '../../../constants/user';
+import { FRIENDS_DATA } from '../../../../constants/user';
 
 export default function Friends() {
   const navigation = useNavigation();
@@ -34,7 +34,7 @@ export default function Friends() {
               }}
             >
               <Image
-                source={require('../../../assets/icons/icon-back.png')}
+                source={require('../../../../assets/icons/icon-back.png')}
                 style={styles.backIcon}
               />
             </TouchableOpacity>

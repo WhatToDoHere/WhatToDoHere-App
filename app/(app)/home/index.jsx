@@ -1,16 +1,15 @@
 import { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
-
 import { useNavigation } from 'expo-router';
 
 import { useAtom } from 'jotai';
-import { userInfoAtom, locationsAtom } from '../../atoms';
+import { userInfoAtom, locationsAtom } from '../../../atoms';
 
-import Header from '../../components/Header';
-import LocationList from '../../components/LocationList';
-import AddLocationButton from '../../components/AddLocationButton';
+import Header from '../../../components/Header';
+import LocationList from '../../../components/LocationList';
+import AddLocationButton from '../../../components/AddLocationButton';
 
-import { getLocationsByUserId } from '../../utils/firebaseService';
+import { getLocationsByUserId } from '../../../services/firebaseService';
 
 export default function HomeScreen() {
   const [userInfo] = useAtom(userInfoAtom);
@@ -37,9 +36,7 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <Header userInfo={userInfo} />
-
       <LocationList locations={locations}></LocationList>
-
       <AddLocationButton onPress={handleAddLocation} />
     </View>
   );
@@ -49,9 +46,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-  },
-  scrollView: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
   },
 });

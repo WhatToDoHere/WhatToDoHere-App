@@ -11,7 +11,7 @@ import {
 import { Stack, useNavigation, useLocalSearchParams } from 'expo-router';
 
 import { useAtom } from 'jotai';
-import { userInfoAtom, locationsAtom, todoAtom } from '../../../atoms';
+import { userInfoAtom, locationsAtom, todoAtom } from '../../../../atoms';
 
 import {
   getTodo,
@@ -19,14 +19,12 @@ import {
   updateTodo,
   uploadImage,
   deleteTodo,
-} from '../../../utils/firebaseService';
-import { DEFAULT_TODO_DATA } from '../../../constants/todo';
+} from '../../../../services/firebaseService';
+import { DEFAULT_TODO_DATA } from '../../../../constants/todo';
 
-import CustomTextInput from '../../../components/CustomTextInput';
-import ImagePickerButton from '../../../components/ImagePickerButton';
-import DeleteButton from '../../../components/DeleteButton';
-
-// import { sendTestNotification } from '../../../services/notificationService';
+import CustomTextInput from '../../../../components/CustomTextInput';
+import ImagePickerButton from '../../../../components/ImagePickerButton';
+import DeleteButton from '../../../../components/DeleteButton';
 
 export default function TodoForm() {
   const [userInfo] = useAtom(userInfoAtom);
@@ -37,7 +35,6 @@ export default function TodoForm() {
   const { mode, locationId, todoId } = useLocalSearchParams();
 
   useEffect(() => {
-    // sendTestNotification();
     const fetchTodoData = async () => {
       const fetchedTodo = await getTodo(locationId, todoId);
       if (fetchedTodo) {
@@ -162,7 +159,7 @@ export default function TodoForm() {
         <View style={styles.contents}>
           <View style={[styles.titleContainer, styles.firstTitle]}>
             <Image
-              source={require('../../../assets/icons/icon-todo.png')}
+              source={require('../../../../assets/icons/icon-todo.png')}
               style={styles.sectionIcon}
             />
             <Text style={styles.sectionTitle}>Todo</Text>
@@ -176,7 +173,7 @@ export default function TodoForm() {
           />
           <View style={styles.titleContainer}>
             <Image
-              source={require('../../../assets/icons/icon-memo.png')}
+              source={require('../../../../assets/icons/icon-memo.png')}
               style={[styles.sectionIcon, styles.memoIcon]}
             />
             <Text style={styles.sectionTitle}>Memo</Text>
@@ -191,7 +188,7 @@ export default function TodoForm() {
           />
           <View style={styles.titleContainer}>
             <Image
-              source={require('../../../assets/icons/icon-settings.png')}
+              source={require('../../../../assets/icons/icon-settings.png')}
               style={[styles.sectionIcon, styles.settingsIcon]}
             />
             <Text style={styles.sectionTitle}>Reminder Options</Text>
@@ -208,14 +205,14 @@ export default function TodoForm() {
                 ⏰ {getPreviewMessage()}
               </Text>
               <Image
-                source={require('../../../assets/icons/icon-next-blue.png')}
+                source={require('../../../../assets/icons/icon-next-blue.png')}
                 style={styles.nextIcon}
               />
             </View>
           </TouchableOpacity>
           <View style={styles.titleContainer}>
             <Image
-              source={require('../../../assets/icons/icon-image.png')}
+              source={require('../../../../assets/icons/icon-image.png')}
               style={[styles.sectionIcon, styles.imageIcon]}
             />
             <Text style={styles.sectionTitle}>Image</Text>

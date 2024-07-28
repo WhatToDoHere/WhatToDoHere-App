@@ -12,10 +12,10 @@ import {
 import { Stack, useNavigation } from 'expo-router';
 
 import { useAtom } from 'jotai';
-import { todoAtom } from '../../../atoms';
+import { todoAtom } from '../../../../atoms';
 
-import SwitchSelector from '../../../components/SwitchSelector';
-import TimePicker from '../../../components/TimePicker';
+import SwitchSelector from '../../../../components/SwitchSelector';
+import TimePicker from '../../../../components/TimePicker';
 
 export default function SetReminderDetails() {
   const navigation = useNavigation();
@@ -110,7 +110,7 @@ export default function SetReminderDetails() {
         <View style={[styles.sectionContainer, styles.flexContainer]}>
           <View style={[styles.titleContainer, styles.firstTitle]}>
             <Image
-              source={require('../../../assets/icons/icon-alert.png')}
+              source={require('../../../../assets/icons/icon-alert.png')}
               style={[styles.sectionIcon, styles.alertIcon]}
             />
             <Text style={styles.sectionTitle}>Reminder</Text>
@@ -128,7 +128,7 @@ export default function SetReminderDetails() {
             <View style={styles.sectionContainer}>
               <View style={styles.titleContainer}>
                 <Image
-                  source={require('../../../assets/icons/icon-trigger.png')}
+                  source={require('../../../../assets/icons/icon-trigger.png')}
                   style={styles.sectionIcon}
                 />
                 <Text style={styles.sectionTitle}>Trigger</Text>
@@ -149,7 +149,7 @@ export default function SetReminderDetails() {
             <View style={styles.sectionContainer}>
               <View style={styles.titleContainer}>
                 <Image
-                  source={require('../../../assets/icons/icon-reminder.png')}
+                  source={require('../../../../assets/icons/icon-reminder.png')}
                   style={styles.sectionIcon}
                 />
                 <Text style={styles.sectionTitle}>Timer</Text>

@@ -8,9 +8,9 @@ import {
 import { Stack, useNavigation } from 'expo-router';
 
 import { useAtom } from 'jotai';
-import { selectedLocationAtom } from '../../../atoms';
+import { selectedLocationAtom } from '../../../../atoms';
 
-import GooglePlacesInput from '../../../components/GooglePlacesInput';
+import GooglePlacesInput from '../../../../components/GooglePlacesInput';
 
 export default function SearchLocation() {
   const navigation = useNavigation();

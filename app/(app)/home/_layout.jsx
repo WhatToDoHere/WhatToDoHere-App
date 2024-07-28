@@ -1,6 +1,30 @@
+import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 
-export default function LootLayout() {
+import { useAtom } from 'jotai';
+import { currentLocationAtom } from '../../../atoms';
+
+import { requestAllPermissions } from '../../../utils/permission';
+import { getCurrentLocation } from '../../../utils/location';
+
+export default function AppLayout() {
+  const [, setCurrentLocation] = useAtom(currentLocationAtom);
+
+  useEffect(() => {
+    setupPermissionsAndLocation();
+  }, []);
+
+  const setupPermissionsAndLocation = async () => {
+    const permissions = await requestAllPermissions();
+
+    if (permissions.foregroundLocation) {
+      const location = await getCurrentLocation();
+      if (location) {
+        setCurrentLocation(location);
+      }
+    }
+  };
+
   return (
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />

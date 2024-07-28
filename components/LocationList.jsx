@@ -30,5 +30,6 @@ export default function LocationList({ locations }) {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
+    paddingTop: 10,
   },
 });

@@ -38,6 +38,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 15,
+    paddingTop: 70,
+    backgroundColor: '#fff',
   },
   title: {
     flexDirection: 'row',

@@ -14,7 +14,7 @@ import { locationsAtom } from '../atoms';
 
 import TodoItem from './TodoItem';
 
-import { updateTodo } from '../utils/firebaseService';
+import { updateTodo } from '../services/firebaseService';
 import { TODO_ITEM_HEIGHT, ADD_TODO_ITEM_HEIGHT } from '../constants/todo';
 
 export default function LocationItem({ location, backgroundColor }) {
