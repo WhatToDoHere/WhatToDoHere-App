@@ -55,3 +55,23 @@ export const isNearCurrentLocation = (lat1, lon1, lat2, lon2) => {
   const distance = R * c;
   return distance <= 300;
 };
+
+export const getCurrentLocation = async () => {
+  try {
+    const location = await Location.getCurrentPositionAsync({
+      accuracy: Location.Accuracy.High,
+    });
+
+    return {
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+      latitudeDelta: 0.009,
+      longitudeDelta: 0.009,
+    };
+  } catch (error) {
+    console.error('Error getting current location:', error);
+    Alert.alert('오류', '현재 위치를 가져오지 못했습니다.');
+
+    return null;
+  }
+};
