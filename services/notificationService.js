@@ -24,15 +24,27 @@ TaskManager.defineTask(
   },
 );
 
+let lastNotificationTime = 0;
+const DEBOUNCE_INTERVAL = 60000;
+
 const sendLocationNotification = async (
   locationId,
   todoId,
   userId,
   eventType,
 ) => {
+  const now = Date.now();
+  if (now - lastNotificationTime < DEBOUNCE_INTERVAL) {
+    console.log('Notification debounced');
+    return;
+  }
+  lastNotificationTime = now;
+
   const locations = await getLocationsWithTodos(userId);
   const location = locations[locationId];
   const todo = location.todos[todoId];
+
+  const notificationId = `${locationId}_${todoId}_${eventType}`;
 
   if (location && todo) {
     const isEntering = eventType === Location.GeofencingEventType.Enter;
@@ -43,7 +55,9 @@ const sendLocationNotification = async (
       (isEntering && todo.reminder.reminderOnArrival) ||
       (!isEntering && !todo.reminder.reminderOnArrival)
     ) {
+      await Notifications.cancelScheduledNotificationAsync(notificationId);
       await Notifications.scheduleNotificationAsync({
+        identifier: notificationId,
         content: {
           title: `${location.alias}에 ${actionType}했어요`,
           body: `${todo.title} 잊지마세요!`,
@@ -82,6 +96,7 @@ const startGeofencing = async (userId) => {
 };
 
 const setupGeofencing = async (userId) => {
+  await Location.stopGeofencingAsync(GEOFENCING_TASK_NAME);
   await startGeofencing(userId);
 };
 
