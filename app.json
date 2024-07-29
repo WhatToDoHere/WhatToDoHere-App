@@ -3,7 +3,7 @@
     "name": "WhatToDoHere",
     "slug": "WhatToDoHere",
     "scheme": "WhatToDoHere",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orInterfaceStyle": "light",
     "splash": {
       "imrientation": "portrait",
@@ -22,7 +22,7 @@
       },
       "supportsTablet": true,
       "bundleIdentifier": "com.moonstrnck.WhatToDoHere",
-      "buildNumber": "1.0.0",
+      "buildNumber": "2",
       "infoPlist": {
         "UIBackgroundModes": ["location", "fetch", "remote-notification"],
         "NSLocationWhenInUseUsageDescription": "We need your location to provide better services.",
