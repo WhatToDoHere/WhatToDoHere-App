@@ -10,7 +10,10 @@ import { auth } from '../firebaseConfig';
 import { useAtom } from 'jotai';
 import { userInfoAtom, locationsAtom } from '../atoms';
 
-import { saveUserToFirestore } from '../services/firebaseService';
+import {
+  saveUserToFirestore,
+  getUserLocations,
+} from '../services/firebaseService';
 import { setupGeofencing } from '../services/notificationService';
 import AuthWrapper from '../components/AuthWrapper';
 
@@ -23,7 +26,7 @@ Notifications.setNotificationHandler({
 });
 
 export default function RootLayout() {
-  const [user, setUserInfo] = useAtom(userInfoAtom);
+  const [userInfo, setUserInfo] = useAtom(userInfoAtom);
   const [, setLocations] = useAtom(locationsAtom);
   const [isAuthReady, setIsAuthReady] = useState(false);
   const [fontsLoaded, fontError] = useFonts({
@@ -53,15 +56,29 @@ export default function RootLayout() {
 
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        await AsyncStorage.setItem('user', JSON.stringify(firebaseUser));
+        try {
+          const { userData, newLocations } =
+            await saveUserToFirestore(firebaseUser);
+          await AsyncStorage.setItem('user', JSON.stringify(userData));
+          setUserInfo(userData);
 
-        setUserInfo(firebaseUser);
+          let userLocations;
 
-        await saveUserToFirestore(firebaseUser, setLocations);
-        await setupGeofencing(firebaseUser.uid);
+          if (newLocations.length > 0) {
+            userLocations = newLocations;
+          } else {
+            userLocations = await getUserLocations(userData.locations);
+          }
+          setLocations(userLocations);
+
+          await setupGeofencing(userData.uid).catch((error) => {
+            console.error('Error in setupGeofencing:', error);
+          });
+        } catch (error) {
+          console.error('Error saving user info:', error);
+        }
       } else {
         await AsyncStorage.removeItem('user');
-
         setUserInfo(null);
         setLocations([]);
       }
@@ -78,7 +95,7 @@ export default function RootLayout() {
   }
 
   return (
-    <AuthWrapper user={user}>
+    <AuthWrapper user={userInfo}>
       <Slot />
     </AuthWrapper>
   );

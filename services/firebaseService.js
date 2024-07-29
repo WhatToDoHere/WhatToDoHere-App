@@ -11,22 +11,30 @@ import {
   collection,
   arrayUnion,
   serverTimestamp,
+  where,
+  query,
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
-export const saveUserToFirestore = async (user, updateLocations) => {
+export const saveUserToFirestore = async (user) => {
   try {
     const userDocRef = doc(firestore, 'users', user.uid);
     const userDoc = await getDoc(userDocRef);
 
+    let userData;
+    let newLocations = [];
+
     if (!userDoc.exists()) {
-      await setDoc(userDocRef, {
+      userData = {
         name: user.displayName || '',
         email: user.email,
         photoURL: user.photoURL,
         friends: [],
         locations: [],
-      });
+        uid: user.uid,
+      };
+
+      await setDoc(userDocRef, userData);
 
       const locations = [
         {
@@ -59,17 +67,20 @@ export const saveUserToFirestore = async (user, updateLocations) => {
       const locationIds = locationRefs.map((ref) => ref.id);
       await updateDoc(userDocRef, { locations: locationIds });
 
-      const newLocations = locationRefs.map((ref, index) => ({
+      userData.locations = locationIds;
+
+      newLocations = locationRefs.map((ref, index) => ({
         id: ref.id,
         ...locations[index],
       }));
 
-      updateLocations((prevLocations) => [...prevLocations, ...newLocations]);
-
       console.log('사용자 정보 저장 완료');
     } else {
+      userData = userDoc.data();
       console.log('이미 존재하는 사용자');
     }
+
+    return { userData, newLocations };
   } catch (error) {
     console.error('사용자 정보 저장 실패', error);
     throw error;
@@ -118,6 +129,31 @@ export const getLocationsByUserId = async (userId) => {
     }
   } catch (error) {
     console.error('Error fetching locations:', error);
+    throw error;
+  }
+};
+
+export const getUserLocations = async (locationIds) => {
+  try {
+    if (!locationIds || locationIds.length === 0) {
+      return [];
+    }
+
+    const userLocations = await Promise.all(
+      locationIds.map(async (locationId) => {
+        const locationDoc = await getDoc(
+          doc(firestore, 'locations', locationId),
+        );
+        if (locationDoc.exists()) {
+          return { id: locationDoc.id, ...locationDoc.data() };
+        }
+        return null;
+      }),
+    );
+
+    return userLocations.filter((location) => location !== null);
+  } catch (error) {
+    console.error('Error fetching user locations:', error);
     throw error;
   }
 };
@@ -387,7 +423,6 @@ export const getLocationsWithTodos = async (userId) => {
             }
           });
 
-          // Only add locations with enabled reminders
           if (Object.keys(todos).length > 0) {
             locationsWithTodos[locationId] = {
               id: locationId,
