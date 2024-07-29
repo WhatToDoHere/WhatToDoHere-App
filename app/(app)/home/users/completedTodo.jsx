@@ -79,7 +79,7 @@ export default function CompletedTodo() {
               />
             </TouchableOpacity>
             <View style={styles.todoTextContainer}>
-              <Text style={styles.todoTitle}>{todo.title}</Text>
+              <Text style={styles.todoTitle}>{todo.alias}</Text>
               <View style={styles.todoLocationContainer}>
                 <Text style={styles.todoLocationAlias}>
                   📍 {todo.locationAlias}

@@ -82,9 +82,7 @@ export default function Profile() {
               source={{ uri: userInfo.photoURL }}
               style={styles.userIcon}
             />
-            <Text style={styles.welcomeText}>
-              Hello, {userInfo.displayName} 👋
-            </Text>
+            <Text style={styles.welcomeText}>Hello, {userInfo.name} 👋</Text>
           </>
         )}
       </View>

@@ -30,6 +30,7 @@ export default function SearchBar({ placeholder, onSearch, editable = true }) {
         }}
         editable={editable}
         pointerEvents={editable ? 'auto' : 'none'}
+        placeholderTextColor="#909090"
       />
       {searchText.length > 0 && (
         <TouchableOpacity onPress={handleClear} style={styles.clearButton}>
