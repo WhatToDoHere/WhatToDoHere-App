@@ -8,13 +8,17 @@ import {
   ScrollView,
 } from 'react-native';
 import { Stack, useNavigation } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import { signOut } from 'firebase/auth';
+import { auth } from '../../../../firebaseConfig';
 
 import { useAtom } from 'jotai';
 import { userInfoAtom } from '../../../../atoms';
 
 export default function Profile() {
   const navigation = useNavigation();
-  const [userInfo] = useAtom(userInfoAtom);
+  const [userInfo, setUserInfo] = useAtom(userInfoAtom);
 
   const menuItems = [
     {
@@ -36,6 +40,17 @@ export default function Profile() {
       link: 'users/addFriend',
     },
   ];
+
+  const handleSignOut = async (setUserInfo) => {
+    try {
+      await signOut(auth);
+      await AsyncStorage.removeItem('user');
+      setUserInfo(null);
+      console.log('로그아웃 성공');
+    } catch (error) {
+      console.error('로그아웃 오류', error);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -89,6 +104,18 @@ export default function Profile() {
                 </View>
               </Pressable>
             ))}
+          </View>
+          <View style={styles.logout}>
+            <TouchableOpacity
+              onPress={() => handleSignOut(setUserInfo)}
+              style={styles.logoutButton}
+            >
+              <Text style={styles.logoutText}>Logout</Text>
+              <Image
+                source={require('../../../../assets/icons/icon-logout.png')}
+                style={styles.logoutIcon}
+              />
+            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
@@ -156,5 +183,28 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: 'Pretendard-Regular',
     fontSize: 16,
+  },
+  logout: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  logoutButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+    paddingRight: 0,
+  },
+  logoutText: {
+    marginRight: 5,
+    fontFamily: 'Opposit-Bold',
+    fontSize: 16,
+  },
+  logoutIcon: {
+    marginTop: -2,
+    width: 20,
+    height: 20,
   },
 });
