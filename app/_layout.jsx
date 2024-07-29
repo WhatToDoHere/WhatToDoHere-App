@@ -63,6 +63,7 @@ export default function RootLayout() {
         await AsyncStorage.removeItem('user');
 
         setUserInfo(null);
+        setLocations([]);
       }
       setIsAuthReady(true);
     });

@@ -14,11 +14,12 @@ import { signOut } from 'firebase/auth';
 import { auth } from '../../../../firebaseConfig';
 
 import { useAtom } from 'jotai';
-import { userInfoAtom } from '../../../../atoms';
+import { userInfoAtom, locationsAtom } from '../../../../atoms';
 
 export default function Profile() {
   const navigation = useNavigation();
   const [userInfo, setUserInfo] = useAtom(userInfoAtom);
+  const [, setLocations] = useAtom(locationsAtom);
 
   const menuItems = [
     {
@@ -46,7 +47,7 @@ export default function Profile() {
       await signOut(auth);
       await AsyncStorage.removeItem('user');
       setUserInfo(null);
-      console.log('로그아웃 성공');
+      setLocations([]);
     } catch (error) {
       console.error('로그아웃 오류', error);
     }
