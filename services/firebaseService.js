@@ -418,3 +418,63 @@ export const getLocationsWithTodos = async (userId) => {
     return {};
   }
 };
+
+export const searchUsersByEmail = async (email) => {
+  const usersRef = collection(firestore, 'users');
+  const exactMatchQuery = query(usersRef, where('email', '==', email));
+  const exactMatchSnapshot = await getDocs(exactMatchQuery);
+
+  const lowerEmail = email.toLowerCase();
+  const prefixMatchQuery = query(
+    usersRef,
+    where('email', '>=', lowerEmail),
+    where('email', '<=', lowerEmail + '\uf8ff'),
+  );
+  const prefixMatchSnapshot = await getDocs(prefixMatchQuery);
+
+  const results = new Set([
+    ...exactMatchSnapshot.docs,
+    ...prefixMatchSnapshot.docs,
+  ]);
+
+  return Array.from(results).map((doc) => ({ id: doc.id, ...doc.data() }));
+};
+
+export const addFriend = async (userId, friendId) => {
+  const userRef = doc(firestore, 'users', userId);
+  await updateDoc(userRef, {
+    friends: arrayUnion(friendId),
+  });
+
+  const updatedUserDoc = await getDoc(userRef);
+  return updatedUserDoc.data();
+};
+
+export const getFriendsList = async (userId) => {
+  try {
+    const userRef = doc(firestore, 'users', userId);
+    const userDoc = await getDoc(userRef);
+
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      const friendIds = userData.friends || [];
+
+      const friendsData = await Promise.all(
+        friendIds.map(async (friendId) => {
+          const friendDoc = await getDoc(doc(firestore, 'users', friendId));
+          if (friendDoc.exists()) {
+            return { id: friendDoc.id, ...friendDoc.data() };
+          }
+          return null;
+        }),
+      );
+
+      return friendsData.filter((friend) => friend !== null);
+    } else {
+      throw new Error('User not found');
+    }
+  } catch (error) {
+    console.error('Error fetching friends list:', error);
+    throw error;
+  }
+};
