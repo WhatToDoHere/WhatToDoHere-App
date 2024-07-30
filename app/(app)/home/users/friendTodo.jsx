@@ -1,32 +1,74 @@
-import { useEffect } from 'react';
-import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { useState, useEffect } from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Stack, useLocalSearchParams, useNavigation } from 'expo-router';
 
-import LocationList from '../../../../components/LocationList';
-import AddLocationButton from '../../../../components/AddLocationButton';
+import { useAtom } from 'jotai';
+import { userInfoAtom, currentFriendLocationsAtom } from '../../../../atoms';
 
-import { FRIENDS_DATA } from '../../../../constants/user';
+import { getLocationsByUserId } from '../../../../services/firebaseService';
+
+import FriendLocationList from '../../../../components/FriendLocationList';
 
 export default function FriendTodo() {
   const navigation = useNavigation();
-  const { friendId } = useLocalSearchParams();
-  const friend = FRIENDS_DATA.find((friend) => friend.id === friendId);
+  const { friendId, friendName } = useLocalSearchParams();
+  const [userInfo] = useAtom(userInfoAtom);
+  const [currentFriendLocations, setCurrentFriendLocations] = useAtom(
+    currentFriendLocationsAtom,
+  );
+  const [isLoading, setIsLoading] = useState(true);
 
+  console.log(friendName);
   useEffect(() => {
-    if (friend) {
-      navigation.setOptions({ title: `${friend.name}'s TODO` });
-    }
-  }, [navigation, friend]);
+    const fetchFriendData = async () => {
+      setIsLoading(true);
+      try {
+        const allFriendLocations = await getLocationsByUserId(friendId);
 
-  const handleAdd = () => {
-    navigation.navigate('location/index');
+        const publicFriendLocations = allFriendLocations.filter(
+          (location) => location.privacy === 'public',
+        );
+
+        setCurrentFriendLocations(publicFriendLocations);
+      } catch (error) {
+        console.error('Error fetching friend data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchFriendData();
+
+    return () => {
+      setCurrentFriendLocations([]);
+    };
+  }, [friendId, userInfo.uid, setCurrentFriendLocations]);
+
+  console.log('친구의 locations', currentFriendLocations);
+
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <View style={styles.centerContainer}>
+          <Text style={styles.messageText}>Loading...⏱️</Text>
+        </View>
+      );
+    } else if (currentFriendLocations.length === 0) {
+      return (
+        <View style={styles.centerContainer}>
+          <Text style={styles.messageText}>No public location 🙈</Text>
+        </View>
+      );
+    } else {
+      return <FriendLocationList locations={currentFriendLocations} />;
+    }
   };
 
   return (
     <View style={styles.container}>
       <Stack.Screen
         options={{
-          title: '친구 목록',
+          title: `${friendName}님의 할 일 목록`,
           headerTitleStyle: {
             fontFamily: 'Pretendard-Regular',
             fontSize: 18,
@@ -48,12 +90,7 @@ export default function FriendTodo() {
           headerBackTitleVisible: false,
         }}
       />
-      <LocationList
-        locations={[
-          { title: friend.name, address: friend.email, todos: friend.todos },
-        ]}
-      />
-      <AddLocationButton onPress={handleAdd} />
+      {renderContent()}
     </View>
   );
 }
@@ -73,5 +110,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  loadingText: {
+    marginTop: 30,
+    textAlign: 'center',
+    fontFamily: 'Opposit-Regular',
+    fontSize: 20,
+    color: '#707070',
+  },
+  messageText: {
+    marginTop: 30,
+    textAlign: 'center',
+    fontFamily: 'Opposit-Regular',
+    fontSize: 18,
+    color: '#707070',
   },
 });

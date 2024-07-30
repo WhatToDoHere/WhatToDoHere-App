@@ -30,9 +30,8 @@ export default function FriendsList() {
     fetchFriends();
   }, [userInfo.uid]);
 
-  const handlePress = (friendId) => {
-    // TODO: Navigate to friend's TODO list screen
-    navigation.navigate('users/friendTodo', { friendId });
+  const handlePress = (friendId, friendName) => {
+    navigation.navigate('users/friendTodo', { friendId, friendName });
   };
 
   const renderFriendItem = ({ item }) => (
@@ -43,7 +42,7 @@ export default function FriendsList() {
         <Text style={styles.friendEmail}>✉️ {item.email}</Text>
       </View>
       <TouchableOpacity
-        onPress={() => handlePress(item.id)}
+        onPress={() => handlePress(item.id, item.name)}
         style={styles.todoButton}
       >
         <Text style={styles.todoButtonText}>TODO</Text>
