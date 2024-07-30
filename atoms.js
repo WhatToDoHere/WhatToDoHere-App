@@ -16,3 +16,4 @@ export const todoAtom = atom({
   locationId: null,
   assignedBy: null,
 });
+export const currentFriendLocationsAtom = atom([]);
