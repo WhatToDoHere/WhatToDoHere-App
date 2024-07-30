@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
   View,
   ScrollView,
@@ -12,12 +12,13 @@ import { Stack, useNavigation } from 'expo-router';
 import { useAtom } from 'jotai';
 import { locationsAtom, userInfoAtom } from '../../../../atoms';
 
-import { updateTodo } from '../../../../services/firebaseService';
+import { updateTodo, getUserInfo } from '../../../../services/firebaseService';
 
 export default function CompletedTodo() {
   const navigation = useNavigation();
   const [locations, setLocations] = useAtom(locationsAtom);
   const [userInfo] = useAtom(userInfoAtom);
+  const [friendsInfo, setFriendsInfo] = useState({});
 
   const completedTodos = useMemo(() => {
     return locations.flatMap((location) =>
@@ -31,6 +32,25 @@ export default function CompletedTodo() {
         })),
     );
   }, [locations]);
+
+  useEffect(() => {
+    const fetchFriendsInfo = async () => {
+      const friendsData = {};
+      for (const todo of completedTodos) {
+        if (todo.assignedBy !== userInfo.uid && !friendsData[todo.assignedBy]) {
+          try {
+            const friendInfo = await getUserInfo(todo.assignedBy);
+            friendsData[todo.assignedBy] = friendInfo;
+          } catch (error) {
+            console.error('Error fetching friend info:', error);
+          }
+        }
+      }
+      setFriendsInfo(friendsData);
+    };
+
+    fetchFriendsInfo();
+  }, [completedTodos, userInfo.uid]);
 
   const handleToggleComplete = async (locationId, todoId) => {
     try {
@@ -79,15 +99,15 @@ export default function CompletedTodo() {
               />
             </TouchableOpacity>
             <View style={styles.todoTextContainer}>
-              <Text style={styles.todoTitle}>{todo.alias}</Text>
+              <Text style={styles.todoTitle}>{todo?.title}</Text>
               <View style={styles.todoLocationContainer}>
                 <Text style={styles.todoLocationAlias}>
-                  📍 {todo.locationAlias}
+                  📍 {todo?.locationAlias}
                 </Text>
                 {todo.locationAddress && (
                   <Text style={styles.todoLocationAddress}>
                     {' '}
-                    - {todo.locationAddress}
+                    - {todo?.locationAddress}
                   </Text>
                 )}
               </View>
@@ -95,7 +115,9 @@ export default function CompletedTodo() {
                 <View style={styles.todoFriend}>
                   <Text>✍🏻 </Text>
                   <View style={styles.friendTag}>
-                    <Text style={styles.friendName}>{todo.friendName}</Text>
+                    <Text style={styles.friendName}>
+                      {friendsInfo[todo.assignedBy]?.name}
+                    </Text>
                   </View>
                   <Text style={styles.friendText}> 님이 작성하신 TODO</Text>
                 </View>
