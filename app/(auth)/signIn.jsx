@@ -47,6 +47,12 @@ export default function SignInScreen() {
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={styles.logoContainer}>
+        <Image
+          source={require('../../assets/icons/logo.png')}
+          style={styles.logoIcon}
+        />
+      </View>
       <Text style={styles.title}>WhatToDoHere</Text>
       <Pressable
         style={[styles.button, styles.googleLogin]}
@@ -69,10 +75,20 @@ export default function SignInScreen() {
 }
 
 const styles = StyleSheet.create({
+  logoContainer: {
+    marginTop: -50,
+    marginBottom: 30,
+    textAlign: 'center',
+  },
+  logoIcon: {
+    width: 120,
+    height: 120,
+  },
   title: {
     marginBottom: 50,
     fontFamily: 'Opposit-Bold',
-    fontSize: 44,
+    fontSize: 42,
+    color: '#202020',
   },
   button: {
     flexDirection: 'row',
@@ -80,7 +96,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     minWidth: 265,
     minHeight: 50,
-    paddingVertical: 14,
+    paddingVertical: 18,
     paddingHorizontal: 32,
     marginBottom: 15,
     borderRadius: 20,
@@ -95,7 +111,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontFamily: 'Opposit-Medium',
-    fontSize: 20,
+    fontSize: 19,
     color: '#202020',
   },
   whiteText: {

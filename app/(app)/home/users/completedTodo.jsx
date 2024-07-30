@@ -87,44 +87,50 @@ export default function CompletedTodo() {
         }}
       />
       <View style={styles.contents}>
-        {completedTodos.map((todo) => (
-          <View key={todo.id} style={styles.todoItem}>
-            <TouchableOpacity
-              onPress={() => handleToggleComplete(todo.locationId, todo.id)}
-              style={styles.checkBox}
-            >
-              <Image
-                source={require('../../../../assets/icons/icon-checkbox-checked.png')}
-                style={styles.checkBoxImage}
-              />
-            </TouchableOpacity>
-            <View style={styles.todoTextContainer}>
-              <Text style={styles.todoTitle}>{todo?.title}</Text>
-              <View style={styles.todoLocationContainer}>
-                <Text style={styles.todoLocationAlias}>
-                  📍 {todo?.locationAlias}
-                </Text>
-                {todo.locationAddress && (
-                  <Text style={styles.todoLocationAddress}>
-                    {' '}
-                    - {todo?.locationAddress}
+        {completedTodos.length === 0 ? (
+          <Text style={styles.noCompletedTodosText}>
+            No completed tasks yet! 👀
+          </Text>
+        ) : (
+          completedTodos.map((todo) => (
+            <View key={todo.id} style={styles.todoItem}>
+              <TouchableOpacity
+                onPress={() => handleToggleComplete(todo.locationId, todo.id)}
+                style={styles.checkBox}
+              >
+                <Image
+                  source={require('../../../../assets/icons/icon-checkbox-checked.png')}
+                  style={styles.checkBoxImage}
+                />
+              </TouchableOpacity>
+              <View style={styles.todoTextContainer}>
+                <Text style={styles.todoTitle}>{todo?.title}</Text>
+                <View style={styles.todoLocationContainer}>
+                  <Text style={styles.todoLocationAlias}>
+                    📍 {todo?.locationAlias}
                   </Text>
+                  {todo.locationAddress && (
+                    <Text style={styles.todoLocationAddress}>
+                      {' '}
+                      - {todo?.locationAddress}
+                    </Text>
+                  )}
+                </View>
+                {todo.assignedBy !== userInfo.uid && (
+                  <View style={styles.todoFriend}>
+                    <Text>✍🏻 </Text>
+                    <View style={styles.friendTag}>
+                      <Text style={styles.friendName}>
+                        {friendsInfo[todo.assignedBy]?.name}
+                      </Text>
+                    </View>
+                    <Text style={styles.friendText}> 님이 작성하신 TODO</Text>
+                  </View>
                 )}
               </View>
-              {todo.assignedBy !== userInfo.uid && (
-                <View style={styles.todoFriend}>
-                  <Text>✍🏻 </Text>
-                  <View style={styles.friendTag}>
-                    <Text style={styles.friendName}>
-                      {friendsInfo[todo.assignedBy]?.name}
-                    </Text>
-                  </View>
-                  <Text style={styles.friendText}> 님이 작성하신 TODO</Text>
-                </View>
-              )}
             </View>
-          </View>
-        ))}
+          ))
+        )}
       </View>
     </ScrollView>
   );
@@ -211,6 +217,13 @@ const styles = StyleSheet.create({
   friendText: {
     fontFamily: 'Pretendard-Regular',
     fontSize: 12,
+    color: '#707070',
+  },
+  noCompletedTodosText: {
+    marginTop: 30,
+    textAlign: 'center',
+    fontFamily: 'Opposit-Regular',
+    fontSize: 20,
     color: '#707070',
   },
 });

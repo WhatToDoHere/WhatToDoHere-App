@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 7,
     paddingTop: 8,
-    backgroundColor: '#303030',
+    backgroundColor: '#202020',
     borderRadius: 20,
   },
   todoButtonText: {

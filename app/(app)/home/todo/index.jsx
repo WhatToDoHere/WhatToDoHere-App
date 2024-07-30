@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
   settingsText: {
     fontFamily: 'Pretendard-Regular',
     fontSize: 15,
-    color: '#303030',
+    color: '#202020',
   },
   previewMessage: {
     marginVertical: 5,
