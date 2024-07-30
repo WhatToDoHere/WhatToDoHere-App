@@ -12,7 +12,7 @@ import { userInfoAtom, locationsAtom } from '../atoms';
 
 import {
   saveUserToFirestore,
-  getUserLocations,
+  getInitialLocations,
 } from '../services/firebaseService';
 import { setupGeofencing } from '../services/notificationService';
 import AuthWrapper from '../components/AuthWrapper';
@@ -67,7 +67,7 @@ export default function RootLayout() {
           if (newLocations.length > 0) {
             userLocations = newLocations;
           } else {
-            userLocations = await getUserLocations(userData.locations);
+            userLocations = await getInitialLocations(userData.locations);
           }
           setLocations(userLocations);
 

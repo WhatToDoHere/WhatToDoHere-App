@@ -143,7 +143,7 @@ export default function LocationItem({ location, backgroundColor }) {
                 source={require('../assets/icons/icon-checkbox-gray.png')}
                 style={styles.checkBox}
               />
-              <Text style={styles.addTodoText}>{'What to do here?'}</Text>
+              <Text style={styles.addTodoText}>What to do here?</Text>
             </TouchableOpacity>
           </View>
         </View>

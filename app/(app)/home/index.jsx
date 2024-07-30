@@ -12,10 +12,9 @@ import AddLocationButton from '../../../components/AddLocationButton';
 import { getLocationsByUserId } from '../../../services/firebaseService';
 
 export default function HomeScreen() {
+  const navigation = useNavigation();
   const [userInfo] = useAtom(userInfoAtom);
   const [locations, setLocations] = useAtom(locationsAtom);
-
-  const navigation = useNavigation();
 
   useEffect(() => {
     const fetchLocations = async () => {
