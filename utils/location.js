@@ -75,3 +75,14 @@ export const getCurrentLocation = async () => {
     return null;
   }
 };
+
+export const getBackgroundColor = (index) => {
+  switch (index % 3) {
+    case 0:
+      return '#D0E7FD';
+    case 1:
+      return '#FDFCD8';
+    default:
+      return '#FFF7F9';
+  }
+};
