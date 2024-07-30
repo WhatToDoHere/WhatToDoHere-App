@@ -133,7 +133,7 @@ export const getLocationsByUserId = async (userId) => {
   }
 };
 
-export const getUserLocations = async (locationIds) => {
+export const getInitialLocations = async (locationIds) => {
   try {
     if (!locationIds || locationIds.length === 0) {
       return [];
@@ -510,6 +510,22 @@ export const getFriendsList = async (userId) => {
     }
   } catch (error) {
     console.error('Error fetching friends list:', error);
+    throw error;
+  }
+};
+
+export const getUserInfo = async (userId) => {
+  try {
+    const userDocRef = doc(firestore, 'users', userId);
+    const userDoc = await getDoc(userDocRef);
+
+    if (userDoc.exists()) {
+      return { id: userDoc.id, ...userDoc.data() };
+    } else {
+      throw new Error('User information does not exist.');
+    }
+  } catch (error) {
+    console.error('Error fetching User info:', error);
     throw error;
   }
 };
