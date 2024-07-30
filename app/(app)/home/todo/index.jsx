@@ -11,7 +11,12 @@ import {
 import { Stack, useNavigation, useLocalSearchParams } from 'expo-router';
 
 import { useAtom } from 'jotai';
-import { userInfoAtom, locationsAtom, todoAtom } from '../../../../atoms';
+import {
+  userInfoAtom,
+  locationsAtom,
+  todoAtom,
+  currentFriendLocationsAtom,
+} from '../../../../atoms';
 
 import {
   getTodo,
@@ -30,9 +35,10 @@ export default function TodoForm() {
   const [userInfo] = useAtom(userInfoAtom);
   const [, setLocations] = useAtom(locationsAtom);
   const [todo, setTodo] = useAtom(todoAtom);
+  const [, setCurrentFriendLocations] = useAtom(currentFriendLocationsAtom);
 
   const navigation = useNavigation();
-  const { mode, locationId, todoId } = useLocalSearchParams();
+  const { mode, locationId, todoId, isFriendTodo } = useLocalSearchParams();
 
   useEffect(() => {
     const fetchTodoData = async () => {
@@ -75,10 +81,23 @@ export default function TodoForm() {
         assignedBy: userInfo.uid,
       };
 
-      if (mode === 'add') {
-        await addTodo(locationId, todoData, setLocations);
+      if (isFriendTodo) {
+        if (mode === 'add') {
+          await addTodo(locationId, todoData, setCurrentFriendLocations);
+        } else {
+          await updateTodo(
+            locationId,
+            todoId,
+            todoData,
+            setCurrentFriendLocations,
+          );
+        }
       } else {
-        await updateTodo(locationId, todoId, todoData, setLocations);
+        if (mode === 'add') {
+          await addTodo(locationId, todoData, setLocations);
+        } else {
+          await updateTodo(locationId, todoId, todoData, setLocations);
+        }
       }
 
       Alert.alert(
