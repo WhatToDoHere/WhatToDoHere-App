@@ -200,10 +200,11 @@ const styles = StyleSheet.create({
     marginRight: 5,
     fontFamily: 'Opposit-Bold',
     fontSize: 16,
+    color: '#909090',
   },
   logoutIcon: {
     marginTop: -2,
-    width: 20,
-    height: 20,
+    width: 19,
+    height: 19,
   },
 });
