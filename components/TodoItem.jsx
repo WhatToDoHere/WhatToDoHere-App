@@ -1,11 +1,28 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
-
 import { useNavigation } from 'expo-router';
+
+import { useAtom } from 'jotai';
+import { userInfoAtom } from '../atoms';
+
+import { getUserInfo } from '../services/firebaseService';
 
 export default function TodoItem({ todo, onCheckBoxToggle }) {
   const [checked, setChecked] = useState(todo.completed);
+  const [friendName, setFriendName] = useState('');
   const navigation = useNavigation();
+  const [userInfo] = useAtom(userInfoAtom);
+
+  useEffect(() => {
+    const fetchFriendName = async () => {
+      if (todo.assignedBy && todo.assignedBy !== userInfo.uid) {
+        const friendInfo = await getUserInfo(todo.assignedBy);
+        setFriendName(friendInfo.name);
+      }
+    };
+
+    fetchFriendName();
+  }, [todo.assignedBy, userInfo.uid]);
 
   const handleCheckBoxToggle = async () => {
     const newCompletedState = !checked;
@@ -35,6 +52,7 @@ export default function TodoItem({ todo, onCheckBoxToggle }) {
       </TouchableOpacity>
       <TouchableOpacity onPress={handleEditTodo} style={styles.textContainer}>
         <Text style={styles.title}>{todo.title}</Text>
+        {friendName && <Text style={styles.friend}>✍🏻 {friendName}</Text>}
       </TouchableOpacity>
     </View>
   );
@@ -55,11 +73,19 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   title: {
     marginTop: 2,
     fontFamily: 'Opposit-Regular',
     fontSize: 14,
     color: '#202020',
+  },
+  friend: {
+    marginLeft: 'auto',
+    fontFamily: 'Opposit-Regular',
+    fontSize: 12,
+    color: '#5B84EF',
   },
 });
