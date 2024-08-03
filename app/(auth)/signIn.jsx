@@ -64,12 +64,6 @@ export default function SignInScreen() {
         />
         <Text style={[styles.text, styles.whiteText]}>Sign in with Google</Text>
       </Pressable>
-      <Pressable
-        style={[styles.button, styles.gusetLogin]}
-        onPress={handleSignIn}
-      >
-        <Text style={styles.text}>Guest</Text>
-      </Pressable>
     </View>
   );
 }
