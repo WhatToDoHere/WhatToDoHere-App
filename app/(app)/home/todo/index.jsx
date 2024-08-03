@@ -77,9 +77,12 @@ export default function TodoForm() {
       const todoData = {
         ...todo,
         image: imageUrl,
-        locationId: locationId,
-        assignedBy: userInfo.uid,
       };
+
+      if (mode === 'add') {
+        todoData.assignedBy = userInfo.uid;
+        todoData.locationId = locationId;
+      }
 
       if (isFriendTodo) {
         if (mode === 'add') {
@@ -103,13 +106,13 @@ export default function TodoForm() {
       Alert.alert(
         '성공',
         mode === 'add'
-          ? '새로운 작업이 추가되었습니다.'
+          ? '새로운 할 일이 추가되었습니다.'
           : '작업이 수정되었습니다.',
       );
       navigation.goBack();
     } catch (error) {
-      console.error('작업 저장 중 오류 발생:', error);
-      Alert.alert('오류', '작업을 저장하는 중 오류가 발생했습니다.');
+      console.error('할 일 저장 중 오류 발생:', error);
+      Alert.alert('오류', '할 일을 저장하는 중 오류가 발생했습니다.');
     }
   };
 
