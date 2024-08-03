@@ -1,8 +1,8 @@
 import { TouchableOpacity, Image, StyleSheet } from 'react-native';
 
-export default function DeleteButton({ onPress }) {
+export default function DeleteButton({ onPress, style }) {
   return (
-    <TouchableOpacity style={styles.deleteButton} onPress={onPress}>
+    <TouchableOpacity style={[styles.deleteButton, style]} onPress={onPress}>
       <Image
         source={require('../assets/icons/icon-delete.png')}
         style={styles.deleteIcon}

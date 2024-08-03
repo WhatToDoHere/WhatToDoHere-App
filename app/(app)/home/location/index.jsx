@@ -25,6 +25,7 @@ import {
 import SearchBar from '../../../../components/SearchBar';
 import SwitchSelector from '../../../../components/SwitchSelector';
 import TitleInput from '../../../../components/TitleInput';
+import DeleteButton from '../../../../components/DeleteButton';
 
 import {
   getFullAddress,
@@ -34,6 +35,7 @@ import {
   getUserLocationCount,
   addLocation,
   updateLocation,
+  deleteLocation,
 } from '../../../../services/firebaseService';
 
 export default function LocationForm() {
@@ -229,6 +231,37 @@ export default function LocationForm() {
     navigation.goBack();
   };
 
+  const handleDelete = () => {
+    Alert.alert(
+      '삭제',
+      '위치를 삭제하면 위치에 지정된 할 일들도 모두 삭제됩니다.\n이 위치를 삭제하시겠습니까?',
+      [
+        {
+          text: '취소',
+          style: 'cancel',
+        },
+        {
+          text: '확인',
+          onPress: async () => {
+            try {
+              await deleteLocation(
+                userInfo.uid,
+                JSON.parse(location).id,
+                setLocations,
+              );
+              Alert.alert('성공', '위치가 삭제되었습니다.');
+              navigation.goBack();
+            } catch (error) {
+              console.error('위치 삭제 중 오류 발생:', error);
+              Alert.alert('오류', '위치를 삭제하는 중 오류가 발생했습니다.');
+            }
+          },
+        },
+      ],
+      { cancelable: false },
+    );
+  };
+
   return (
     <ScrollView style={styles.container}>
       <Stack.Screen
@@ -359,6 +392,11 @@ export default function LocationForm() {
           selected={privacyOption}
           onSelect={(value) => setPrivacyOption(value)}
         />
+        {mode === 'edit' && (
+          <View style={styles.deleteButtonWrap}>
+            <DeleteButton style={styles.deleteButton} onPress={handleDelete} />
+          </View>
+        )}
       </View>
     </ScrollView>
   );
@@ -499,5 +537,17 @@ const styles = StyleSheet.create({
     fontFamily: 'Pretendard-Regular',
     fontSize: 14,
     color: '#202020',
+  },
+  deleteButtonWrap: {
+    marginTop: 40,
+    marginBottom: 10,
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  deleteButton: {
+    position: 'static',
+    left: 0,
+    bottom: 0,
+    marginLeft: 0,
   },
 });

@@ -13,6 +13,7 @@ import {
   serverTimestamp,
   where,
   query,
+  arrayRemove,
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
@@ -526,6 +527,35 @@ export const getUserInfo = async (userId) => {
     }
   } catch (error) {
     console.error('Error fetching User info:', error);
+    throw error;
+  }
+};
+
+export const deleteLocation = async (userId, locationId, updateLocations) => {
+  try {
+    const userDocRef = doc(firestore, 'users', userId);
+    const locationDocRef = doc(firestore, 'locations', locationId);
+
+    const todosCollectionRef = collection(locationDocRef, 'todos');
+    const todosSnapshot = await getDocs(todosCollectionRef);
+    const deleteTodoPromises = todosSnapshot.docs.map((doc) =>
+      deleteDoc(doc.ref),
+    );
+    await Promise.all(deleteTodoPromises);
+
+    await deleteDoc(locationDocRef);
+
+    await updateDoc(userDocRef, {
+      locations: arrayRemove(locationId),
+    });
+
+    updateLocations((prevLocations) =>
+      prevLocations.filter((location) => location.id !== locationId),
+    );
+
+    console.log('위치 삭제 성공');
+  } catch (error) {
+    console.error('위치 삭제 중 오류:', error);
     throw error;
   }
 };
