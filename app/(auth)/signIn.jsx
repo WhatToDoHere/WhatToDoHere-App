@@ -46,7 +46,7 @@ export default function SignInScreen() {
   };
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    <View style={styles.container}>
       <View style={styles.logoContainer}>
         <Image
           source={require('../../assets/icons/logo.png')}
@@ -69,6 +69,12 @@ export default function SignInScreen() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFF',
+  },
   logoContainer: {
     marginTop: -50,
     marginBottom: 30,
