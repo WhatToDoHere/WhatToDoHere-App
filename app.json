@@ -3,7 +3,7 @@
     "name": "WhatToDoHere",
     "slug": "WhatToDoHere",
     "scheme": "WhatToDoHere",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "orInterfaceStyle": "light",
     "splash": {
       "imrientation": "portrait",
@@ -22,7 +22,7 @@
       },
       "supportsTablet": true,
       "bundleIdentifier": "com.moonstrnck.WhatToDoHere",
-      "buildNumber": "3",
+      "buildNumber": "4",
       "infoPlist": {
         "UIBackgroundModes": ["location", "fetch", "remote-notification"],
         "NSLocationWhenInUseUsageDescription": "현재 위치 표시 및 위치 기반 알림을 등록하기 위해 허용되어야 합니다.",
