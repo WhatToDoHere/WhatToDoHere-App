@@ -50,17 +50,17 @@
       <true/>
     </dict>
     <key>NSCameraUsageDescription</key>
-    <string>WhatToDoHere가 카메라를 사용하도록 허용합니다.</string>
+    <string>할 일 등록 시 이미지를 함께 첨부할 수 있습니다.</string>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>WhatToDoHere가 사용자의 위치 정보를 사용하도록 허용합니다.</string>
+    <string>현재 위치 표시 및 위치 기반 알림을 등록하기 위해 허용되어야 합니다.</string>
     <key>NSLocationAlwaysUsageDescription</key>
-    <string>We need your location to provide better services.</string>
+    <string>현재 위치 표시 및 위치 기반 알림을 등록하기 위해 허용되어야 합니다.</string>
     <key>NSLocationWhenInUseUsageDescription</key>
-    <string>We need your location to provide better services.</string>
+    <string>현재 위치 표시 및 위치 기반 알림을 등록하기 위해 허용되어야 합니다.</string>
     <key>NSMicrophoneUsageDescription</key>
     <string>Allow $(PRODUCT_NAME) to access your microphone</string>
     <key>NSPhotoLibraryUsageDescription</key>
-    <string>WhatToDoHere가 사용자의 사진에 접근하도록 허용합니다.</string>
+    <string>할 일 등록 시 사진을 함께 첨부할 수 있습니다.</string>
     <key>NSUserActivityTypes</key>
     <array>
       <string>$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route</string>

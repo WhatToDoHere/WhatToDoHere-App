@@ -25,8 +25,8 @@
       "buildNumber": "3",
       "infoPlist": {
         "UIBackgroundModes": ["location", "fetch", "remote-notification"],
-        "NSLocationWhenInUseUsageDescription": "We need your location to provide better services.",
-        "NSLocationAlwaysUsageDescription": "We need your location to provide better services."
+        "NSLocationWhenInUseUsageDescription": "현재 위치 표시 및 위치 기반 알림을 등록하기 위해 허용되어야 합니다.",
+        "NSLocationAlwaysUsageDescription": "현재 위치 표시 및 위치 기반 알림을 등록하기 위해 허용되어야 합니다."
       }
     },
     "android": {
@@ -51,14 +51,14 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "WhatToDoHere가 사용자의 사진에 접근하도록 허용합니다.",
-          "cameraPermission": "WhatToDoHere가 카메라를 사용하도록 허용합니다."
+          "photosPermission": "할 일 등록 시 이미지를 함께 첨부할 수 있습니다.",
+          "cameraPermission": "할 일 등록 시 사진을 함께 첨부할 수 있습니다."
         }
       ],
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "WhatToDoHere가 사용자의 위치 정보를 사용하도록 허용합니다.",
+          "locationAlwaysAndWhenInUsePermission": "현재 위치 표시 및 위치 기반 알림을 등록하기 위해 허용되어야 합니다.",
           "isIosBackgroundLocationEnabled": true
         }
       ],
