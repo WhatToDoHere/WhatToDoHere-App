@@ -1,1 +1,149 @@
 # 📍 WhatToDoHere
+
+<p align="center">
+  <img width="500" alt="WhatToDoHere_cover" src="https://github.com/user-attachments/assets/a14783bb-687d-4f6e-aeb8-44d43c9ba169">
+</p>
+
+<div align="center">
+WhatToDoHere는 <b>위치 기반 미리 알림</b>을 제공하는 React Native 모바일 애플리케이션입니다.
+사용자의 GPS와 WiFi 정보를 활용하여 특정 위치에 등록된 할 일을 알려주며,
+친구와의 할 일 공유 기능을 통해 협업을 지원합니다.
+</div>
+
+<br>
+
+## 🔗 Links
+
+<div align="center">
+ <a href="#-links">WhatToDoHere iOS</a> | <a href="#-links">WhatToDoHere TestFlight</a> | <a href="https://github.com/moonstrnck/WhatToDoHere">WhatToDoHere Repository</a>
+</div>
+
+<br>
+
+## 🗂️ Index
+
+- [**📍 WhatToDoHere**](#-whattodohere)
+- [**🔗 Links**](#-links)
+- [**🧐 Motivation**](#-motivation)
+- [**🔧 Tech Stack**](#-tech-stack)
+- [**📱 Features**](#-features)
+- [**🚨 Challenges**](#-challenges)
+- [**💭 Reflections**](#-reflections)
+
+<br>
+
+## 🧐 Motivation
+
+우리에겐 매 순간 크고 작은 할 일들이 생겨납니다. 타임라인 순으로 처리할 일도 있지만, 특정 위치에서만 할 수 있는 일들이 있습니다. 예를 들어, 세탁기 예약 설정과 같이 집에서만 할 수 있는 일, 또는 회사에서 해야 할 업무처럼요.<br>
+시중에는 수많은 작업 관리 툴들이 많지만 오히려 너무 많은 옵션과 기능을 제공해 간편한 작업들을 등록하기에 부담스러운 경우가 많습니다. 그래서 저는 보다 직관적으로 위치 별 할 일을 등록하여 해당 위치에 도착했을 때 알려주는 어플리케이션이 있으면 일상의 편리함을 줄 수 있지 않을까? 라는 아이디어에서 WhatToDoHere를 기획하게 되었습니다.
+
+<br>
+
+## 🔧 Tech Stack
+
+### Client
+
+![Javascript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=JavaScript&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![React Native](https://img.shields.io/badge/React_Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Expo](https://img.shields.io/badge/Expo-000020?style=for-the-badge&logo=expo&logoColor=white)
+![Jotai](https://img.shields.io/badge/Jotai-white.svg?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyLjllbSIgaGVpZ2h0PSIxZW0iIHZpZXdCb3g9IjAgMCA1MTIgMTc3Ij48cGF0aCBkPSJNNzQuOTk3IDkuNDA1aDM0LjQ1M3YxMTQuOTJhNTIuMTYgNTIuMTYgMCAwIDEtNy4wODIgMjcuNjM3YTQ4LjE0IDQ4LjE0IDAgMCAxLTE5Ljc5NCAxOC4xMTJhNjQuMiA2NC4yIDAgMCAxLTI5LjM3MiA2LjM5MmE2Ni41IDY2LjUgMCAwIDEtMjctNS4zMTJhNDMgNDMgMCAwIDEtMTkuMTItMTYuMDkzUTAgMTQ0LjI3OSAwIDEyNy44NjZoMzQuNjgzYy4xMDcgNi41MzMgMiAxMS42MzIgNS42ODMgMTUuMjQ0YTE5Ljg1IDE5Ljg1IDAgMCAwIDE0LjYwNyA1LjQzNXExOS44NjQgMCAyMC4wMjQtMjQuMjJ6bTExMC45MDEgMTY3LjIycS0xOC43NSAwLTMyLjM4MS04LjAwM2E1NC4wNyA1NC4wNyAwIDAgMS0yMS4wNTEtMjIuMzc4YTcxLjc0IDcxLjc0IDAgMCAxLTcuNC0zMy4zNTZhNzIuMTUgNzIuMTUgMCAwIDEgNy40LTMzLjUxNWE1NC4yIDU0LjIgMCAwIDEgMjEuMDUtMjIuMzc4YTYyLjkgNjIuOSAwIDAgMSAzMi4zODItOC4wMDNhNjMgNjMgMCAwIDEgMzIuNCA4LjAwM2E1NC4xIDU0LjEgMCAwIDEgMjEuMDMzIDIyLjM3OGE3Mi4xNiA3Mi4xNiAwIDAgMSA3LjQxOCAzMy41MTVhNzEuNzQgNzEuNzQgMCAwIDEtNy40MTggMzMuMzU2YTU0IDU0IDAgMCAxLTIxLjAzMyAyMi4zNzhxLTEzLjY1IDguMDItMzIuNCA4LjAwM20zOS4xOTgtMTY3LjIydjE4LjU5aC03OC4zNzhWOS40MDV6bS0zOC45NSAxNDAuNjYzYTIxLjI1IDIxLjI1IDAgMCAwIDE4Ljk4NS0xMC4xMjZsLjI5Ni0uNDk3cTYuNTUtMTAuNjIyIDYuNTUtMjYuNzg3cTAtMTUuNjI1LTYuMTctMjYuMTIybC0uNDM0LS43MThhMjEuMjUgMjEuMjUgMCAwIDAtMTkuMjgtMTAuNjIzYTIxLjUxIDIxLjUxIDAgMCAwLTE5LjE4MiAxMC4xMzdsLS4yOTMuNDg2cS02LjYwNCAxMC42MjMtNi42MDQgMjYuODRxMCAxNS42NzYgNi4xNzEgMjYuMDc2bC40MzMuNzExYTIxLjUzIDIxLjUzIDAgMCAwIDE4Ljg2IDEwLjYzOXptMTQzLjY5LTk5LjQ2NHYyNS43NmgtMjMuMjYzdjU5Ljk0N3EwIDcuMDgzIDMuMjIyIDkuNTYxYTEzLjI4IDEzLjI4IDAgMCAwIDcuODE0IDIuNTFsLjU2LS4wMTRhMjYgMjYgMCAwIDAgNC44MTYtLjQ0MmwzLjctLjY3M2w1LjMxMiAyNS41MTJsLTEuMzIyLjM4NWMtMS41NzYuNDQ0LTMuNTIzLjk0Ny01LjkyIDEuNDkyYTYwLjQgNjAuNCAwIDAgMS0xMC4wNzcgMS4yODdsLTEuMjcxLjA0cS0xOC42NzkuODMzLTI5Ljk3NC04LjA3MnEtMTEuMDQtOC43MDQtMTEuMTM4LTI2LjMzNGwuMDAyLTY1LjJoLTE2LjkwOHYtMjUuNzZoMTYuOTA4di0yOS42MmgzNC4yNzZ2MjkuNjJ6bTUyLjU4MyAxMjUuOTVxLTE3LjcwNCAwLTI5LjM3Mi05LjI2dC0xMS42NjctMjcuNnEwLTEzLjgyOSA2LjUxNS0yMS43MjRhMzcuNSAzNy41IDAgMCAxIDE3LjEwMy0xMS41NjJhOTcgOTcgMCAwIDEgMjIuNzMzLTQuNzhhMTc0LjUgMTc0LjUgMCAwIDAgMjMuMDE2LTMuMzgxcTYuOTQtMS43NyA2LjkyMi03Ljcydi0uNDk1Yy4yNi00LjQ2LTEuNDk1LTguOC00Ljc4LTExLjgyN3EtNC44MTUtNC4xNi0xMy41NjItNC4xNzhhMjQuMzggMjQuMzggMCAwIDAtMTQuNzMgNC4wMTlhMTguOTQgMTguOTQgMCAwIDAtNy4yNDEgMTAuMjE1bC0zMS43MDktMi41NjdhNDIuMjggNDIuMjggMCAwIDEgMTcuNTgtMjYuODA1cTE0LjA1OC05Ljg3OSAzNi4yNi05Ljg5N2E3NC44IDc0LjggMCAwIDEgMjUuNzQyIDQuMzU2YTQyLjgzIDQyLjgzIDAgMCAxIDE5LjM2OSAxMy41NjFxNy4zNjUgOS4yMjUgNy4zNjUgMjMuOTM3djgzLjM3MWgtMzIuNTA2di0xNy4xMzhoLS45NTZhMzUuNzMgMzUuNzMgMCAwIDEtMTMuNDkgMTQuMDRxLTguOTc3IDUuNDM1LTIyLjU5MiA1LjQzNW05LjgwOS0yMy42NzFhMjYuNTYgMjYuNTYgMCAwIDAgMTguNTE5LTYuNTVhMjEuMTQgMjEuMTQgMCAwIDAgNy4yNDItMTUuNjY3bC0uMDAxLTEzLjc0MWEyMC4yIDIwLjIgMCAwIDEtNi4yMzIgMi40MDhhMTAxIDEwMSAwIDAgMS05LjAzIDEuNzdsLTMuMDgzLjQ3NGMtMS45NzYuMzExLTMuNzk4LjYwNi01LjQ4NS44NTRhMzQgMzQgMCAwIDAtMTQuNTE4IDUuMDgxYTEyLjUgMTIuNSAwIDAgMC01LjUwNiAxMS4wMTNhMTIuMjkgMTIuMjkgMCAwIDAgNS4wOTkgMTAuNjIyYTIyIDIyIDAgMCAwIDEyLjI1MyAzLjc0NnptMTAxLjc5LTExOC4yMTJsLS42MDgtLjAwMmExOC40MyAxOC40MyAwIDAgMS0xMy4wNDktNS4xMTZhMTYuMTggMTYuMTggMCAwIDEtNS40Ny0xMi4yN2ExNi4xIDE2LjEgMCAwIDEgNS40Ny0xMi4yMzNjNy40MjQtNi43MzMgMTguNzQ0LTYuNzMzIDI2LjE2OCAwYTE2LjEgMTYuMSAwIDAgMSA1LjQ3IDEyLjIzM2ExNi4xOCAxNi4xOCAwIDAgMS01LjA1NiAxMS44OWwtLjQxNC4zOGExOC41IDE4LjUgMCAwIDEtMTIuNTEgNS4xMThtLTE3Ljc2NCAxMzkuNTQ2VjUwLjYwNGgzNC4yNzZ2MTIzLjYxM3oiLz48L3N2Zz4=&style=for-the-badge&logoColor=black)
+
+### Server
+
+![NODE.JS](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
+![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)
+
+### Test
+
+![Jest Expo](https://img.shields.io/badge/Jest--Expo-white.svg?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNjI0IiBoZWlnaHQ9IjI2MjQiIHZpZXdCb3g9IjAgMCAyNjI0IDI2MjQiIGZpbGw9Im5vbmUiPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyNDcuNzIgMjQ3Mi4yNUwxMjUwLjggMjQxNS44NEwxMjU0LjM2IDIzNTAuNDNDMTI3My40MyAyMzUxLjQ3IDEyOTIuNjUgMjM1MiAxMzEyIDIzNTJDMTMzMS4zNSAyMzUyIDEzNTAuNTcgMjM1MS40NyAxMzY5LjY0IDIzNTAuNDNMMTM3My4yIDI0MTUuODRMMTM3Ni4yOCAyNDcyLjI1QzE2NDguNzYgMjQ1Ny40IDE4OTYuMjYgMjM0OC42NiAyMDg2Ljk4IDIxNzcuODRMMjA0OS4yOCAyMTM1Ljc1TDIwMDUuNTggMjA4Ni45NkMyMDM0LjE4IDIwNjEuMzUgMjA2MS4zNSAyMDM0LjE4IDIwODYuOTYgMjAwNS41OEwyMTM1Ljc1IDIwNDkuMjhMMjE3Ny44NCAyMDg2Ljk4QzIzNDguNjYgMTg5Ni4yNiAyNDU3LjQgMTY0OC43NiAyNDcyLjI1IDEzNzYuMjhMMjQxNS44NCAxMzczLjJMMjM1MC40MyAxMzY5LjY0QzIzNTEuNDcgMTM1MC41NyAyMzUyIDEzMzEuMzUgMjM1MiAxMzEyQzIzNTIgMTI5Mi42NSAyMzUxLjQ3IDEyNzMuNDMgMjM1MC40MyAxMjU0LjM2TDI0MTUuODQgMTI1MC44TDI0NzIuMjUgMTI0Ny43MkMyNDU3LjQgOTc1LjI0IDIzNDguNjYgNzI3Ljc0NCAyMTc3Ljg0IDUzNy4wMkwyMTM1Ljc1IDU3NC43MTZMMjA4Ni45NiA2MTguNDE3QzIwNjEuMzUgNTg5LjgyMiAyMDM0LjE4IDU2Mi42NTEgMjAwNS41OCA1MzcuMDM4TDIwNDkuMjggNDg4LjI0OEwyMDg2Ljk4IDQ0Ni4xNjFDMTg5Ni4yNiAyNzUuMzM2IDE2NDguNzYgMTY2LjYwMyAxMzc2LjI4IDE1MS43NDhMMTM3My4yIDIwOC4xNjRMMTM2OS42NCAyNzMuNTY3QzEzNTAuNTcgMjcyLjUyNyAxMzMxLjM1IDI3MiAxMzEyIDI3MkMxMjkyLjY1IDI3MiAxMjczLjQzIDI3Mi41MjcgMTI1NC4zNiAyNzMuNTY3TDEyNTAuOCAyMDguMTY0TDEyNDcuNzIgMTUxLjc0OEM5NzUuMjQgMTY2LjYwMyA3MjcuNzQ0IDI3NS4zMzYgNTM3LjAyMSA0NDYuMTYyTDU3NC43MTYgNDg4LjI0OEw2MTguNDE3IDUzNy4wMzhDNTg5LjgyMiA1NjIuNjUxIDU2Mi42NTEgNTg5LjgyMiA1MzcuMDM4IDYxOC40MTdMNDg4LjI0OCA1NzQuNzE2TDQ0Ni4xNjEgNTM3LjAyMUMyNzUuMzM2IDcyNy43NDQgMTY2LjYwMyA5NzUuMjQgMTUxLjc0OCAxMjQ3LjcyTDIwOC4xNjQgMTI1MC44TDI3My41NjcgMTI1NC4zNkMyNzIuNTI3IDEyNzMuNDMgMjcyIDEyOTIuNjUgMjcyIDEzMTJDMjcyIDEzMzEuMzUgMjcyLjUyNyAxMzUwLjU3IDI3My41NjcgMTM2OS42NEwyMDguMTY0IDEzNzMuMkwxNTEuNzQ4IDEzNzYuMjhDMTY2LjYwMyAxNjQ4Ljc2IDI3NS4zMzYgMTg5Ni4yNiA0NDYuMTYyIDIwODYuOThMNDg4LjI0OCAyMDQ5LjI4TDUzNy4wMzggMjAwNS41OEM1NjIuNjUxIDIwMzQuMTggNTg5LjgyMiAyMDYxLjM1IDYxOC40MTcgMjA4Ni45Nkw1NzQuNzE2IDIxMzUuNzVMNTM3LjAyMSAyMTc3Ljg0QzcyNy43NDQgMjM0OC42NiA5NzUuMjQgMjQ1Ny40IDEyNDcuNzIgMjQ3Mi4yNVpNMjYyNCAxMzEyQzI2MjQgMjAzNi42IDIwMzYuNiAyNjI0IDEzMTIgMjYyNEM1ODcuNDAyIDI2MjQgMCAyMDM2LjYgMCAxMzEyQzAgNTg3LjQwMiA1ODcuNDAyIDAgMTMxMiAwQzIwMzYuNiAwIDI2MjQgNTg3LjQwMiAyNjI0IDEzMTJaIiBmaWxsPSJibGFjayIvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTU0NC4xODcgMTM1OS41MUw1NTguMDYgMTMxNi44OUw1NzIuMTYzIDEyOTcuNThDNTg0LjAwOSAxMjgxLjM2IDYwNi4wNjkgMTI1OC45NCA2MjAuODk2IDEyNDMuODhDNjQwLjQxMiAxMjI0LjA1IDY2Ni4xNTcgMTE5OC41IDY5NS43NjkgMTE2OS40NkM3NTUuMTE2IDExMTEuMjUgODMxLjcxMyAxMDM3LjMgOTA4Ljg1MSA5NjMuNDg3QzEwNTkuMiA4MTkuNjA0IDEyMjIuNzUgNjY1LjQzNSAxMjU2LjY1IDYzOC4xMDJMMTI1Ni43IDYzOC4wNjdMMTI1Ni43NCA2MzguMDMyQzEyNTcuOTggNjM3LjAzMSAxMjU5LjMgNjM1Ljk2NyAxMjYwLjY4IDYzNC44NDhDMTI4Mi42OCA2MTcuMDIyIDEzMjEuOTEgNTg1LjI0NyAxMzcxLjE1IDU3MC44NTlDMTQzMi43NCA1NTIuODY2IDE0ODcuMzIgNTY2LjM5NSAxNTIzLjA0IDU3Ni43NTRMMTUyNS4zOCA1NzcuNDMxTDE1NzYuNDYgNTk0LjA1NkwxNTc4Ljc0IDU5NC44ODNDMTYxMy43NyA2MDcuNTU0IDE2NjUuODUgNjI4Ljc2NyAxNzA1LjAzIDY3OS41ODlDMTczNi4zNCA3MjAuMiAxNzQ5LjMzIDc2OC45NTQgMTc1Ni42MSA3OTYuMjgyQzE3NTcuMDcgNzk4LjAwNCAxNzU3LjUgNzk5LjY0MSAxNzU3LjkyIDgwMS4xODZMMTc1Ny45MyA4MDEuMjI3QzE3NjkuNDcgODQ0LjA3MSAxODEyLjQ3IDEwNzMuMzYgMTg1MC4wMiAxMjgyLjQyQzE4NjkuMjcgMTM4OS42MiAxODg3LjgyIDE0OTUuNjcgMTkwMS4yIDE1NzYuMzlDMTkwNy44NyAxNjE2LjYxIDE5MTMuMzkgMTY1MS4zNyAxOTE3LjEgMTY3Ny4xMkMxOTE4LjkyIDE2ODkuNzggMTkyMC41IDE3MDEuNjcgMTkyMS41NCAxNzExLjQ2QzE5MjIuMDMgMTcxNi4xMyAxOTIyLjYyIDE3MjIuMzMgMTkyMi45MiAxNzI4Ljc2QzE5MjMuMDYgMTczMS44NSAxOTIzLjI0IDE3MzcuMTQgMTkyMy4wMyAxNzQzLjQyQzE5MjMuMDIgMTc0My41MSAxOTIzLjAyIDE3NDMuNjIgMTkyMy4wMiAxNzQzLjc2QzE5MjIuOTIgMTc0Ny4wMyAxOTIyLjQgMTc2NS4xOCAxOTE1LjU3IDE3ODYuMTdDMTg5NS40OCAxODQ3LjkgMTg1OS4xNSAxODk1LjYyIDE4MDEuNzQgMTkzOS43OEwxODAxLjcyIDE5MzkuOEwxODAxLjY5IDE5MzkuODFDMTc2My42OSAxOTY5LjAyIDE3MDkuMTggMTk5NS4xNiAxNjQ2LjIzIDE5OTQuNEMxNTczLjM3IDE5OTMuNTIgMTUwMS40MSAxOTU1LjIgMTQ2My44IDE4NzguOTJMMTQ2My43NSAxODc4LjhDMTQ1Ni43NCAxODY0LjU3IDE0NTIuMzUgMTg0OS43MiAxNDUwLjk5IDE4NDUuMTNDMTQ1MC45MiAxODQ0LjkxIDE0NTAuODcgMTg0NC43MiAxNDUwLjgyIDE4NDQuNTVDMTQ0OC41MiAxODM2LjgyIDE0NDYuMTIgMTgyNy45OSAxNDQzLjc2IDE4MTguOTJDMTQzOC45OSAxODAwLjYgMTQzMy4yMSAxNzc2Ljg1IDE0MjYuNzkgMTc0OS45QzE0MTkuMzggMTcxOC44IDE0MTAuNjggMTY4MS41IDE0MDEuMjUgMTY0MS4wOEMxMzk0LjQyIDE2MTEuODIgMTM4Ny4yMSAxNTgwLjkzIDEzNzkuODMgMTU0OS41N0MxMzU5LjkgMTQ2NC44MiAxMzM4LjY5IDEzNzYuNDQgMTMxOC43MyAxMjk5LjA5QzEyNTcuMDYgMTM0OS44NyAxMTg3LjkgMTQwOC44NCAxMTIxLjkgMTQ2NS42MkMxMDk3LjQ4IDE0ODYuNjMgMTA3My40NyAxNTA3LjM2IDEwNTAuNzIgMTUyN0MxMDE5LjMxIDE1NTQuMTEgOTkwLjMxOCAxNTc5LjE0IDk2Ni4wMjUgMTU5OS45M0M5NDQuOTczIDE2MTcuOTMgOTI2LjMxNSAxNjMzLjczIDkxMS42NzggMTY0NS43M0M5MDQuNDMgMTY1MS42NyA4OTcuMjkzIDE2NTcuNDEgODkwLjg5IDE2NjIuM0M4OTAuNzQ4IDE2NjIuNDEgODkwLjU4NyAxNjYyLjUzIDg5MC40MDggMTY2Mi42N0M4ODYuNjA2IDE2NjUuNTggODc0LjMxMiAxNjc1IDg2MC4yNzEgMTY4Mi4zOEw4NjAuMTYgMTY4Mi40NEM3ODQuODU3IDE3MjEuOTcgNzA0LjEyOSAxNzEwLjU5IDY0NC43MDkgMTY2OC40MkM1OTMuMzY2IDE2MzEuOTggNTY0LjY4OCAxNTc4Ljc2IDU1MS4xNiAxNTMyLjc4TDU1MS4xNDEgMTUzMi43MkM1MzQuMzM5IDE0NzUuNTEgNTI5LjQyOSAxNDIxLjU3IDU0Mi43NzcgMTM2NS40NEw1NDQuMTg3IDEzNTkuNTFaTTEyNzQuNDEgMTE0MS44QzEyNzQuNDIgMTE0MS43OSAxMjc0LjQzIDExNDEuNzkgMTI3NC40MyAxMTQxLjc4QzEyNzUuNDQgMTE0MC45NyAxMjc2LjQ1IDExNDAuMTcgMTI3Ny40NSAxMTM5LjM3QzEyNzkuNDcgMTEzNy43NSAxMjgxLjQ5IDExMzYuMTQgMTI4My40OSAxMTM0LjU1QzEzMTEuOTggMTExMS44NSAxMzM4LjA2IDEwOTEuNzggMTM2MC40IDEwNzUuNjRDMTM2NS4wMiAxMDcyLjE2IDEzNzAuNDIgMTA2OS44NCAxMzc2LjE0IDEwNjguODlDMTM4MS44NiAxMDY3Ljk0IDEzODcuNzIgMTA2OC4zOSAxMzkzLjI0IDEwNzAuMThDMTM5OC43NSAxMDcxLjk4IDE0MDMuNzYgMTA3NS4wNyAxNDA3LjgyIDEwNzkuMkMxNDExLjg4IDEwODMuMzQgMTQxNC44OSAxMDg4LjM5IDE0MTYuNTggMTA5My45MkMxNDI1LjEzIDExMjAuMTIgMTQzNC40IDExNTEuNyAxNDQ0LjA4IDExODYuODJDMTQ0NC43NiAxMTg5LjI4IDE0NDUuNDQgMTE5MS43NyAxNDQ2LjEyIDExOTQuMjdDMTQ0Ni40NiAxMTk1LjUgMTQ0Ni44IDExOTYuNzUgMTQ0Ny4xNCAxMTk3Ljk5QzE0NDcuMTQgMTE5OCAxNDQ3LjE0IDExOTguMDEgMTQ0Ny4xNSAxMTk4LjAyQzE0ODAuMzcgMTMyMC4wOCAxNTE3LjkgMTQ4MC45IDE1NDcuNDcgMTYwNy42MUMxNTcyLjk3IDE3MTYuOSAxNTkyLjU1IDE4MDAuODIgMTU5OC4zNCAxODEyLjU4QzE2MjAuMTQgMTg1Ni44IDE2NzEuNzggMTg1MC40OCAxNzEwLjI4IDE4MjAuODhDMTc0OC4xNCAxNzkxLjc3IDE3NjMuNzkgMTc2Ny44MyAxNzcyLjkzIDE3MzkuNzVDMTc3OS4xNiAxNzIwLjYzIDE2MzEuODUgOTA5Ljg3IDE2MTMuMDkgODQwLjI0N0MxNTk1LjA1IDc3My4zMzYgMTU4Ny45OCA3NTcuNzM2IDE1MjcuNzIgNzM1LjkzOEwxNDgxLjI2IDcyMC44MThDMTQxOS43MiA3MDIuOTcgMTQwNC44NCA3MTEuMzc1IDEzNTAuOCA3NTQuODc0QzEyOTUuODYgNzk5LjE3MSA3MjIuOTI4IDEzNDUuNDggNjkzLjI5NCAxMzg2LjA1TDY4OC43MDggMTQwMC4xNEM2ODIuOTAzIDE0MjQuNTUgNjgzLjUzNiAxNDUxLjIxIDY5NS4wNjEgMTQ5MC40NEM3MDguNzY5IDE1MzcuMDMgNzQ2Ljc5NiAxNTcyLjU0IDc5MC40NDUgMTU0OS42MkM4MDIuMDUyIDE1NDMuNTIgODY3LjI3MyAxNDg3LjIxIDk1Mi4yMiAxNDEzLjg3QzEwNTAuNzEgMTMyOC44NCAxMTc1LjcxIDEyMjAuOTEgMTI3NC40MSAxMTQxLjhaIiBmaWxsPSJibGFjayIvPgo8L3N2Zz4=&style=for-the-badge&logoColor=black)
+
+### Deployment
+
+![App Store](https://img.shields.io/badge/App_Store-0D96F6?style=for-the-badge&logo=app-store&logoColor=white)
+![TestFlight](https://img.shields.io/badge/TestFlight-0D96F6?style=for-the-badge&logo=testflight&logoColor=white)
+![EAS](https://img.shields.io/badge/EAS-000020?style=for-the-badge&logo=expo&logoColor=white)
+
+### Development Tools
+
+![Xcode](https://img.shields.io/badge/Xcode-147EFB?style=for-the-badge&logo=xcode&logoColor=white)
+
+### 네이티브 모듈을 사용함에도 왜 Expo였나?
+---
+
+Expo는 React Native 개발을 단순화하는 프레임워크입니다. 이는 복잡한 네이티브 환경 설정 없이 iOS와 Android 앱을 개발할 수 있게 해줍니다. Expo SDK는 이 프레임워크의 핵심 구성 요소로, 다양한 네이티브 기능을 JavaScript API로 제공합니다. 이를 통해 개발자는 네이티브 코드를 직접 작성하지 않고도 많은 기능을 구현할 수 있습니다. <br><br>
+이러한 이유로 초기 계획부터 Expo를 활용한 React Native 개발을 진행하려고 했습니다. 또한 위치 추적(expo-location)과 알림 기능(expo-notifications)은 위치 기반 할 일 알림이라는 WhatToDoHere 앱의 핵심 기능 구현에 필수적이었습니다. 이를 Expo SDK가 지원해주기에 Expo를 통해 구현해야겠다는 생각이었습니다. <br><br>
+그러나 프로젝트 진행 중 Expo SDK가 지원하는 모듈 이외의 네이티브 모듈 또한 필요한 상황이라는 것을 얼마 지나지 않아 깨닫게 되었습니다. WhatToDoHere에서는 정밀한 지도 기능을 위한 `react-native-maps`와 WiFi 네트워크 정보 확인을 위한 `@react-native-community/netinfo`가 필요했습니다. Expo SDK에서 지원하지 않는다는 모듈임을 확인한 후 절망적이었죠.<br><br>
+결론적으로 이 문제는 EAS(Expo Application Services) Prebuild를 통해 해결할 수 있었습니다. EAS Prebuild 도입 이전에는 네이티브 모듈을 사용하기 위해 `expo eject` 명령을 사용해야 했습니다. Expo 환경에서 벗어나 순수 React Native 프로젝트를 전환하는 것을 의미했고, 이는 Expo의 많은 이점을 포기해야 하는 단점이 있었죠. 하지만 EAS Prebuild는 Expo의 편의성을 유지하면서도 추가적인 네이티브 모듈을 사용할 수 있게 해주는 도구입니다. <br><br>
+결과적으로, Expo와 EAS Prebuild의 조합은 WhatToDoHere 프로젝트에 적합했습니다. 위치 기반 서비스, 알림 시스템, 지도 통합, 네트워크 상태 관리 등의 복잡한 기능을 효율적으로 구현할 수 있었고, 동시에 필요한 모든 네이티브 기능도 사용할 수 있었습니다. 이로 인해 개발 시간이 단축되고 실제 기능 개발에 더욱 집중할 수 있었습니다.
+
+### 전역상태관리 툴로서 Jotai를 선택한 이유
+
+---
+
+<br>
+
+## 📱 Features
+
+### 1. 구글 로그인 및 로그아웃
+
+<div style="text-align: center">
+  <img width="200" alt="" src="https://github.com/user-attachments/assets/ce4bacb9-5c2c-42d4-bcdf-22a1afaeff72">
+</div>
+<br>
+
+- 간편한 로그인을 위한 구글 연동 로그인 및 로그아웃
+  - 친구와의 할 일 공유 기능을 위해 로그인 정보 필수
+
+### 2. 위치 및 할 일 관리
+
+<div style="text-align: center">
+  <img width="200" alt="" src="https://github.com/user-attachments/assets/ce4bacb9-5c2c-42d4-bcdf-22a1afaeff72">
+</div>
+<br>
+
+- 현재 위치 또는 위치 검색을 통한 새로운 위치 등록
+- (현재 위치의 경우) WiFi SSID 및 BSSID 정보 자동 등록
+- 위치별 공개/비공개 설정
+- 할 일 제목, 메모, 이미지 등록 기능
+- 할 일별 알림 여부, 도착할 때/떠날 때 옵션 설정, 지연 알림 시간 설정
+- 사용자가 등록한 위치에 도착하거나 떠날 때 알림 제공
+
+### 3. 친구와의 할 일 공유
+
+<div style="text-align: center">
+  <img width="200" alt="" src="https://github.com/user-attachments/assets/ce4bacb9-5c2c-42d4-bcdf-22a1afaeff72">
+</div>
+<br>
+
+- 이메일을 통한 친구 검색 및 등록
+- 친구의 공개 위치 확인 및 할 일 요청 기능
+
+### 4. 사용자 경험
+
+<div style="text-align: center">
+  <img width="200" alt="" src="https://github.com/user-attachments/assets/ce4bacb9-5c2c-42d4-bcdf-22a1afaeff72">
+</div>
+<br>
+
+- 완료한 할 일 목록 제공
+- 직관적인 사용자 인터페이스
+  - 위치별 할 일 목록 표시 및 위치 카드의 아코디언 UI
+  - Native-like interactions
+
+<br>
+
+## 🚨 Challenges
+
+[챌린지 작성 예정]
+
+<!-- 1. React Native에서의 백그라운드 위치 추적 구현
+2. WiFi 정보를 이용한 정확한 실내 위치 파악
+3. Firebase를 활용한 실시간 데이터 동기화
+4. 친구 간 할 일 공유 시 데이터 보안 및 프라이버시 보호 -->
+
+<br>
+
+## 💭 Reflections
+
+[회고 작성 예정]
