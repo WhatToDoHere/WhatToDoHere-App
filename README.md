@@ -1,9 +1,9 @@
 # 📍 WhatToDoHere
-
+<br>
 <p align="center">
   <img width="700" alt="WhatToDoHere_cover" src="https://github.com/user-attachments/assets/f793016e-ce86-4c64-880d-f69b9400b82d">
 </p>
-
+<br>
 <div align="center">
 WhatToDoHere는 <b>위치 기반 미리 알림</b>을 제공하는 React Native 모바일 애플리케이션입니다. <br>
 사용자의 GPS와 WiFi 정보를 활용하여 특정 위치에 등록된 할 일을 알려주며, <br>
@@ -161,10 +161,12 @@ Expo는 React Native 개발을 단순화하는 프레임워크입니다. 이는 
 
 ## 1. 구글 로그인 및 로그아웃
 
-<div style="text-align: center">
+[시연 영상 첨부 예정]
+
+<!-- <div style="text-align: center">
   <img width="200" alt="" src="https://github.com/user-attachments/assets/ce4bacb9-5c2c-42d4-bcdf-22a1afaeff72">
 </div>
-<br>
+<br> -->
 
 - 간편한 로그인을 위한 구글 연동 로그인 및 로그아웃
   - 친구와의 할 일 공유 기능을 위해서는 로그인 정보 필수
@@ -172,10 +174,13 @@ Expo는 React Native 개발을 단순화하는 프레임워크입니다. 이는 
 
 ## 2. 위치 및 할 일 관리
 
+<!--
 <div style="text-align: center">
   <img width="200" alt="" src="https://github.com/user-attachments/assets/ce4bacb9-5c2c-42d4-bcdf-22a1afaeff72">
 </div>
-<br>
+<br> -->
+
+[시연 영상 첨부 예정]
 
 - 현재 위치 또는 위치 검색을 통한 새로운 위치 등록
 - (현재 위치의 경우) WiFi SSID 및 BSSID 정보 자동 등록
@@ -186,20 +191,24 @@ Expo는 React Native 개발을 단순화하는 프레임워크입니다. 이는 
 
 ## 3. 친구와의 할 일 공유
 
-<div style="text-align: center">
+<!-- <div style="text-align: center">
   <img width="200" alt="" src="https://github.com/user-attachments/assets/ce4bacb9-5c2c-42d4-bcdf-22a1afaeff72">
 </div>
-<br>
+<br> -->
+
+[시연 영상 첨부 예정]
 
 - 이메일을 통한 친구 검색 및 등록
 - 친구의 공개 위치 확인 및 할 일 요청 기능
 
 ## 4. 사용자 경험
 
-<div style="text-align: center">
+<!-- <div style="text-align: center">
   <img width="200" alt="" src="https://github.com/user-attachments/assets/ce4bacb9-5c2c-42d4-bcdf-22a1afaeff72">
 </div>
-<br>
+<br> -->
+
+[시연 영상 첨부 예정]
 
 - 완료한 할 일 목록 제공
 - 직관적인 사용자 인터페이스
@@ -222,8 +231,8 @@ WhatToDoHere의 핵심적인 아이덴티티는 수많은 작업 관리 어플�
 <div align="center">
   <table>
     <tr>
-      <td align="center"><img width="150" src="./assets/images/readme/reminder.gif" alt="미리알림"></td>
-      <td align="center"><img width="150" src="./assets/images/readme/todoist.gif" alt="todoist"></td>
+      <td align="center"><img width="200" src="./assets/images/readme/reminder.gif" alt="미리알림"></td>
+      <td align="center"><img width="200" src="./assets/images/readme/todoist.gif" alt="todoist"></td>
     </tr>
     <tr>
       <td align="center" style="font-size: 12px; color: #ccc;">iOS 미리알림</td>
@@ -239,18 +248,18 @@ Todoist는 메인 화면에서 타임라인 형식으로 작업 목록을 보여
 
 ### 1-2. UX/UI 개선의 과정과 실제 구현된 메인 화면
 
-<div style="text-align: center">
-  <img width="1000" alt="위치 카드 변천사" src="https://github.com/user-attachments/assets/cc266291-57a0-443e-97f2-a0dcf5d3c6ac">
+<div align="center" style="text-align: center">
+  <img width="1000" alt="위치 카드 변천사" src="https://github.com/user-attachments/assets/92d5e18f-023c-4284-8475-76269ec15c5c">
 </div>
 
-<div style="text-align: center">
-  <img width="150" alt="메인화면" src="https://github.com/user-attachments/assets/2faeb2de-a798-4058-b0d2-090e5663128a"><br>
-  <i style="font-size: 12px; color: #ccc">WhatToDoHere 메인</i>
+<div align="center" style="text-align: center">
+  <img width="200" alt="메인화면" src="https://github.com/user-attachments/assets/2faeb2de-a798-4058-b0d2-090e5663128a"><br>
+  <i>WhatToDoHere 메인</i>
 </div>
 <br>
 
 결론적으로, 저는 메인 화면에 카드 형태로 위치 정보를 강조하도록 메인화면을 구성하였습니다. 또한 작업 목록을 위치 카드에 함께 보여주되 토글 버튼을 추가하여 카드를 접었다 펼칠 수 있도록 하였습니다. 이는 작업 목록이 많아질 경우 카드의 높이가 높아져 스크롤이 길어지는 것을 방지하고, 위치 정보만을 명료하게 보여주기 위함이었습니다. <br>
-이처럼 위치 카드가 작업 추가/수정, 위치 수정 기능까지 핵심 기능을 대부분 포함하고 있지만 사용자가 기능을 단번에 알아볼 수 있도록 직관적인 UI를 지향했고, 더불어 **expo-router**를 이용해 stack navigation을 구현함으로써 사용자에게 보다 부드러운 화면 전환을 제공했습니다.
+이처럼 위치 카드가 작업 추가/수정, 위치 수정 기능까지 핵심 기능을 대부분 포함하고 있지만 사용자가 기능을 단번에 알아볼 수 있도록 직관적인 UI를 지향했고, **expo-router**를 이용해 stack navigation을 구현함으로써 사용자에게 보다 부드러운 화면 전환을 제공할 수 있었습니다.
 
 ## 2. 다양한 옵션을 처리하는 할 일별 알림 로직 구현
 
