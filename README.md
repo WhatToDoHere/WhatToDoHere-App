@@ -226,8 +226,8 @@ WhatToDoHere의 핵심적인 아이덴티티는 수많은 작업 관리 어플�
       <td align="center"><img width="150" src="./assets/images/readme/todoist.gif" alt="todoist"></td>
     </tr>
     <tr>
-      <td align="center">iOS 미리알림</td>
-      <td align="center">Todoist</td>
+      <td align="center" style="font-size: 12px; color: #ccc;">iOS 미리알림</td>
+      <td align="center" style="font-size: 12px; color: #ccc;">Todoist</td>
     </tr>
   </table>
 </div>
@@ -237,11 +237,20 @@ iOS 미리 알림은 작업 알림에 대한 다양한 옵션을 제공하는 �
 <br><br>
 Todoist는 메인 화면에서 타임라인 형식으로 작업 목록을 보여주고 있었습니다. 체크 리스트 형태여서 사용자가 즉시 완료 처리를 할 수 있다는 점이 간편해 보였고, 토글 기능을 이용해 목록을 접었다 펼칠 수 있는 기능이 사소하지만 편의를 제공한다고 느껴졌습니다.
 
-### 1-2. 실제 구현된 WhatToDoHere의 메인화면
+### 1-2. UX/UI 개선의 과정과 실제 구현된 메인 화면
 
 <div style="text-align: center">
-  <img width="1000" alt="위치 카드 변천사" src="https://github.com/user-attachments/assets/b7b00327-cc42-430d-b1cb-3d9edbe3c065">
+  <img width="1000" alt="위치 카드 변천사" src="https://github.com/user-attachments/assets/cc266291-57a0-443e-97f2-a0dcf5d3c6ac">
 </div>
+
+<div style="text-align: center">
+  <img width="150" alt="메인화면" src="https://github.com/user-attachments/assets/2faeb2de-a798-4058-b0d2-090e5663128a"><br>
+  <i style="font-size: 12px; color: #ccc">WhatToDoHere 메인</i>
+</div>
+<br>
+
+결론적으로, 저는 메인 화면에 카드 형태로 위치 정보를 강조하도록 메인화면을 구성하였습니다. 또한 작업 목록을 위치 카드에 함께 보여주되 토글 버튼을 추가하여 카드를 접었다 펼칠 수 있도록 하였습니다. 이는 작업 목록이 많아질 경우 카드의 높이가 높아져 스크롤이 길어지는 것을 방지하고, 위치 정보만을 명료하게 보여주기 위함이었습니다. <br>
+이처럼 위치 카드가 작업 추가/수정, 위치 수정 기능까지 핵심 기능을 대부분 포함하고 있지만 사용자가 기능을 단번에 알아볼 수 있도록 직관적인 UI를 지향했고, 더불어 **expo-router**를 이용해 stack navigation을 구현함으로써 사용자에게 보다 부드러운 화면 전환을 제공했습니다.
 
 ## 2. 다양한 옵션을 처리하는 할 일별 알림 로직 구현
 
