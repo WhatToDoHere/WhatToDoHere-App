@@ -43,6 +43,7 @@ export default function AppLayout() {
       <Stack.Screen name="users/friends" />
       <Stack.Screen name="users/addFriend" />
       <Stack.Screen name="users/friendTodo" />
+      <Stack.Screen name="users/settings" />
     </Stack>
   );
 }
