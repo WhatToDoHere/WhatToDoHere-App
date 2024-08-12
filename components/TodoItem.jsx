@@ -16,8 +16,17 @@ export default function TodoItem({ todo, onCheckBoxToggle }) {
   useEffect(() => {
     const fetchFriendName = async () => {
       if (todo.assignedBy && todo.assignedBy !== userInfo.uid) {
-        const friendInfo = await getUserInfo(todo.assignedBy);
-        setFriendName(friendInfo.name);
+        try {
+          const friendInfo = await getUserInfo(todo.assignedBy);
+          if (friendInfo && friendInfo.name) {
+            setFriendName(friendInfo.name);
+          } else {
+            setFriendName('알 수 없는 사용자');
+          }
+        } catch (error) {
+          console.error('Error fetching friend info:', error);
+          setFriendName('삭제된 계정');
+        }
       }
     };
 
