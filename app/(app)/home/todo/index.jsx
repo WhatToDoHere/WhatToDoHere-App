@@ -210,7 +210,7 @@ export default function TodoForm() {
           />
           <View style={styles.titleContainer}>
             <Image
-              source={require('../../../../assets/icons/icon-settings.png')}
+              source={require('../../../../assets/icons/icon-settings-bell.png')}
               style={[styles.sectionIcon, styles.settingsIcon]}
             />
             <Text style={styles.sectionTitle}>Reminder Options</Text>
