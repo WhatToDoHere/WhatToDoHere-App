@@ -16,81 +16,88 @@ TaskManager.defineTask(
 
     console.log(`Geofencing event: ${eventType} for region:`, region);
 
-    const [locationId, todoId, userId] = region.identifier.split('|');
+    const [locationId, userId] = region.identifier.split('|');
     if (!userId) {
       console.error('userId not found in region identifier');
       return;
     }
 
-    await sendLocationNotification(locationId, todoId, userId, eventType);
+    await handleLocationEvent(locationId, userId, eventType);
   },
 );
 
 const lastNotificationTimes = {};
-const DEBOUNCE_INTERVAL = 60000; // 60초
+const DEBOUNCE_INTERVAL = 60000;
 
-const sendLocationNotification = async (
-  locationId,
-  todoId,
-  userId,
-  eventType,
-) => {
+const handleLocationEvent = async (locationId, userId, eventType) => {
   const now = Date.now();
   const lastTime = lastNotificationTimes[locationId] || 0;
 
-  console.log(`Checking notification for location ${locationId}:`);
+  console.log(`Checking notifications for location ${locationId}:`);
   console.log(`Last notification time: ${new Date(lastTime).toISOString()}`);
   console.log(`Current time: ${new Date(now).toISOString()}`);
   console.log(`Time difference: ${now - lastTime}ms`);
 
   if (now - lastTime < DEBOUNCE_INTERVAL) {
-    console.log(`Notification debounced for location ${locationId}`);
+    console.log(`Notifications debounced for location ${locationId}`);
     return;
   }
 
   lastNotificationTimes[locationId] = now;
 
-  console.log(`Sending notification for location ${locationId}`);
-
   try {
     const locations = await getLocationsWithTodos(userId);
     const location = locations[locationId];
-    const todo = location?.todos?.[todoId];
 
-    if (!location || !todo) {
-      console.error('Location or todo not found');
+    if (!location || !location.todos) {
+      console.error('Location or todos not found');
       return;
     }
 
-    const appName = 'WhatToDoHere';
-    const notificationId = `${locationId}_${todoId}_${eventType}`;
-
     const isEntering = eventType === Location.GeofencingEventType.Enter;
-    const delaySeconds = todo.reminder?.delayMinutes
-      ? todo.reminder.delayMinutes * 60
-      : 0;
 
-    if (
-      (isEntering && todo.reminder?.reminderOnArrival) ||
-      (!isEntering && todo.reminder && !todo.reminder.reminderOnArrival)
-    ) {
-      await Notifications.cancelScheduledNotificationAsync(notificationId);
-      await Notifications.scheduleNotificationAsync({
-        identifier: notificationId,
-        content: {
-          title: appName,
-          subtitle: isEntering
-            ? `${location.alias}에 도착했어요`
-            : `${location.alias}에서 출발했어요`,
-          body: `${todo.title} 잊지마세요!`,
-        },
-        trigger: {
-          seconds: delaySeconds > 0 ? delaySeconds : 1,
-        },
-      });
-    }
+    Object.entries(location.todos).forEach(([todoId, todo]) => {
+      if (todo.reminder && todo.reminder.isEnabled && !todo.completed) {
+        sendLocationNotification(location, todo, userId, isEntering);
+      }
+    });
   } catch (error) {
-    console.error('Error sending location notification:', error);
+    console.error('Error handling location event:', error);
+  }
+};
+
+const sendLocationNotification = async (location, todo, userId, isEntering) => {
+  console.log(
+    `Sending notification for todo ${todo.id} at location ${location.id}`,
+  );
+
+  const appName = 'WhatToDoHere';
+  const notificationId = `${location.id}_${todo.id}_${isEntering ? 'enter' : 'exit'}`;
+
+  const delaySeconds = todo.reminder?.delayMinutes
+    ? todo.reminder.delayMinutes * 60
+    : 0;
+
+  if (
+    (isEntering && todo.reminder?.reminderOnArrival) ||
+    (!isEntering && todo.reminder && !todo.reminder.reminderOnArrival)
+  ) {
+    await Notifications.cancelScheduledNotificationAsync(notificationId);
+    await Notifications.scheduleNotificationAsync({
+      identifier: notificationId,
+      content: {
+        title: appName,
+        subtitle: isEntering
+          ? `${location.alias}에 도착했어요`
+          : `${location.alias}에서 출발했어요`,
+        body: `${todo.title} 잊지마세요!`,
+        sound: true,
+        vibrate: [0, 250, 250, 250],
+      },
+      trigger: {
+        seconds: delaySeconds > 0 ? delaySeconds : 1,
+      },
+    });
   }
 };
 
@@ -101,24 +108,25 @@ const startGeofencing = async (userId) => {
     console.log('locationsWithTodos', locationsWithTodos);
 
     const geofences = Object.values(locationsWithTodos)
-      .flatMap((location) =>
-        Object.values(location.todos || {})
-          .filter((todo) => todo.reminder && todo.reminder.isEnabled)
-          .map((todo) => {
-            if (!location.latitude || !location.longitude) {
-              console.log(`Invalid coordinates for location ${location.id}`);
-              return null;
-            }
-            return {
-              identifier: `${location.id}|${todo.id}|${userId}`,
-              latitude: location.latitude,
-              longitude: location.longitude,
-              radius: 300,
-              notifyOnEnter: todo.reminder.reminderOnArrival,
-              notifyOnExit: !todo.reminder.reminderOnArrival,
-            };
-          }),
-      )
+      .filter((location) => {
+        return Object.values(location.todos || {}).some(
+          (todo) => todo.reminder && todo.reminder.isEnabled && !todo.completed,
+        );
+      })
+      .map((location) => {
+        if (!location.latitude || !location.longitude) {
+          console.log(`Invalid coordinates for location ${location.id}`);
+          return null;
+        }
+        return {
+          identifier: `${location.id}|${userId}`,
+          latitude: location.latitude,
+          longitude: location.longitude,
+          radius: 300,
+          notifyOnEnter: true,
+          notifyOnExit: true,
+        };
+      })
       .filter(Boolean);
 
     if (geofences.length === 0) {
