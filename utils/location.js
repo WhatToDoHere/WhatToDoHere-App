@@ -77,7 +77,7 @@ export const getCurrentLocation = async () => {
 };
 
 export const getBackgroundColor = (index) => {
-  switch (index % 3) {
+  switch (index) {
     case 0:
       return '#D0E7FD';
     case 1:
