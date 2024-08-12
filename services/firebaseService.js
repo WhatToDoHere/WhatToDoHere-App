@@ -14,8 +14,14 @@ import {
   where,
   query,
   arrayRemove,
+  writeBatch,
 } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import {
+  ref,
+  deleteObject,
+  uploadBytes,
+  getDownloadURL,
+} from 'firebase/storage';
 
 export const saveUserToFirestore = async (user) => {
   try {
@@ -556,6 +562,71 @@ export const deleteLocation = async (userId, locationId, updateLocations) => {
     console.log('위치 삭제 성공');
   } catch (error) {
     console.error('위치 삭제 중 오류:', error);
+    throw error;
+  }
+};
+
+export const deleteUserData = async (userId) => {
+  try {
+    const userDocRef = doc(firestore, 'users', userId);
+    const userDoc = await getDoc(userDocRef);
+
+    if (!userDoc.exists()) {
+      throw new Error('User not found');
+    }
+
+    const userData = userDoc.data();
+    const batch = writeBatch(firestore);
+
+    const userImageUrls = new Set();
+    for (const locationId of userData.locations) {
+      const locationRef = doc(firestore, 'locations', locationId);
+
+      const todosCollectionRef = collection(locationRef, 'todos');
+      const todosSnapshot = await getDocs(todosCollectionRef);
+      todosSnapshot.forEach((todoDoc) => {
+        const todoData = todoDoc.data();
+        if (todoData.image) {
+          userImageUrls.add(todoData.image);
+        }
+        batch.delete(todoDoc.ref);
+      });
+
+      batch.delete(locationRef);
+    }
+
+    for (const friendId of userData.friends) {
+      const friendRef = doc(firestore, 'users', friendId);
+      batch.update(friendRef, {
+        friends: arrayRemove(userId),
+      });
+    }
+
+    batch.delete(userDocRef);
+
+    await batch.commit();
+
+    const deleteImagePromises = Array.from(userImageUrls).map(
+      async (imageUrl) => {
+        const imagePath = decodeURIComponent(
+          imageUrl.split('/o/')[1].split('?')[0],
+        );
+        const imageRef = ref(storage, imagePath);
+
+        try {
+          await deleteObject(imageRef);
+          console.log(`Deleted image: ${imagePath}`);
+        } catch (error) {
+          console.error(`Error deleting image ${imagePath}:`, error);
+        }
+      },
+    );
+
+    await Promise.all(deleteImagePromises);
+
+    console.log('User and related data deleted successfully');
+  } catch (error) {
+    console.error('Error deleting user and related data:', error);
     throw error;
   }
 };
