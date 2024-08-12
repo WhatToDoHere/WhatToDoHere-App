@@ -10,37 +10,18 @@ import {
 import { Stack, useNavigation } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { signOut } from 'firebase/auth';
 import { auth } from '../../../../firebaseConfig';
+import { signOut } from 'firebase/auth';
 
 import { useAtom } from 'jotai';
 import { userInfoAtom, locationsAtom } from '../../../../atoms';
+
+import { USER_MENU_ITEMS } from '../../../../constants/user';
 
 export default function Profile() {
   const navigation = useNavigation();
   const [userInfo, setUserInfo] = useAtom(userInfoAtom);
   const [, setLocations] = useAtom(locationsAtom);
-
-  const menuItems = [
-    {
-      id: 1,
-      icon: require('../../../../assets/icons/icon-completed.png'),
-      title: '완료 목록',
-      link: 'users/completedTodo',
-    },
-    {
-      id: 2,
-      icon: require('../../../../assets/icons/icon-friends.png'),
-      title: '친구 목록',
-      link: 'users/friends',
-    },
-    {
-      id: 3,
-      icon: require('../../../../assets/icons/icon-add-friend.png'),
-      title: '친구 추가',
-      link: 'users/addFriend',
-    },
-  ];
 
   const handleSignOut = async (setUserInfo) => {
     try {
@@ -89,7 +70,7 @@ export default function Profile() {
       <ScrollView>
         <View style={styles.contents}>
           <View style={styles.userMenu}>
-            {menuItems.map((item) => (
+            {USER_MENU_ITEMS.map((item) => (
               <Pressable
                 key={item.id}
                 onPress={() => {
