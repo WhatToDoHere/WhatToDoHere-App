@@ -1,4 +1,5 @@
 # 📍 WhatToDoHere
+
 <p align="center">
   <img width="800" alt="WhatToDoHere_cover" src="https://github.com/user-attachments/assets/3743f984-654a-4e12-b39f-037bdd7fc59c">
 </p>
@@ -56,7 +57,7 @@ WhatToDoHere는 <b>위치 기반 미리 알림</b>을 제공하는 React Native 
   <b>✔️ 네이티브 모듈을 사용함에도 왜 Expo였나?</b>
 </summary>
 
-<br/>
+<br>
 
 Expo는 React Native 개발을 단순화하는 프레임워크입니다. 이는 복잡한 네이티브 환경 설정 없이 iOS와 Android 앱을 개발할 수 있게 해줍니다. Expo SDK는 이 프레임워크의 핵심 구성 요소로, 다양한 네이티브 기능을 JavaScript API로 제공합니다. 이를 통해 개발자는 네이티브 코드를 직접 작성하지 않고도 많은 기능을 구현할 수 있습니다. <br><br>
 이러한 이유로 초기 계획부터 Expo를 활용한 React Native 개발을 진행하려고 했습니다. 또한 위치 추적(expo-location)과 알림 기능(expo-notifications)은 위치 기반 할 일 알림이라는 WhatToDoHere 앱의 핵심 기능 구현에 필수적이었습니다. 이를 Expo SDK가 지원해주기에 Expo를 통해 구현해야겠다는 생각이었습니다. <br><br>
@@ -73,8 +74,9 @@ Expo는 React Native 개발을 단순화하는 프레임워크입니다. 이는 
   <b>✔️ 상태관리 도구로서 Jotai를 선택한 이유</b>
 </summary>
 
-<br/>
-짧은 개발 기간과 프로젝트 규모를 생각했을 떄, 상태관리 도구로서 Jotai를 선택했습니다. 가장 크게 고려했던 점은 작은 기능에도 잦은 화면 전환이 일어날 수 있는 모바일 앱 특성상, 다양한 화면 또는 컴포넌트에서 전역상태에 쉽게 접근이 가능했어야 했습니다. Jotai는 이런 상황에서 매우 적합했습니다. Jotai는 atom이라는 작은 단위로 상태를 관리합니다. <br> 이 atom들은 필요한 컴포넌트에서 쉽게 임포트하여 사용할 수 있습니다. 이는 중앙 집중식 store를 사용하는 다른 상태 관리 라이브러리와는 달리 전역 상태에 쉽게 접근하고 업데이트 할 수 있는 환경을 제공합니다. <br>
+<br>
+
+짧은 개발 기간과 프로젝트 규모를 생각했을 떄, 상태관리 도구로서 Jotai를 선택했습니다. 가장 크게 고려했던 점은 작은 기능에도 잦은 화면 전환이 일어날 수 있는 모바일 앱 특성상, 다양한 화면 또는 컴포넌트에서 전역상태에 쉽게 접근이 가능했어야 했습니다. Jotai는 이런 상황에서 매우 적합했습니다. Jotai는 atom이라는 작은 단위로 상태를 관리합니다. <br><br> 이 atom들은 필요한 컴포넌트에서 쉽게 임포트하여 사용할 수 있습니다. 이는 중앙 집중식 store를 사용하는 다른 상태 관리 라이브러리와는 달리 전역 상태에 쉽게 접근하고 업데이트 할 수 있는 환경을 제공합니다. <br>
 또한 Jotai는 atom 단위로 상태가 업데이트되므로 불필요한 리렌더링을 줄일 수 있었습니다.<br><br>
 다양한 상태관리 도구와 비교했을 때에도 Jotai의 Atomic 접근 방식이 더욱 세분화되고 유연한 방식으로 상태를 업데이트할 수 있다는 점에서 가장 매력적으로 다가왔기 때문에 Jotai를 상태관리 도구로서 선택하게 되었습니다. 다음은 다른 전역상태관리 도구와 Jotai를 비교한 표입니다.
 
@@ -157,7 +159,7 @@ Expo는 React Native 개발을 단순화하는 프레임워크입니다. 이는 
 
 <br>
 
-# Architecture
+# System Architecture
 
 <br>
 
@@ -165,9 +167,10 @@ Expo는 React Native 개발을 단순화하는 프레임워크입니다. 이는 
 
 <br>
 
-WhatToDoHere는 React Native와 Expo를 기반으로 한 iOS 클라이언트와 Firebase 백엔드를 결합한 구성을 선택하였습니다. WhatToDoHere가 로그인 기능을 제공하게 된 베경에는 기획 단계에서 친구와의 할 일 공유 기능을 구체화하게 되면서 사용자 간 상호작용을 가능하게 하는 알림 어플리케이션으로서 정체성을 확정 지었기 때문입니다. AsyncStorage(로컬)만으로 데이터 처리를 하기에 한계를 느껴, Google 로그인 연동과 강력한 서버리스 아키텍처를 제공하는 Firebase를 도입해 사용자 별 위치, 할 일 정보 등을 관리하도록 설계하였습니다.
-<br> 이로써 로그인한 사용자 정보는 위치 정보와 할 일 데이터를 조직화하는 핵심 식별자로 활용되며, 이를 통해 개인화된 경험과 동시에 친구 간 정보 공유가 가능하도록 했습니다.
+WhatToDoHere는 React Native와 Expo를 기반으로 한 iOS 클라이언트와 Firebase 백엔드를 결합한 구성을 선택하였습니다.
 
+WhatToDoHere가 로그인 기능을 제공하게 된 베경에는 기획 단계에서 친구와의 할 일 공유 기능을 구체화하게 되면서 사용자 간 상호작용을 가능하게 하는 알림 어플리케이션으로서 정체성을 확정 지었기 때문입니다. AsyncStorage(로컬)만으로 데이터 처리를 하기에 한계를 느껴, Google 로그인 연동과 강력한 서버리스 아키텍처를 제공하는 Firebase를 도입해 사용자 별 위치, 할 일 정보 등을 관리하도록 설계하였습니다.
+<br> 이로써 로그인한 사용자 정보는 위치 정보와 할 일 데이터를 조직화하는 핵심 식별자로 활용되며, 이를 통해 개인화된 경험과 동시에 친구 간 정보 공유가 가능하도록 했습니다.
 
 클라이언트 측에서는 전역 상태로서 각각의 Atom을 생성하여 사용자 정보와 위치 정보를 관리합니다. 또한 Firestore의 데이터와 실시간 동기화를 통해 최신 데이터를 유지하도록 하였으며, 애플리케이션 내에서 데이터의 일관성을 유지하고, UI 업데이트를 효율적으로 처리할 수 있게 하였습니다.
 
@@ -237,18 +240,18 @@ WhatToDoHere는 React Native와 Expo를 기반으로 한 iOS 클라이언트와 
 
 약 3주라는 기간 동안 기획, 디자인, 개발까지 하나의 애플리케이션을 만들기 위한 전체적인 개발 프로세스를 혼자 겪으며 부딪혔던 난관들은 주제가 참 다양했습니다.<br>사용성 측면에서 메인화면부터 어떻게 구성해야할까 하는 고민이 먼저 있었고, 핵심 기능의 완성도를 위해 계속해서 기능의 옵션이나 기능 자체가 추가되는 경험도 하였습니다.<br><b>문제 발생 > 해결 방안 모색과 고민 > 합리적 판단</b>의 연속이었습니다. 이런 일련의 과정 속에서 제가 크게 고민했던 부분들과 프로젝트의 완성도에 크게 기여할 수 있었던 챌린지들을 몇가지로 추려보았습니다.
 
-## 1. 메인화면에 앱의 핵심 기능을 어떻게 잘 보여줄 수 있을까?: 사용성을 위한 고민들
+## 1. 메인화면에 앱의 핵심 기능을 어떻게 잘 보여줄 수 있을까?
 
 WhatToDoHere의 핵심적인 아이덴티티는 수많은 작업 관리 애플리케이션 중에서도 **위치 기반으로 작업을 관리**한다는 점입니다. 작업 관리 애플리케이션은 이미 시중에 많은 서비스가 있지만 차별점을 갖기위해서는 선택과 집중이 필요했습니다.<br> 사전 조사 차원에서 주변 지인들에게 작업 관리 애플리케이션 사용 현황이나 의견 등을 물어보았습니다. 예상대로 날짜별 일정관리 어플은 많이 사용하지만, 기능이 매우 고도화된 작업 관리 애플리케이션의 경우, 오히려 너무 많은 기능을 제공하면서 UI가 비교적 직관적이지 못하다던가, 사용자의 학습량이 늘어나게 되어 접근성이 떨어진다는 피드백을 받을 수 있었습니다. <br><br>
 여기서 얻을 수 있었던 힌트는 위치 기반 작업 관리라는 컨셉에 맞춰 특별한 학습없이 사용할 수 있도록 단순하고 직관적인 UI를 제공하자는 것이었습니다.
 
 ### 1-1. 작업 관리 애플리케이션을 벤치마킹하자!
 
-<div align="center">
+<div>
   <table>
     <tr>
-      <td align="center"><img width="200" src="./assets/images/readme/reminder.gif" alt="미리알림"></td>
-      <td align="center"><img width="200" src="./assets/images/readme/todoist.gif" alt="todoist"></td>
+      <td align="center"><img width="250" src="./assets/images/readme/reminder.gif" alt="미리알림"></td>
+      <td align="center"><img width="250" src="./assets/images/readme/todoist.gif" alt="todoist"></td>
     </tr>
     <tr>
       <td align="center" style="font-size: 12px; color: #ccc;">iOS 미리알림</td>
@@ -264,14 +267,24 @@ Todoist는 메인 화면에서 타임라인 형식으로 작업 목록을 보여
 
 ### 1-2. UX/UI 개선의 과정과 실제 구현된 메인 화면
 
-<div align="center" style="text-align: center">
-  <img width="1000" alt="위치 카드 변천사" src="https://github.com/user-attachments/assets/92d5e18f-023c-4284-8475-76269ec15c5c">
+<div>
+  <img width="750" alt="위치 카드 변천사" src="https://github.com/user-attachments/assets/a761aea0-48eb-4144-b16b-8f1cfb32fc63">
 </div>
 
-<div align="center" style="text-align: center">
-  <img width="200" alt="메인화면" src="https://github.com/user-attachments/assets/2faeb2de-a798-4058-b0d2-090e5663128a"><br>
-  <i>WhatToDoHere 메인</i>
+<div>
+  <table>
+    <tr>
+      <td align="center"><img width="250" alt="메인화면" src="https://github.com/user-attachments/assets/2faeb2de-a798-4058-b0d2-090e5663128a"></td>
+    </tr>
+    <tr>
+      <td align="center" style="font-size: 12px; color: #ccc;">WhatToDoHere 메인</td>
+    </tr>
+  </table>
 </div>
+<!-- <div>
+  <img width="250" alt="메인화면" src="https://github.com/user-attachments/assets/2faeb2de-a798-4058-b0d2-090e5663128a"><br>
+  <i style="text-align: center">WhatToDoHere 메인</i>
+</div> -->
 <br>
 
 결론적으로, 저는 메인 화면에 카드 형태로 위치 정보를 강조하도록 메인화면을 구성하였습니다. 또한 작업 목록을 위치 카드에 함께 보여주되 토글 버튼을 추가하여 카드를 접었다 펼칠 수 있도록 하였습니다. <br>이는 작업 목록이 많아질 경우 카드의 높이가 높아져 스크롤이 길어지는 것을 방지하고, 위치 정보만을 명료하게 보여주기 위함이었습니다. <br>
