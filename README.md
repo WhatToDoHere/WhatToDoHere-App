@@ -163,7 +163,9 @@ Expo는 React Native 개발을 단순화하는 프레임워크입니다. 이는 
 
 <br>
 
+<div align="center">
 <img width="750" alt="Architecture" src="https://github.com/user-attachments/assets/eb35ee34-4bc7-49a2-b9c8-eac23308d866">
+</div>
 
 <br>
 
@@ -247,7 +249,7 @@ WhatToDoHere의 핵심적인 아이덴티티는 수많은 작업 관리 애플�
 
 ### 1-1. 작업 관리 애플리케이션을 벤치마킹하자!
 
-<div>
+<div align="center">
   <table>
     <tr>
       <td align="center"><img width="250" src="./assets/images/readme/reminder.gif" alt="미리알림"></td>
@@ -259,6 +261,7 @@ WhatToDoHere의 핵심적인 아이덴티티는 수많은 작업 관리 애플�
     </tr>
   </table>
 </div>
+
 <br>
 
 iOS 미리 알림은 작업 알림에 대한 다양한 옵션을 제공하는 대표적인 Reminder 애플리케이션입니다. <br>날짜/시간/태그/위치 등을 알림에 설정할 수 있으나 개인적으로는 사용자가 단번에 이러한 기능을 모두 파악하기에는 어려움이 있다고 생각됐습니다.<br> 그 이유가 무엇일까 생각했을 때, 미리 알림의 메인 화면이 폴더로 구성되어 있어 제공하는 정보가 극히 적고, 폴더에 태그나 위치정보를 등록할 수 있음에도 직접 설정해보지 않으면 알 수가 없었습니다.<br>반면, 인상깊었던 UI는 새로운 미리 알림을 등록하는 모달로 이동할 때 특유의 네이티브 인터랙션이 자연스러워 이런 점은 제 애플리케이션에도 적용하면 좋겠다고 생각했습니다.
@@ -267,11 +270,11 @@ Todoist는 메인 화면에서 타임라인 형식으로 작업 목록을 보여
 
 ### 1-2. UX/UI 개선의 과정과 실제 구현된 메인 화면
 
-<div>
+<div align="center">
   <img width="750" alt="위치 카드 변천사" src="https://github.com/user-attachments/assets/f965c931-4a8e-4d27-a715-2ae0891a7082">
 </div>
 
-<div>
+<div align="center">
   <table>
     <tr>
       <td align="center"><img width="250" alt="메인화면" src="https://github.com/user-attachments/assets/2faeb2de-a798-4058-b0d2-090e5663128a"></td>
@@ -291,7 +294,6 @@ Todoist는 메인 화면에서 타임라인 형식으로 작업 목록을 보여
 
 이는 작업 목록이 많아질 경우 카드의 높이가 높아져 스크롤이 길어지는 것을 방지하고, 위치 정보만을 명료하게 보여주기 위함이었습니다.
 
-
 이처럼 위치 카드가 작업 추가/수정, 위치 수정 기능까지 핵심 기능을 대부분 포함하고 있지만 사용자가 기능을 단번에 알아볼 수 있도록 직관적인 UI를 지향했고, **expo-router**를 이용해 stack navigation을 구현함으로써 사용자에게 보다 부드러운 화면 전환을 제공할 수 있었습니다.
 
 ## 2. 다양한 옵션을 처리하는 할 일별 알림 로직 구현
@@ -310,8 +312,8 @@ GPS와 WiFi 정보를 조합하여 알림 기능을 구현하자는 목표 하�
 
 #### 📍 Geofencing
 
-<div>
-  <img width="500" alt="Geofencing" src="https://github.com/user-attachments/assets/672c64a6-8736-46c2-bdfa-675ead9e9fbd"><br>
+<div align="center">
+  <img width="500" alt="Geofencing" src="https://github.com/user-attachments/assets/eaded076-afc8-4522-a542-60d60bb1883d"><br>
 </div> <br>
 
 Geofencing은 가상의 지리적 경계를 설정하고, 사용자가 이 경계를 출입할 때만 이벤트를 트리거하는 위치 기반 기술입니다. 이 접근 방식은 다음과 같은 이유로 배터리 최적화에 탁월합니다.
@@ -325,9 +327,9 @@ Geofencing은 가상의 지리적 경계를 설정하고, 사용자가 이 경�
 
 이러한 이유로 WhatToDoHere에서는 백그라운드 위치 추적에 있어 Geofencing 개념을 도입하기로 결정하였고, 이는 Expo SDK가 지원하는 `expo-loation` 라이브러리를 이용하여 비교적 간편한 API를 통해 구현할 수 있었습니다.
 
-### 2-2. Geofence와 WiFi정보와 어떻게 결합해서 위치의 정확성을 구현할까?
+### 2-2. Geofence와 WiFi정보를 어떻게 결합해서 위치의 정확성을 구현할까?
 
- Geofencing 을 이용하여 테스트 알림까지 구현 한 후에 문득 떠오른 생각은 **WiFi 정보를 어떻게 결합해서 알림을 보내지?** 였습니다. <br><br>
+Geofencing 을 이용하여 테스트 알림까지 구현 한 후에 문득 떠오른 생각은 **WiFi 정보를 어떻게 결합해서 알림을 보내지?** 였습니다. <br><br>
 초기 기획에서는 할 일별 알림 설정에 대한 옵션을 **특정 위치에 도착/출발** 옵션만 제공하는 방향으로 단순하게 가져갔었습니다. <br>
 WhatToDoHere의 차별성과 사용성을 생각했을 때, 처음 추가된 옵션이 **WiFi**였고, <br>
 이후 **사용자가 특정 위치에 도착 후에 반드시 바로 알림을 받고 싶지 않을 수 있다** 라는 피드백을 받은 후, 지연 시간을 설정할 수 있는 옵션까지 추가하게 되었습니다.<br>
@@ -341,13 +343,159 @@ WhatToDoHere의 차별성과 사용성을 생각했을 때, 처음 추가된 옵
 <br>
 
 여기서 제가 WiFi 옵션을 넣으면서 [처음에 구상했던 알림 로직 (알림 기능 2)](#2-다양한-옵션을-처리하는-할-일별-알림-로직-구현) 에 오류가 있음을 발견했습니다. <br><br>
+
+<div align="center">
+  <img width="500" alt="Geofencing" src="https://github.com/user-attachments/assets/4a1bafbc-6dae-483e-a0ff-4f5673481279"><br>
+</div> <br>
+
 GPS와 WiFi 정보가 둘 중 하나라도 일치하면 알림을 제공한다는 것은 위치 정확성과 거리가 멉니다. 또한 조건이 포괄적이어서 알림 로직을 구현함에 있어서도 둘 중 하나의 정보를 체크해야한다면 반드시 두 가지 정보를 모두 확인해야하므로 성능적으로도 좋지 않다는 판단을 했습니다. <br>실제 위치 정보의 정확성을 확보하려면 Geofencing과 더불어 WiFi 값까지 정확히 일치해야할 것입니다. <br> 하지만 위치 마다 WiFi 정보가 존재하지 않을 수 있고(사용자가 등록하지 않은 경우), 사용자가 포괄적인 범위에서 알림을 받고 싶을 수도 있습니다. <br>
 이런 경우 최선의 결정은 사용자에게 옵션을 주는 것이 적합하다고 판단하여, 기능을 추가하게 되었습니다.
 
+### 2-3. 사용자에게 옵션을 제공하자!
 
-#### 사용자에게 옵션을 제공하자!
+<div align="center">
+  <table>
+    <tr>
+      <td align="center"><img width="300" src="./assets/images/readme/wifi-asis.gif" alt="미리알림"></td>
+      <td align="center"><img width="300" src="./assets/images/readme/wifi-tobe.gif" alt="todoist"></td>
+    </tr>
+    <tr>
+      <td align="center" style="font-size: 12px; color: #ccc;">
+      <b>AS-IS</b> <br>
+      자동으로 WiFi 정보를 불러와 저장하고 프론트에 노출
+      </td>
+      <td align="center" style="font-size: 12px; color: #ccc;">
+      <b>TO-BE</b> <br>
+      위치 등록 시 사용자가 WiFi 정보 사용 유무 직접 선택
+      </td>
+    </tr>
+  </table>
+</div>
 
-### 2-3. 같은 알림이 반복해서 울린다?
+<br>
+
+#### 🧐 WiFi 정보 일치 판별을 언제 하면 좋을까?
+
+WiFi 사용 유무를 사용자가 직접 선택하게 되면, 로직은 더욱 명확해집니다. 사용자가 보다 정확한 위치에서의 알림을 위해 WiFi 정보를 사용한다고 체크했다면, WiFi 정보가 일치하는지 판별하여 알림만 전송하면 되니까요. 하지만 백그라운드에서 모든 위치에 대한 WiFi 정보에 대해 주기적으로 판별하는 것은 배터리 성능 측면에서 말도 안되는 상황이었습니다. 따라서 WiFi 정보를 확인하기 위한 트리거가 필요했고, 저는 WiFi 일치 판별 트리거의 최소한의 조건을 세우고 이를 가장 충족하는 방안을 찾고자 했습니다.
+
+- 백그라운드에서도 트리거되어야 한다.
+- 등록한 위치가 어느정도 근접했을 때 확인해야한다. (배터리 효율 문제)
+- Geofence 영역도 일치하고 WiFi 정보도 일치할 경우 알림을 트리거해야한다.
+
+다음 세 가지의 선택지 중 제가 설정한 조건을 충족하는지 검증하는 과정을 거쳤습니다.
+
+1. `Push Notifications`:
+   - 장점: 서버에서 중앙 집중식으로 관리 가능
+   - 단점: 실시간 정확도가 떨어질 수 있으며, 서버 리소스 소비가 큼
+   - 결론: 위치 기반 서비스의 특성상 부적합
+2. `NetInfo` 이벤트 리스너:
+   - 장점: 장점: WiFi 상태 변경을 실시간으로 감지 가능
+   - 단점: 단점: 백그라운드에서 지원되지 않아 앱이 활성 상태일 때만 사용 가능
+   - 결론: 백그라운드 동작이 필수적인 WhatToDoHere에는 부적합
+3. **Geofence 트리거 + `Background Fetch`:**
+   - 장점: 백그라운드에서 동작 가능, 배터리 효율성 개선
+   - 단점: 구현 복잡도 증가
+   - **결론: 프로젝트에 가장 적합한 방식으로 선정**
+
+Geofence 이벤트가 발생하면 기본적으로 운영 체제는 앱에 제한된 시간동안 백그라운드에서 실행할 수 있는 권한을 부여하게 됩니다. 하지만 iOS의 경우 일반적으로 백그라운드 실행 시간이 약 30초로 제한 되어, 별도의 Background Tasks API를 사용하는 것이 불가피했습니다.
+
+결론적으로 저는 Geofence로 초기 WiFi 일치 여부를 확인하고 ,이후에는 `Background Fetch`를 사용하여 백그라운드에서 Geofence 영역 내에서 주기적으로 WiFi 값을 확인하는 방향으로 로직을 구성하였습니다. 아래의 이미지는 이를 도식화한 이미지입니다.
+
+<details>
+<summary>
+  <b>🧑🏻‍💻 코드 보기</b>
+</summary>
+<br/>
+
+```js
+async function handleLocationEvent(locationId, userId, eventType, region) {
+  try {
+    const locations = await getLocationsWithTodos(userId);
+    const location = locations[locationId];
+
+    if (!location || !location.todos) {
+      console.error('Location or todos not found');
+      return;
+    }
+
+    const isEntering = eventType === Location.GeofencingEventType.Enter;
+
+    if (isEntering) {
+      if (location.isWifiEnabled) {
+        // WiFi가 활성화된 위치의 경우, Background Fetch 태스크 등록
+        await registerWifiCheckTask(userId);
+      } else {
+        // WiFi가 비활성화된 위치의 경우, 즉시 알림 처리
+        await processNotifications(location, userId, true);
+      }
+    } else {
+      // Geofence 영역을 벗어날 때 Background Fetch 태스크 해제
+      await BackgroundFetch.unregisterTaskAsync(WIFI_CHECK_TASK_NAME);
+
+      if (!location.isWifiEnabled) {
+        await processNotifications(location, userId, false);
+      }
+    }
+  } catch (error) {
+    console.error('Error handling location event:', error);
+  }
+}
+```
+
+```js
+// Background Fetch 태스크 정의
+TaskManager.defineTask(WIFI_CHECK_TASK_NAME, async () => {
+  const locations = await getLocationsWithTodos(global.userId);
+
+  for (const location of Object.values(locations)) {
+    if (location.isWifiEnabled) {
+      // 현재 WiFi 상태 확인
+      const wifiState = await NetInfo.fetch('wifi');
+      if (wifiState.details.bssid === location.bssid) {
+        // WiFi 일치 시 알림 처리
+        await processNotifications(location, global.userId, true);
+
+        return BackgroundFetch.Result.NewData;
+      }
+    }
+  }
+
+  return BackgroundFetch.Result.NoData;
+});
+```
+
+</details>
+
+<br/>
+
+<div align="center">
+  <img width="500" alt="Reminder" src="https://github.com/user-attachments/assets/57da8be5-bec7-4f1c-8e54-c50ad7636142"><br>
+</div> <br>
+
+#### 🧐 Background Fetch 사용도 결국 배터리 성능에 부담을 주지 않을까?
+Background Fetch 사용은 배터리 소모를 증가시킬 수 있어, 최적화에 대한 고민을 하지 않을 수 없었습니다. 이에 대한 해결은 비교적 간단했습니다. 사용자가 WiFi 사용을 설정하고 WiFi 정보를 등록하는 시점은 사용자의 현재 위치에서 가능합니다. (기능 상 현재 접속 중인 네트워크가 아니라면 정보를 가져올 수 없음.)
+
+결국 사용자가 등록한 위치에 가까워질 수록 WiFi가 일치할 가능성이 높아집니다. 따라서 Geofence 진입 후 동일한 주기마다 WiFi를 확인하는 것이 아닌 거리에 따른 적응형 간격을 설정하였습니다.
+
+```js
+// Background Fetch 태스크 내부
+const distance = calculateDistance(location.latitude, location.longitude);
+let nextInterval;
+
+if (distance > 300) {
+  nextInterval = 15 * 60; // 15분
+} else if (distance > 100) {
+  nextInterval = 5 * 60;  // 5분
+} else {
+  nextInterval = 60;      // 1분
+}
+
+// 다음 실행 간격 설정
+await BackgroundFetch.setMinimumIntervalAsync(nextInterval);
+```
+
+
+### 2-4. 같은 알림이 반복해서 울린다?
 
 ## 3. 로컬에서 사용하던 유저가 로그인을 하면?
 
