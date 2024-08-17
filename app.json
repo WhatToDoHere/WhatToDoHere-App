@@ -7,7 +7,7 @@
     "orInterfaceStyle": "light",
     "splash": {
       "imrientation": "portrait",
-      "icon": "./assets/icon.png",
+      "icon": "./assets/WhatToDoHere.png",
       "useage": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
