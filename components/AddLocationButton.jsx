@@ -2,10 +2,15 @@ import { StyleSheet, TouchableOpacity, Image } from 'react-native';
 
 export default function AddLocationButton({ onPress }) {
   return (
-    <TouchableOpacity style={styles.addButton} onPress={onPress}>
+    <TouchableOpacity
+      style={styles.addButton}
+      onPress={onPress}
+      testID="add-location-button"
+    >
       <Image
         source={require('../assets/icons/icon-add.png')}
-        style={[styles.addIcon]}
+        style={styles.addIcon}
+        testID="add-location-icon"
       />
     </TouchableOpacity>
   );
