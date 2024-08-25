@@ -18,20 +18,20 @@ WhatToDoHere는 <b>위치 기반 미리 알림</b>을 제공하는 React Native 
 
 <br><br>
 
-# Table of contents
+# 목차
 
 [**📍 WhatToDoHere**](#-whattodohere)
 
-- [**Inspiration**](#inspiration)
-- [**Technologies**](#technologies)
-- [**System Architecture**](#system-architecture)
-- [**Features Overview**](#feature-overview)
-- [**Development Refelections**](#development-reflections)
-- [**Lessons Learned**](#lessons-learned)
+- [**프로젝트 기획동기**](#프로젝트-기획동기)
+- [**사용한 기술들**](#사용한-기술들)
+- [**시스템 아키텍처**](#시스템-아키텍처)
+- [**기능 소개**](#기능-소개)
+- [**개발 과정에서 고민한 부분들**](#개발-과정에서-고민한-부분들)
+- [**회고**](#회고)
 
 <br>
 
-# Inspiration
+# 프로젝트 기획동기
 
 우리에겐 매 순간 크고 작은 할 일들이 생겨납니다. 타임라인 순으로 처리할 일도 있지만, 특정 위치에서만 할 수 있는 일들이 있습니다. 예를 들어, 세탁기 예약 설정과 같이 집에서만 할 수 있는 일, 또는 회사에서 해야 할 업무처럼요.
 
@@ -39,7 +39,7 @@ WhatToDoHere는 <b>위치 기반 미리 알림</b>을 제공하는 React Native 
 
 <br>
 
-# Technologies
+# 사용한 기술들
 
 ### Client
 
@@ -162,7 +162,7 @@ Expo는 React Native 개발을 단순화하는 프레임워크입니다. 이는 
 
 <br>
 
-# System Architecture
+# 시스템 아키텍처
 
 <br>
 
@@ -181,7 +181,7 @@ WhatToDoHere가 로그인 기능을 제공하게 된 베경에는 기획 단계�
 
 <br>
 
-# Feature Overview
+# 기능 소개
 
 ## 1. 구글 로그인 및 로그아웃
 
@@ -241,7 +241,7 @@ WhatToDoHere가 로그인 기능을 제공하게 된 베경에는 기획 단계�
 
 <br>
 
-# Development Reflections
+# 개발 과정에서 고민한 부분들
 
 약 3주라는 기간 동안 기획, 디자인, 개발까지 하나의 애플리케이션을 만들기 위한 전체적인 개발 프로세스를 혼자 겪으며 부딪혔던 난관들은 주제가 참 다양했습니다.<br>사용성 측면에서 메인화면부터 어떻게 구성해야할까 하는 고민이 먼저 있었고, 핵심 기능의 완성도를 위해 계속해서 기능의 옵션이나 기능 자체가 추가되는 경험도 하였습니다.<br><b>문제 발생 > 해결 방안 모색과 고민 > 합리적 판단</b>의 연속이었습니다. 이런 일련의 과정 속에서 제가 크게 고민했던 부분들과 프로젝트의 완성도에 크게 기여할 수 있었던 챌린지들을 몇 가지로 추려보았습니다.
 
@@ -598,7 +598,7 @@ d = R ⋅ c
 - 로그인 하지 않고 접근가능한 기능들 구현 (Guest 모드 구현)
 - Guset로 이용하던 유저가 로그인을 하게 되면 AsyncStorage에 있는 정보를 FireStore(DB)으로 어떻게 이관하면 될까? -->
 
-# Lessons Learned
+# 회고
 
 **처음 접해본 React Native로 모바일 앱 개발**
 
