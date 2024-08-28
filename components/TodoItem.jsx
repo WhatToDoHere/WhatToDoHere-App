@@ -15,7 +15,7 @@ export default function TodoItem({ todo, onCheckBoxToggle }) {
 
   useEffect(() => {
     const fetchFriendName = async () => {
-      if (todo.assignedBy && todo.assignedBy !== userInfo.uid) {
+      if (todo.assignedBy && userInfo && todo.assignedBy !== userInfo.uid) {
         try {
           const friendInfo = await getUserInfo(todo.assignedBy);
           if (friendInfo && friendInfo.name) {
@@ -49,7 +49,11 @@ export default function TodoItem({ todo, onCheckBoxToggle }) {
 
   return (
     <View style={styles.todoItem}>
-      <TouchableOpacity onPress={handleCheckBoxToggle} style={styles.checkBox}>
+      <TouchableOpacity
+        onPress={handleCheckBoxToggle}
+        style={styles.checkBox}
+        testID="checkbox"
+      >
         <Image
           source={
             checked
@@ -59,7 +63,11 @@ export default function TodoItem({ todo, onCheckBoxToggle }) {
           style={styles.checkBoxImage}
         />
       </TouchableOpacity>
-      <TouchableOpacity onPress={handleEditTodo} style={styles.textContainer}>
+      <TouchableOpacity
+        onPress={handleEditTodo}
+        style={styles.textContainer}
+        testID="todo-text"
+      >
         <Text style={styles.title}>{todo.title}</Text>
         {friendName && <Text style={styles.friend}>✍🏻 {friendName}</Text>}
       </TouchableOpacity>
