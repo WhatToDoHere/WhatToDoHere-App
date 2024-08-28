@@ -82,6 +82,7 @@ export default function FriendLocationItem({ location, backgroundColor }) {
             <TouchableOpacity
               onPress={toggleExpand}
               style={styles.toggleButton}
+              testID="toggle-button"
             >
               <Animated.Image
                 source={require('../assets/icons/icon-accordion.png')}
@@ -94,10 +95,17 @@ export default function FriendLocationItem({ location, backgroundColor }) {
           📍 {location.address ?? '위치가 설정되지 않음'}
         </Text>
       </View>
-      <Animated.View style={[styles.todoListContainer, { height }]}>
+      <Animated.View
+        style={[styles.todoListContainer, { height }]}
+        testID="todo-list-container"
+      >
         <View style={styles.todoListContent}>
           {userTodos.map((todo) => (
-            <FriendTodoItem key={todo.id} todo={todo} />
+            <FriendTodoItem
+              key={todo.id}
+              todo={todo}
+              testID="friend-todo-item"
+            />
           ))}
           <View style={styles.addTodoItem}>
             <TouchableOpacity
