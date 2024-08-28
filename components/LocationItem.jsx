@@ -102,6 +102,7 @@ export default function LocationItem({ location, backgroundColor }) {
             <TouchableOpacity
               onPress={handleEditLocation}
               style={styles.editButton}
+              testID="edit-button"
             >
               <Image
                 source={require('../assets/icons/icon-edit.png')}
@@ -111,6 +112,7 @@ export default function LocationItem({ location, backgroundColor }) {
             <TouchableOpacity
               onPress={toggleExpand}
               style={styles.toggleButton}
+              testID="toggle-button"
             >
               <Animated.Image
                 source={require('../assets/icons/icon-accordion.png')}
@@ -123,8 +125,11 @@ export default function LocationItem({ location, backgroundColor }) {
           📍 {location.address ?? '위치를 설정해 주세요!'}
         </Text>
       </View>
-      <Animated.View style={[styles.todoListContainer, { height }]}>
-        <View style={styles.todoListContent}>
+      <Animated.View
+        style={[styles.todoListContainer, { height }]}
+        testID="todo-list-container"
+      >
+        <View style={styles.todoListContent} testID="todo-list-content">
           {location.todos
             ?.filter((todo) => !todo.completed)
             .map((todo) => (
@@ -132,6 +137,7 @@ export default function LocationItem({ location, backgroundColor }) {
                 key={todo.id}
                 todo={todo}
                 onCheckBoxToggle={handleCheckBoxToggle}
+                testID="todo-item"
               />
             ))}
           <View style={styles.addTodoItem}>
