@@ -1,18 +1,16 @@
-import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import AddLocationButton from './AddLocationButton';
 
-// Mock the image asset
 jest.mock('../assets/icons/icon-add.png', () => 'mocked-image-source');
 
 describe('AddLocationButton', () => {
-  it('renders correctly', () => {
+  it('AddLocationButton 컴포넌트가 올바르게 렌더링 됩니다.', () => {
     const { getByTestId } = render(<AddLocationButton onPress={() => {}} />);
     const button = getByTestId('add-location-button');
     expect(button).toBeTruthy();
   });
 
-  it('calls onPress when pressed', () => {
+  it('버튼을 누르면 onPress 함수가 호출됩니다.', () => {
     const mockOnPress = jest.fn();
     const { getByTestId } = render(<AddLocationButton onPress={mockOnPress} />);
     const button = getByTestId('add-location-button');
@@ -22,7 +20,7 @@ describe('AddLocationButton', () => {
     expect(mockOnPress).toHaveBeenCalledTimes(1);
   });
 
-  it('has correct style', () => {
+  it('올바른 스타일을 가지고 있습니다.', () => {
     const { getByTestId } = render(<AddLocationButton onPress={() => {}} />);
     const button = getByTestId('add-location-button');
 
@@ -37,7 +35,7 @@ describe('AddLocationButton', () => {
     });
   });
 
-  it('renders the add icon', () => {
+  it('추가 아이콘을 렌더링합니다.', () => {
     const { getByTestId } = render(<AddLocationButton onPress={() => {}} />);
     const icon = getByTestId('add-location-icon');
 
