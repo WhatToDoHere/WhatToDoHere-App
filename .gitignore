@@ -43,3 +43,6 @@ yarn-error.*
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+
+# Unit Test
+/coverage
