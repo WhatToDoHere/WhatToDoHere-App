@@ -71,13 +71,17 @@ export default function ImagePickerButton({ onImageSelected, initialImage }) {
     if (image) {
       setFullScreenModalVisible(true);
     } else {
-      buttonRef.current.measure((fx, fy, width, height, px, py) => {
-        setModalPosition({
-          top: py + height - 100,
-          left: px + width - 50,
-        });
+      if (process.env.NODE_ENV === 'test') {
         setModalVisible(true);
-      });
+      } else {
+        buttonRef.current.measure((fx, fy, width, height, px, py) => {
+          setModalPosition({
+            top: py + height - 100,
+            left: px + width - 50,
+          });
+          setModalVisible(true);
+        });
+      }
     }
   };
 
@@ -132,13 +136,23 @@ export default function ImagePickerButton({ onImageSelected, initialImage }) {
 
   return (
     <View>
-      <Pressable ref={buttonRef} style={styles.imageButton} onPress={pickImage}>
+      <Pressable
+        ref={buttonRef}
+        style={styles.imageButton}
+        onPress={pickImage}
+        testID="image-button"
+      >
         {image ? (
           <View>
-            <Image source={{ uri: image }} style={styles.imagePreview} />
+            <Image
+              source={{ uri: image }}
+              style={styles.imagePreview}
+              testID="image-preview"
+            />
             <TouchableOpacity
               style={styles.removeImageButton}
               onPress={removeImage}
+              testID="remove-image-button"
             >
               <Image
                 source={require('../assets/icons/icon-remove-photo.png')}
@@ -150,6 +164,7 @@ export default function ImagePickerButton({ onImageSelected, initialImage }) {
           <Image
             source={require('../assets/icons/icon-add-photo.png')}
             style={styles.addImageIcon}
+            testID="add-image-icon"
           />
         )}
       </Pressable>
@@ -158,6 +173,7 @@ export default function ImagePickerButton({ onImageSelected, initialImage }) {
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
+        testID="modal-content"
       >
         <TouchableOpacity
           style={styles.modalOverlay}
@@ -173,10 +189,12 @@ export default function ImagePickerButton({ onImageSelected, initialImage }) {
                 left: modalPosition.left,
               },
             ]}
+            testID="modal-content-view"
           >
             <TouchableOpacity
               style={styles.modalButton}
               onPress={handleImageLibrary}
+              testID="photo-library-button"
             >
               <Text style={styles.modalText}>사진 선택</Text>
               <Image
@@ -187,6 +205,7 @@ export default function ImagePickerButton({ onImageSelected, initialImage }) {
             <TouchableOpacity
               style={[styles.modalButton, { borderBottomWidth: 0 }]}
               onPress={handleCamera}
+              testID="take-photo-button"
             >
               <Text style={styles.modalText}>사진 찍기</Text>
               <Image
@@ -202,12 +221,14 @@ export default function ImagePickerButton({ onImageSelected, initialImage }) {
         transparent={true}
         visible={fullScreenModalVisible}
         onRequestClose={() => setFullScreenModalVisible(false)}
+        testID="full-screen-modal"
       >
         <View style={styles.fullScreenModalContainer}>
           <Image source={{ uri: image }} style={styles.fullScreenImage} />
           <TouchableOpacity
             style={styles.closeButton}
             onPress={() => setFullScreenModalVisible(false)}
+            testID="close-button"
           >
             <Text style={styles.closeButtonText}>닫기</Text>
           </TouchableOpacity>
