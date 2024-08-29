@@ -20,6 +20,7 @@
       "entitlements": {
         "com.apple.developer.networking.wifi-info": true
       },
+      "usesAppleSignIn": true,
       "supportsTablet": true,
       "bundleIdentifier": "com.moonstrnck.WhatToDoHere",
       "buildNumber": "5",
@@ -46,6 +47,7 @@
     },
     "owner": "moonstrnck",
     "plugins": [
+      "expo-apple-authentication",
       "expo-router",
       "react-native-wifi-reborn",
       [
