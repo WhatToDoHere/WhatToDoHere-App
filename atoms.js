@@ -1,6 +1,7 @@
 import { atom } from 'jotai';
 
 export const userInfoAtom = atom(null);
+export const loadingAtom = atom(false);
 export const currentLocationAtom = atom(null);
 export const selectedLocationAtom = atom(null);
 export const locationsAtom = atom([]);
