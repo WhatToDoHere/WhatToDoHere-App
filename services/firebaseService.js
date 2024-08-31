@@ -15,6 +15,9 @@ import {
   query,
   arrayRemove,
   writeBatch,
+  startAt,
+  endAt,
+  orderBy,
 } from 'firebase/firestore';
 import {
   ref,
@@ -94,6 +97,21 @@ export const saveUserToFirestore = async (user) => {
     console.error('사용자 정보 저장 실패', error);
     throw error;
   }
+};
+
+export async function updateUsername(uid, username, lowercaseUsername) {
+  const userRef = doc(firestore, 'users', uid);
+  await updateDoc(userRef, {
+    username: username,
+    lowercaseUsername: lowercaseUsername,
+  });
+}
+
+export const checkUsernameExists = async (username) => {
+  const usersRef = collection(firestore, 'users');
+  const q = query(usersRef, where('username', '==', username));
+  const snapshot = await getDocs(q);
+  return !snapshot.empty;
 };
 
 export const getLocationsByUserId = async (userId) => {
@@ -378,7 +396,6 @@ export const getLocationsWithTodos = async (userId) => {
 
     if (userDoc.exists()) {
       const userData = userDoc.data();
-      console.log('User data:', userData);
       const locationIds = userData.locations || [];
       console.log('Location IDs:', locationIds);
 
@@ -463,25 +480,55 @@ export const getLocationsWithTodos = async (userId) => {
   }
 };
 
-export const searchUsersByEmail = async (email) => {
+export const searchUsersByUsername = async (username) => {
   const usersRef = collection(firestore, 'users');
-  const exactMatchQuery = query(usersRef, where('email', '==', email));
-  const exactMatchSnapshot = await getDocs(exactMatchQuery);
+  // const exactMatchQuery = query(usersRef, where('email', '==', email));
+  // const exactMatchSnapshot = await getDocs(exactMatchQuery);
 
-  const lowerEmail = email.toLowerCase();
-  const prefixMatchQuery = query(
+  // const lowerEmail = email.toLowerCase();
+  // const prefixMatchQuery = query(
+  //   usersRef,
+  //   where('email', '>=', lowerEmail),
+  //   where('email', '<=', lowerEmail + '\uf8ff'),
+  // );
+  // const prefixMatchSnapshot = await getDocs(prefixMatchQuery);
+
+  // const results = new Set([
+  //   ...exactMatchSnapshot.docs,
+  //   ...prefixMatchSnapshot.docs,
+  // ]);
+  // 대소문자 구분 검색
+  const caseSensitiveQuery = query(
     usersRef,
-    where('email', '>=', lowerEmail),
-    where('email', '<=', lowerEmail + '\uf8ff'),
+    where('username', '>=', username),
+    where('username', '<=', username + '\uf8ff'),
   );
-  const prefixMatchSnapshot = await getDocs(prefixMatchQuery);
+  const caseSensitiveSnapshot = await getDocs(caseSensitiveQuery);
 
-  const results = new Set([
-    ...exactMatchSnapshot.docs,
-    ...prefixMatchSnapshot.docs,
-  ]);
+  // 대소문자 구분 없는 검색
+  const lowercaseUsername = username.toLowerCase();
+  const caseInsensitiveQuery = query(
+    usersRef,
+    where('lowercaseUsername', '>=', lowercaseUsername),
+    where('lowercaseUsername', '<=', lowercaseUsername + '\uf8ff'),
+  );
+  const caseInsensitiveSnapshot = await getDocs(caseInsensitiveQuery);
 
-  return Array.from(results).map((doc) => ({ id: doc.id, ...doc.data() }));
+  // 결과 합치기 및 중복 제거
+  const uniqueResults = new Map();
+
+  caseSensitiveSnapshot.docs.forEach((doc) => {
+    uniqueResults.set(doc.id, { id: doc.id, ...doc.data() });
+  });
+
+  caseInsensitiveSnapshot.docs.forEach((doc) => {
+    if (!uniqueResults.has(doc.id)) {
+      uniqueResults.set(doc.id, { id: doc.id, ...doc.data() });
+    }
+  });
+
+  // Map을 배열로 변환
+  return Array.from(uniqueResults.values());
 };
 
 export const addFriend = async (userId, friendId) => {
