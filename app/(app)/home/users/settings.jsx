@@ -13,17 +13,18 @@ import { router, Stack, useNavigation } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
+import * as AppleAuthentication from 'expo-apple-authentication';
+
+import { useAtom } from 'jotai';
+import { userInfoAtom, locationsAtom } from '../../../../atoms';
 
 import { auth } from '../../../../firebaseConfig';
 import {
   deleteUser,
   GoogleAuthProvider,
+  OAuthProvider,
   reauthenticateWithCredential,
 } from 'firebase/auth';
-
-import { useAtom } from 'jotai';
-import { userInfoAtom, locationsAtom } from '../../../../atoms';
-
 import { deleteUserData } from '../../../../services/firebaseService';
 
 WebBrowser.maybeCompleteAuthSession();
@@ -40,9 +41,22 @@ export default function UserSettings() {
 
   useEffect(() => {
     if (response?.type === 'success') {
-      handleReauthResponse(response);
+      handleGoogleReauth(response);
     }
   }, [response]);
+
+  const getProviderInfo = () => {
+    const user = auth.currentUser;
+    return user && user.providerData.length > 0 ? user.providerData[0] : null;
+  };
+
+  const getDisplayEmail = () => {
+    const providerInfo = getProviderInfo();
+    if (providerInfo?.providerId === 'apple.com') {
+      return 'Apple 로그인 계정';
+    }
+    return userInfo?.email || '-';
+  };
 
   const handleDeleteAccount = async () => {
     Alert.alert(
@@ -62,7 +76,15 @@ export default function UserSettings() {
   const initiateAccountDeletion = async () => {
     setIsDeleting(true);
     try {
-      await promptAsync();
+      const providerInfo = getProviderInfo();
+
+      if (providerInfo?.providerId === 'google.com') {
+        await promptAsync();
+      } else if (providerInfo?.providerId === 'apple.com') {
+        await handleAppleReauth();
+      } else {
+        throw new Error('지원되지 않는 로그인 방식입니다.');
+      }
     } catch (error) {
       console.error('재인증 시작 오류:', error);
       Alert.alert(
@@ -73,16 +95,47 @@ export default function UserSettings() {
     }
   };
 
-  const handleReauthResponse = async (response) => {
+  const handleAppleReauth = async () => {
+    try {
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+      const { identityToken } = credential;
+
+      if (identityToken) {
+        const provider = new OAuthProvider('apple.com');
+        const authCredential = provider.credential({
+          idToken: identityToken,
+        });
+
+        await reauthenticateWithCredential(auth.currentUser, authCredential);
+        await performAccountDeletion();
+      } else {
+        throw new Error('Apple 인증 토큰을 받지 못했습니다.');
+      }
+    } catch (error) {
+      console.error('Apple 재인증 오류:', error);
+
+      Alert.alert('오류', 'Apple 재인증에 실패했습니다. 다시 시도해 주세요.');
+      setIsDeleting(false);
+    }
+  };
+
+  const handleGoogleReauth = async (response) => {
     const { id_token } = response.params;
     const credential = GoogleAuthProvider.credential(id_token);
 
     try {
       const user = auth.currentUser;
+
       await reauthenticateWithCredential(user, credential);
       await performAccountDeletion();
     } catch (error) {
       console.error('재인증 오류:', error);
+
       Alert.alert('오류', '재인증에 실패했습니다. 다시 시도해 주세요.');
       setIsDeleting(false);
     }
@@ -91,6 +144,7 @@ export default function UserSettings() {
   const performAccountDeletion = async () => {
     try {
       const user = auth.currentUser;
+
       if (!user) throw new Error('사용자가 로그인되어 있지 않습니다.');
 
       await deleteUserData(user.uid);
@@ -107,6 +161,7 @@ export default function UserSettings() {
       router.replace('/(auth)/signIn');
     } catch (error) {
       console.error('계정 삭제 오류:', error);
+
       Alert.alert(
         '오류',
         '계정 삭제 중 오류가 발생했습니다. 다시 시도해 주세요.',
@@ -117,7 +172,6 @@ export default function UserSettings() {
   };
 
   const handleUsernameChange = () => {
-    // 사용자 이름 변경 화면으로 이동
     navigation.navigate('users/changeUsername');
   };
 
@@ -157,7 +211,7 @@ export default function UserSettings() {
               />
               <Text style={styles.label}>이메일</Text>
             </View>
-            <Text style={styles.value}>{userInfo?.email}</Text>
+            <Text style={styles.value}>{getDisplayEmail()}</Text>
           </View>
           <View style={styles.listItem}>
             <View style={styles.leftContent}>
@@ -167,7 +221,7 @@ export default function UserSettings() {
               />
               <Text style={styles.label}>이름</Text>
             </View>
-            <Text style={styles.value}>{userInfo?.name}</Text>
+            <Text style={styles.value}>{userInfo?.name || '-'}</Text>
           </View>
           <TouchableOpacity
             style={styles.listItem}
