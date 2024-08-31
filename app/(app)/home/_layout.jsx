@@ -28,6 +28,7 @@ export default function AppLayout() {
   return (
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen name="setupUsername" options={{ presentation: 'modal' }} />
       <Stack.Screen name="location/index" options={{ presentation: 'modal' }} />
       <Stack.Screen
         name="location/searchLocation"
@@ -44,6 +45,7 @@ export default function AppLayout() {
       <Stack.Screen name="users/addFriend" />
       <Stack.Screen name="users/friendTodo" />
       <Stack.Screen name="users/settings" />
+      <Stack.Screen name="users/changeUsername" />
     </Stack>
   );
 }

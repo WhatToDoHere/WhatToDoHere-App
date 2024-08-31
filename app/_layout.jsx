@@ -1,15 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
+import { View, ActivityIndicator } from 'react-native';
 import { Slot } from 'expo-router';
 import { useFonts } from 'expo-font';
 import * as Notifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { useAtom } from 'jotai';
+import { userInfoAtom, locationsAtom, loadingAtom } from '../atoms';
+
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../firebaseConfig';
-
-import { useAtom } from 'jotai';
-import { userInfoAtom, locationsAtom } from '../atoms';
-
 import {
   saveUserToFirestore,
   getInitialLocations,
@@ -26,9 +26,9 @@ Notifications.setNotificationHandler({
 });
 
 export default function RootLayout() {
-  const [userInfo, setUserInfo] = useAtom(userInfoAtom);
+  const [, setUserInfo] = useAtom(userInfoAtom);
   const [, setLocations] = useAtom(locationsAtom);
-  const [isAuthReady, setIsAuthReady] = useState(false);
+  const [isLoading, setIsLoading] = useAtom(loadingAtom);
   const [fontsLoaded, fontError] = useFonts({
     'Opposit-Bold': require('../assets/fonts/Opposit-Bold.ttf'),
     'Opposit-Light': require('../assets/fonts/Opposit-Light.ttf'),
@@ -42,19 +42,21 @@ export default function RootLayout() {
 
   useEffect(() => {
     const checkInitialAuth = async () => {
+      setIsLoading(true);
       try {
         const storedUser = await AsyncStorage.getItem('user');
         if (storedUser) {
           setUserInfo(JSON.parse(storedUser));
         }
       } catch (error) {
-        console.error('Error checking initial auth:', error);
+        console.error('초기 인증 확인 중 오류 발생:', error);
       } finally {
-        setIsAuthReady(true);
+        setIsLoading(false);
       }
     };
 
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      setIsLoading(true);
       if (firebaseUser) {
         try {
           const { userData, newLocations } =
@@ -62,27 +64,24 @@ export default function RootLayout() {
           await AsyncStorage.setItem('user', JSON.stringify(userData));
           setUserInfo(userData);
 
-          let userLocations;
-
-          if (newLocations.length > 0) {
-            userLocations = newLocations;
-          } else {
-            userLocations = await getInitialLocations(userData.locations);
-          }
+          const userLocations =
+            newLocations.length > 0
+              ? newLocations
+              : await getInitialLocations(userData.locations);
           setLocations(userLocations);
 
           await setupGeofencing(userData.uid).catch((error) => {
-            console.error('Error in setupGeofencing:', error);
+            console.error('Geofencing 설정 중 오류 발생:', error);
           });
         } catch (error) {
-          console.error('Error saving user info:', error);
+          console.error('사용자 정보 저장 중 오류 발생:', error);
         }
       } else {
         await AsyncStorage.removeItem('user');
         setUserInfo(null);
         setLocations([]);
       }
-      setIsAuthReady(true);
+      setIsLoading(false);
     });
 
     checkInitialAuth();
@@ -90,12 +89,20 @@ export default function RootLayout() {
     return () => unsubscribe();
   }, []);
 
-  if (!isAuthReady || (!fontsLoaded && !fontError)) {
+  if (!fontsLoaded && !fontError) {
     return null;
   }
 
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
   return (
-    <AuthWrapper user={userInfo}>
+    <AuthWrapper>
       <Slot />
     </AuthWrapper>
   );

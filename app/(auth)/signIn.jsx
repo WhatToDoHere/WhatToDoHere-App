@@ -2,13 +2,18 @@ import { useEffect } from 'react';
 import { View, Text, Image, StyleSheet, Pressable } from 'react-native';
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
+import * as AppleAuthentication from 'expo-apple-authentication';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
-import { auth } from '../../firebaseConfig';
 
 import { useAtom } from 'jotai';
 import { userInfoAtom } from '../../atoms';
+
+import {
+  GoogleAuthProvider,
+  signInWithCredential,
+  OAuthProvider,
+} from 'firebase/auth';
+import { auth } from '../../firebaseConfig';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -34,15 +39,52 @@ export default function SignInScreen() {
       const user = userCredential.user;
 
       await AsyncStorage.setItem('user', JSON.stringify(user));
-
       setUserInfo(user);
     } catch (error) {
       console.error('로그인 오류', error);
     }
   };
 
-  const handleSignIn = () => {
+  const handleGoogleSignIn = () => {
     promptAsync();
+  };
+
+  const handleAppleSignIn = async () => {
+    try {
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+
+      console.log('Apple 인증 정보:', credential);
+
+      const { identityToken } = credential;
+      if (!identityToken) {
+        throw new Error('Apple로부터 인증 토큰을 받지 못했습니다.');
+      }
+
+      const provider = new OAuthProvider('apple.com');
+      const oauthCredential = provider.credential({
+        idToken: identityToken,
+      });
+
+      const userCredential = await signInWithCredential(auth, oauthCredential);
+      const user = userCredential.user;
+
+      console.log('Firebase 사용자:', user);
+
+      await AsyncStorage.setItem('user', JSON.stringify(user));
+      setUserInfo(user);
+    } catch (e) {
+      if (e.code === 'ERR_CANCELED') {
+        console.log('사용자가 Apple 로그인을 취소했습니다.');
+      } else {
+        console.error('Apple 로그인 오류:', e);
+        console.error('오류 상세:', JSON.stringify(e, null, 2));
+      }
+    }
   };
 
   return (
@@ -54,16 +96,20 @@ export default function SignInScreen() {
         />
       </View>
       <Text style={styles.title}>WhatToDoHere</Text>
-      <Pressable
-        style={[styles.button, styles.googleLogin]}
-        onPress={handleSignIn}
-      >
+      <Pressable style={styles.googleLogin} onPress={handleGoogleSignIn}>
         <Image
           source={require('../../assets/icons/icon-google.png')}
           style={styles.googleIcon}
         />
-        <Text style={[styles.text, styles.whiteText]}>Sign in with Google</Text>
+        <Text style={[styles.text, styles.whiteText]}>Google로 로그인</Text>
       </Pressable>
+      <AppleAuthentication.AppleAuthenticationButton
+        buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+        buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+        cornerRadius={10}
+        style={styles.appleLogin}
+        onPress={handleAppleSignIn}
+      />
     </View>
   );
 }
@@ -90,21 +136,20 @@ const styles = StyleSheet.create({
     fontSize: 42,
     color: '#202020',
   },
-  button: {
+  googleLogin: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    minWidth: 265,
-    minHeight: 50,
-    paddingVertical: 18,
-    paddingHorizontal: 32,
-    marginBottom: 15,
-    borderRadius: 20,
-    elevation: 3,
-    fontFamily: 'Opposit-Bold',
+    backgroundColor: '#000',
+    borderRadius: 10,
+    padding: 10,
+    height: 50,
+    width: 265,
+    marginBottom: 10,
   },
-  googleLogin: {
-    backgroundColor: '#202020',
+  appleLogin: {
+    width: 265,
+    height: 50,
   },
   gusetLogin: {
     backgroundColor: '#EEEEEE',
@@ -115,12 +160,14 @@ const styles = StyleSheet.create({
     color: '#202020',
   },
   whiteText: {
-    color: 'white',
+    color: '#FFF',
+    fontSize: 19,
+    fontFamily: 'System',
+    fontWeight: '600',
   },
   googleIcon: {
-    width: 20,
-    height: 20,
-    marginTop: -5,
-    marginRight: 20,
+    width: 13,
+    height: 13,
+    marginRight: 7,
   },
 });
