@@ -116,6 +116,11 @@ export default function UserSettings() {
     }
   };
 
+  const handleUsernameChange = () => {
+    // 사용자 이름 변경 화면으로 이동
+    navigation.navigate('users/changeUsername');
+  };
+
   return (
     <View style={styles.container}>
       <Stack.Screen
@@ -164,6 +169,25 @@ export default function UserSettings() {
             </View>
             <Text style={styles.value}>{userInfo?.name}</Text>
           </View>
+          <TouchableOpacity
+            style={styles.listItem}
+            onPress={handleUsernameChange}
+          >
+            <View style={styles.leftContent}>
+              <Image
+                source={require('../../../../assets/icons/icon-username.png')}
+                style={styles.icon}
+              />
+              <Text style={styles.label}>사용자 이름</Text>
+            </View>
+            <View style={styles.rightContent}>
+              <Text style={styles.value}>{userInfo?.username}</Text>
+              <Image
+                source={require('../../../../assets/icons/icon-arrow-right.png')}
+                style={styles.arrowIcon}
+              />
+            </View>
+          </TouchableOpacity>
           <TouchableOpacity
             style={styles.deleteButton}
             onPress={handleDeleteAccount}
@@ -227,6 +251,15 @@ const styles = StyleSheet.create({
     fontFamily: 'Pretendard-Regular',
     fontSize: 16,
     color: '#909090',
+  },
+  rightContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  arrowIcon: {
+    width: 15,
+    height: 15,
+    marginLeft: 10,
   },
   deleteButton: {
     marginTop: 30,
