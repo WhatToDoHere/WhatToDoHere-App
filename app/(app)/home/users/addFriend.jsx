@@ -10,14 +10,13 @@ import {
 } from 'react-native';
 import { Stack, useNavigation } from 'expo-router';
 
-import SearchBar from '../../../../components/SearchBar';
-import FriendSearchResultList from '../../../../components/FriendSearchResultList';
-
 import { useAtom } from 'jotai';
 import { userInfoAtom } from '../../../../atoms';
 
+import SearchBar from '../../../../components/SearchBar';
+import FriendSearchResultList from '../../../../components/FriendSearchResultList';
 import {
-  searchUsersByEmail,
+  searchUsersByUsername,
   addFriend,
 } from '../../../../services/firebaseService';
 
@@ -30,7 +29,7 @@ export default function AddFriend() {
 
   const handleSearch = async (text) => {
     if (text.length > 0) {
-      const results = await searchUsersByEmail(text);
+      const results = await searchUsersByUsername(text);
       const filteredResults = results.filter(
         (user) =>
           user.uid !== userInfo.uid && !userInfo.friends.includes(user.uid),
@@ -103,7 +102,7 @@ export default function AddFriend() {
       />
       <View style={styles.contents}>
         <SearchBar
-          placeholder="이메일을 입력하세요."
+          placeholder="사용자 이름을 입력하세요."
           onSearch={handleSearch}
           style={styles.searchBar}
         />

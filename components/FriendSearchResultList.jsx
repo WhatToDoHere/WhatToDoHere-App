@@ -1,4 +1,3 @@
-import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 
 export default function FriendSearchResultList({
@@ -27,8 +26,7 @@ export default function FriendSearchResultList({
             style={styles.profileImage}
           />
           <View style={styles.textContainer}>
-            <Text style={styles.name}>{user.name}</Text>
-            <Text style={styles.email}>✉️ {user.email}</Text>
+            <Text style={styles.username}>{user.username}</Text>
           </View>
           {selectedFriends.some((friend) => friend.id === user.id) && (
             <Image
@@ -60,7 +58,7 @@ const styles = StyleSheet.create({
   textContainer: {
     flex: 1,
   },
-  name: {
+  username: {
     fontFamily: 'Pretendard-Regular',
     fontSize: 16,
   },

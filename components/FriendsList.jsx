@@ -36,13 +36,19 @@ export default function FriendsList() {
 
   const renderFriendItem = ({ item }) => (
     <View style={styles.item}>
-      <Image source={{ uri: item.photoURL }} style={styles.profileImage} />
+      <Image
+        source={
+          item.photoURL
+            ? { uri: item.photoURL }
+            : require('../assets/icons/icon-user-default.png')
+        }
+        style={styles.profileImage}
+      />
       <View style={styles.friendInfo}>
-        <Text style={styles.friendName}>{item.name}</Text>
-        <Text style={styles.friendEmail}>✉️ {item.email}</Text>
+        <Text style={styles.friendName}>{item.username}</Text>
       </View>
       <TouchableOpacity
-        onPress={() => handlePress(item.id, item.name)}
+        onPress={() => handlePress(item.id, item.username)}
         style={styles.todoButton}
       >
         <Text style={styles.todoButtonText}>TODO</Text>
