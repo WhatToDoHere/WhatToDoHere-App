@@ -69,7 +69,7 @@ export default function ValidatedTextInput({
             ) : isValid ? (
               <Image
                 source={require('../assets/icons/icon-check-validation.png')}
-                style={styles.icon}
+                style={styles.validateIcon}
               />
             ) : null}
             <TouchableOpacity
@@ -97,10 +97,10 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 5,
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: 'transparent',
-    backgroundColor: '#EEEEEE',
+    borderColor: '#eee',
+    backgroundColor: '#fff',
   },
   invalidContainer: {
     borderColor: '#F15858',
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  icon: {
+  validateIcon: {
     width: 18,
     height: 18,
     marginRight: 5,
