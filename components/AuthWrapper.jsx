@@ -15,16 +15,13 @@ export default function AuthWrapper({ children }) {
 
     const inAuthGroup = segments[0] === '(auth)';
     const inAppGroup = segments[0] === '(app)';
-    const inSetupUsername = segments[1] === 'setupUsername';
+    const inSetupUsername = segments[2] === 'setupUsername';
 
     if (userInfo && !userInfo.username && !inSetupUsername) {
-      console.log('Redirecting to setup username');
       router.replace('/(app)/home/setupUsername');
     } else if (userInfo && userInfo.username && !inAppGroup) {
-      console.log('Redirecting to home');
       router.replace('/(app)/home');
     } else if (!userInfo && !inAuthGroup) {
-      console.log('Redirecting to sign in');
       router.replace('/(auth)/signIn');
     }
   }, [userInfo, isLoading, segments, router]);

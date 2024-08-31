@@ -7,20 +7,20 @@ import {
   Alert,
   TouchableOpacity,
 } from 'react-native';
-import { Stack, useNavigation, useRouter } from 'expo-router';
+import { Stack, useNavigation } from 'expo-router';
+
 import { useAtom } from 'jotai';
-import { userInfoAtom, loadingAtom } from '../../../../atoms';
-import { updateUsername } from '../../../../services/firebaseService';
+import { userInfoAtom } from '../../../../atoms';
+
 import ValidatedTextInput from '../../../../components/ValidatedTextInput';
+import { updateUsername } from '../../../../services/firebaseService';
 import { validateUsername } from '../../../../utils/validation';
 
 export default function ChangeUsername() {
   const [userInfo, setUserInfo] = useAtom(userInfoAtom);
-  const [isLoading, setIsLoading] = useAtom(loadingAtom);
   const [username, setUsername] = useState(userInfo.username);
   const [isUsernameValid, setIsUsernameValid] = useState(false);
   const navigation = useNavigation();
-  const router = useRouter();
 
   const validateInput = (name) => {
     if (name === userInfo.username) return null;
@@ -34,10 +34,10 @@ export default function ChangeUsername() {
   const handleUpdateUsername = async () => {
     if (!username || username === userInfo.username) {
       navigation.goBack();
+
       return;
     }
 
-    setIsLoading(true);
     try {
       await updateUsername(userInfo.uid, username, username.toLowerCase());
       setUserInfo((prevUserInfo) => ({
@@ -45,15 +45,21 @@ export default function ChangeUsername() {
         username,
         lowercaseUsername: username.toLowerCase(),
       }));
-      Alert.alert('성공', '사용자 이름이 성공적으로 변경되었습니다.');
+
+      Alert.alert('성공', '사용자 이름이 성공적으로 변경되었습니다.', [
+        {
+          text: '확인',
+          onPress: () => {
+            navigation.goBack();
+          },
+        },
+      ]);
     } catch (error) {
       console.error('사용자 이름 변경 오류', error);
       Alert.alert(
         '오류',
         '사용자 이름 변경에 실패했습니다. 다시 시도해 주세요.',
       );
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -82,12 +88,12 @@ export default function ChangeUsername() {
           headerRight: () => (
             <TouchableOpacity
               onPress={handleUpdateUsername}
-              disabled={!isUsernameValid || isLoading}
+              disabled={!isUsernameValid}
             >
               <Text
                 style={[
                   styles.headerRight,
-                  (!isUsernameValid || isLoading) && styles.disabledText,
+                  !isUsernameValid && styles.disabledText,
                 ]}
               >
                 완료
@@ -98,6 +104,9 @@ export default function ChangeUsername() {
           headerBackTitleVisible: false,
         }}
       />
+      <View style={styles.infoContainer}>
+        <Text style={styles.infoText}>변경할 사용자 이름을 입력해 주세요.</Text>
+      </View>
       <ValidatedTextInput
         value={username}
         onChangeText={setUsername}
@@ -127,6 +136,17 @@ const styles = StyleSheet.create({
   headerRight: {
     paddingRight: 5,
     fontSize: 16,
+  },
+  infoContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  infoText: {
+    textAlign: 'center',
+    fontFamily: 'Pretendard-Regular',
+    fontSize: 14,
+    lineHeight: 20,
+    color: '#202020',
   },
   disabledText: {
     color: '#A0A0A0',
