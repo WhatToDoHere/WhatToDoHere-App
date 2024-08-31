@@ -121,7 +121,7 @@ export default function CompletedTodo() {
                     <Text>✍🏻 </Text>
                     <View style={styles.friendTag}>
                       <Text style={styles.friendName}>
-                        {friendsInfo[todo.assignedBy]?.name}
+                        {friendsInfo[todo.assignedBy]?.username}
                       </Text>
                     </View>
                     <Text style={styles.friendText}> 님이 작성하신 TODO</Text>

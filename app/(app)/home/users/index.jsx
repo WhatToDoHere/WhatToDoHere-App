@@ -10,11 +10,11 @@ import {
 import { Stack, useNavigation } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { auth } from '../../../../firebaseConfig';
-import { signOut } from 'firebase/auth';
-
 import { useAtom } from 'jotai';
 import { userInfoAtom, locationsAtom } from '../../../../atoms';
+
+import { auth } from '../../../../firebaseConfig';
+import { signOut } from 'firebase/auth';
 
 import { USER_MENU_ITEMS } from '../../../../constants/user';
 
@@ -60,10 +60,16 @@ export default function Profile() {
         {userInfo && (
           <>
             <Image
-              source={{ uri: userInfo.photoURL }}
+              source={
+                userInfo.photoURL
+                  ? { uri: userInfo.photoURL }
+                  : require('../../../../assets/icons/icon-user-default.png')
+              }
               style={styles.userIcon}
             />
-            <Text style={styles.welcomeText}>Hello, {userInfo.name} 👋</Text>
+            <Text style={styles.welcomeText}>
+              Hello, {userInfo.username} 👋
+            </Text>
           </>
         )}
       </View>

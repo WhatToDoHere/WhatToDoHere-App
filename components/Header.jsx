@@ -18,7 +18,11 @@ export default function Header({ userInfo }) {
           onPress={() => router.push({ pathname: '/home/users' })}
         >
           <Image
-            source={{ uri: userInfo.photoURL }}
+            source={
+              userInfo.photoURL
+                ? { uri: userInfo.photoURL }
+                : require('../assets/icons/icon-user-default.png')
+            }
             style={styles.profileImage}
           />
         </TouchableOpacity>

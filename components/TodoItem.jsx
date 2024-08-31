@@ -18,8 +18,8 @@ export default function TodoItem({ todo, onCheckBoxToggle }) {
       if (todo.assignedBy && userInfo && todo.assignedBy !== userInfo.uid) {
         try {
           const friendInfo = await getUserInfo(todo.assignedBy);
-          if (friendInfo && friendInfo.name) {
-            setFriendName(friendInfo.name);
+          if (friendInfo && friendInfo.username) {
+            setFriendName(friendInfo.username);
           } else {
             setFriendName('알 수 없는 사용자');
           }
