@@ -33,11 +33,6 @@ const handleLocationEvent = async (locationId, userId, eventType) => {
   const now = Date.now();
   const lastTime = lastNotificationTimes[locationId] || 0;
 
-  console.log(`Checking notifications for location ${locationId}:`);
-  console.log(`Last notification time: ${new Date(lastTime).toISOString()}`);
-  console.log(`Current time: ${new Date(now).toISOString()}`);
-  console.log(`Time difference: ${now - lastTime}ms`);
-
   if (now - lastTime < DEBOUNCE_INTERVAL) {
     console.log(`Notifications debounced for location ${locationId}`);
     return;
@@ -105,7 +100,6 @@ const startGeofencing = async (userId) => {
   try {
     console.log('Starting geofencing for user:', userId);
     const locationsWithTodos = await getLocationsWithTodos(userId);
-    console.log('locationsWithTodos', locationsWithTodos);
 
     const geofences = Object.values(locationsWithTodos)
       .filter((location) => {
@@ -144,16 +138,25 @@ const startGeofencing = async (userId) => {
 const setupGeofencing = async (userId) => {
   try {
     console.log('Setting up geofencing for user:', userId);
-    await Location.stopGeofencingAsync(GEOFENCING_TASK_NAME).catch((error) => {
-      console.log(
-        'Failed to stop geofencing, it may not have been running:',
-        error,
-      );
-    });
+    const isGeofencingRegistered =
+      await TaskManager.isTaskRegisteredAsync(GEOFENCING_TASK_NAME);
+
+    if (isGeofencingRegistered) {
+      await Location.stopGeofencingAsync(GEOFENCING_TASK_NAME);
+    }
+
     await startGeofencing(userId);
   } catch (error) {
     console.error('Error setting up geofencing:', error);
   }
 };
 
-export { setupGeofencing };
+const stopGeofencing = async () => {
+  try {
+    await Location.stopGeofencingAsync(GEOFENCING_TASK_NAME);
+  } catch (error) {
+    console.error('Error stopping geofencing:', error);
+  }
+};
+
+export { setupGeofencing, stopGeofencing };
