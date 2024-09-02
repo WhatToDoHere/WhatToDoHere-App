@@ -10,16 +10,17 @@ import {
 import { useNavigation } from 'expo-router';
 
 import { useAtom } from 'jotai';
-import { locationsAtom } from '../atoms';
+import { isGuestAtom, locationsAtom } from '../atoms';
 
 import TodoItem from './TodoItem';
 
-import { updateTodo } from '../services/firebaseService';
+import * as firebaseService from '../services/firebaseService';
+import * as asyncStorageService from '../services/asyncStorageService';
 import { TODO_ITEM_HEIGHT, ADD_TODO_ITEM_HEIGHT } from '../constants/todo';
 
 export default function LocationItem({ location, backgroundColor }) {
   const [, setLocations] = useAtom(locationsAtom);
-
+  const [isGuest] = useAtom(isGuestAtom);
   const [expanded, setExpanded] = useState(false);
   const rotation = useState(new Animated.Value(0))[0];
   const animation = useState(new Animated.Value(0))[0];
@@ -68,12 +69,32 @@ export default function LocationItem({ location, backgroundColor }) {
 
   const handleCheckBoxToggle = async (todoId, newCompletedState) => {
     try {
-      await updateTodo(
-        location.id,
-        todoId,
-        { completed: newCompletedState },
-        setLocations,
-      );
+      if (isGuest) {
+        await asyncStorageService.updateTodo(location.id, todoId, {
+          completed: newCompletedState,
+        });
+      } else {
+        await firebaseService.updateTodo(location.id, todoId, {
+          completed: newCompletedState,
+        });
+      }
+
+      setLocations((prevLocations) => {
+        return prevLocations.map((loc) => {
+          if (loc.id === location.id) {
+            return {
+              ...loc,
+              todos: loc.todos.map((todo) =>
+                todo.id === todoId
+                  ? { ...todo, completed: newCompletedState }
+                  : todo,
+              ),
+            };
+          }
+
+          return loc;
+        });
+      });
     } catch (error) {
       console.error('Error updating todo:', error);
     }

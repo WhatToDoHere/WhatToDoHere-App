@@ -18,6 +18,7 @@ import NetInfo from '@react-native-community/netinfo';
 
 import { useAtom } from 'jotai';
 import {
+  isGuestAtom,
   currentLocationAtom,
   selectedLocationAtom,
   userInfoAtom,
@@ -33,21 +34,18 @@ import {
   getFullAddress,
   isNearCurrentLocation,
 } from '../../../../utils/location';
-import {
-  getUserLocationCount,
-  addLocation,
-  updateLocation,
-  deleteLocation,
-} from '../../../../services/firebaseService';
+import * as firebaseService from '../../../../services/firebaseService';
+import * as asyncStorageService from '../../../../services/asyncStorageService';
 
 export default function LocationForm() {
   const navigation = useNavigation();
   const { mode, location } = useLocalSearchParams();
 
+  const [isGuest] = useAtom(isGuestAtom);
   const [currentLocation] = useAtom(currentLocationAtom);
   const [selectedLocation, setSelectedLocation] = useAtom(selectedLocationAtom);
   const [userInfo] = useAtom(userInfoAtom);
-  const [, setLocations] = useAtom(locationsAtom);
+  const [locations, setLocations] = useAtom(locationsAtom);
 
   const [region, setRegion] = useState(null);
   const [privacyOption, setPrivacyOption] = useState('비공개');
@@ -150,8 +148,7 @@ export default function LocationForm() {
           setBssid(null);
         }
       } else {
-        const locationCount = await getUserLocationCount(userInfo.uid);
-        setLocationTitle(`Location ${locationCount + 1}`);
+        setLocationTitle(`Location ${locations.length + 1}`);
 
         const newRegion = {
           latitude: currentLocation.latitude,
@@ -249,12 +246,42 @@ export default function LocationForm() {
       locationData.bssid = bssid;
     }
 
-    if (mode === 'add') {
-      await addLocation(userInfo.uid, locationData, setLocations);
-    } else if (mode === 'edit') {
-      const parsedLocation = JSON.parse(location);
-      await updateLocation(parsedLocation.id, locationData, setLocations);
+    let updatedLocation;
+
+    if (isGuest) {
+      if (mode === 'add') {
+        updatedLocation = await asyncStorageService.addLocation(locationData);
+      } else {
+        const parsedLocation = JSON.parse(location);
+        updatedLocation = await asyncStorageService.updateLocation(
+          parsedLocation.id,
+          locationData,
+        );
+      }
+    } else {
+      if (mode === 'add') {
+        updatedLocation = await firebaseService.addLocation(
+          userInfo.uid,
+          locationData,
+        );
+      } else {
+        const parsedLocation = JSON.parse(location);
+        updatedLocation = await firebaseService.updateLocation(
+          parsedLocation.id,
+          locationData,
+        );
+      }
     }
+
+    setLocations((prevLocations) => {
+      if (mode === 'add') {
+        return [...prevLocations, updatedLocation];
+      } else {
+        return prevLocations.map((location) =>
+          location.id === updatedLocation.id ? updatedLocation : location,
+        );
+      }
+    });
 
     Alert.alert('완료', '위치가 저장되었습니다.');
     navigation.goBack();
@@ -265,19 +292,24 @@ export default function LocationForm() {
       '삭제',
       '위치를 삭제하면 위치에 지정된 할 일들도 모두 삭제됩니다.\n이 위치를 삭제하시겠습니까?',
       [
-        {
-          text: '취소',
-          style: 'cancel',
-        },
+        { text: '취소', style: 'cancel' },
         {
           text: '확인',
           onPress: async () => {
             try {
-              await deleteLocation(
-                userInfo.uid,
-                JSON.parse(location).id,
-                setLocations,
+              const parsedLocation = JSON.parse(location);
+              if (isGuest) {
+                await asyncStorageService.deleteLocation(parsedLocation.id);
+              } else {
+                await firebaseService.deleteLocation(
+                  userInfo.uid,
+                  parsedLocation.id,
+                );
+              }
+              setLocations((prevLocations) =>
+                prevLocations.filter((loc) => loc.id !== parsedLocation.id),
               );
+
               Alert.alert('성공', '위치가 삭제되었습니다.');
               navigation.goBack();
             } catch (error) {

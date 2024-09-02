@@ -6,14 +6,18 @@ import * as Notifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { useAtom } from 'jotai';
-import { userInfoAtom, locationsAtom, loadingAtom } from '../atoms';
+import {
+  isGuestAtom,
+  userInfoAtom,
+  locationsAtom,
+  loadingAtom,
+} from '../atoms';
 
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../firebaseConfig';
-import {
-  saveUserToFirestore,
-  getInitialLocations,
-} from '../services/firebaseService';
+import { getInitialLocations } from '../services/firebaseService';
+import { saveGuestUser } from '../services/asyncStorageService';
+import { migrateAsyncToFirestore } from '../services/migrationService';
 import { setupGeofencing } from '../services/notificationService';
 import AuthWrapper from '../components/AuthWrapper';
 
@@ -26,6 +30,7 @@ Notifications.setNotificationHandler({
 });
 
 export default function RootLayout() {
+  const [, setIsGuest] = useAtom(isGuestAtom);
   const [, setUserInfo] = useAtom(userInfoAtom);
   const [, setLocations] = useAtom(locationsAtom);
   const [isLoading, setIsLoading] = useAtom(loadingAtom);
@@ -40,16 +45,39 @@ export default function RootLayout() {
     'Pretendard-Regular': require('../assets/fonts/Pretendard-Regular.otf'),
   });
 
+  const initializeGuestUser = async () => {
+    const { userData, locations } = await saveGuestUser();
+    setUserInfo(userData);
+    setLocations(Object.values(locations));
+    setIsGuest(true);
+  };
+
   useEffect(() => {
-    const checkInitialAuth = async () => {
+    const initializeUser = async () => {
       setIsLoading(true);
       try {
         const storedUser = await AsyncStorage.getItem('user');
+        const guestUser = await AsyncStorage.getItem('guest');
+
         if (storedUser) {
-          setUserInfo(JSON.parse(storedUser));
+          const userData = JSON.parse(storedUser);
+          setUserInfo(userData);
+
+          const userLocations = await getInitialLocations(userData.locations);
+          setLocations(userLocations);
+          await setupGeofencing(userData.uid);
+        } else if (guestUser) {
+          const guestData = JSON.parse(guestUser);
+          setUserInfo(guestData);
+
+          const guestLocations = await AsyncStorage.getItem('guestLocations');
+          setLocations(JSON.parse(guestLocations));
+          setIsGuest(true);
+        } else {
+          await initializeGuestUser();
         }
       } catch (error) {
-        console.error('초기 인증 확인 중 오류 발생:', error);
+        console.error('사용자 초기화 중 오류 발생:', error);
       } finally {
         setIsLoading(false);
       }
@@ -57,34 +85,30 @@ export default function RootLayout() {
 
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setIsLoading(true);
-      if (firebaseUser) {
-        try {
-          const { userData, newLocations } =
-            await saveUserToFirestore(firebaseUser);
+
+      try {
+        if (firebaseUser) {
+          const { userData, locations } =
+            await migrateAsyncToFirestore(firebaseUser);
           await AsyncStorage.setItem('user', JSON.stringify(userData));
+
           setUserInfo(userData);
+          setLocations(locations);
 
-          const userLocations =
-            newLocations.length > 0
-              ? newLocations
-              : await getInitialLocations(userData.locations);
-          setLocations(userLocations);
-
-          await setupGeofencing(userData.uid).catch((error) => {
-            console.error('Geofencing 설정 중 오류 발생:', error);
-          });
-        } catch (error) {
-          console.error('사용자 정보 저장 중 오류 발생:', error);
+          await setupGeofencing(userData.uid);
+          setIsGuest(false);
+        } else {
+          await AsyncStorage.removeItem('user');
+          await initializeGuestUser();
         }
-      } else {
-        await AsyncStorage.removeItem('user');
-        setUserInfo(null);
-        setLocations([]);
+      } catch (error) {
+        console.error('사용자 상태 변경 처리 중 오류 발생:', error);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     });
 
-    checkInitialAuth();
+    initializeUser();
 
     return () => unsubscribe();
   }, []);

@@ -3,30 +3,36 @@ import { View, StyleSheet } from 'react-native';
 import { useNavigation } from 'expo-router';
 
 import { useAtom } from 'jotai';
-import { userInfoAtom, locationsAtom } from '../../../atoms';
+import { userInfoAtom, locationsAtom, isGuestAtom } from '../../../atoms';
 
 import Header from '../../../components/Header';
 import LocationList from '../../../components/LocationList';
 import AddLocationButton from '../../../components/AddLocationButton';
 
-import { getLocationsByUserId } from '../../../services/firebaseService';
+import * as firebaseService from '../../../services/firebaseService';
+import * as asyncStorageService from '../../../services/asyncStorageService';
 
 export default function HomeScreen() {
   const navigation = useNavigation();
   const [userInfo] = useAtom(userInfoAtom);
   const [locations, setLocations] = useAtom(locationsAtom);
+  const [isGuest] = useAtom(isGuestAtom);
 
   useEffect(() => {
     const fetchLocations = async () => {
-      if (userInfo) {
-        const fetchedLocations = await getLocationsByUserId(userInfo.uid);
-
+      if (isGuest) {
+        const guestLocations = await asyncStorageService.getLocations();
+        setLocations(guestLocations);
+      } else if (userInfo) {
+        const fetchedLocations = await firebaseService.getLocationsByUserId(
+          userInfo.uid,
+        );
         setLocations(fetchedLocations);
       }
     };
 
     fetchLocations();
-  }, [userInfo, setLocations]);
+  }, [isGuest, userInfo, setLocations]);
 
   const handleAddLocation = () => {
     navigation.navigate('location/index', { mode: 'add' });

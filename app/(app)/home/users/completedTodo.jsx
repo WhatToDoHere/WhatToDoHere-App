@@ -10,51 +10,85 @@ import {
 import { Stack, useNavigation } from 'expo-router';
 
 import { useAtom } from 'jotai';
-import { locationsAtom, userInfoAtom } from '../../../../atoms';
+import { isGuestAtom, locationsAtom, userInfoAtom } from '../../../../atoms';
 
-import { updateTodo, getUserInfo } from '../../../../services/firebaseService';
+import * as firebaseService from '../../../../services/firebaseService';
+import * as asyncStorageService from '../../../../services/asyncStorageService';
 
 export default function CompletedTodo() {
   const navigation = useNavigation();
   const [locations, setLocations] = useAtom(locationsAtom);
   const [userInfo] = useAtom(userInfoAtom);
+  const [isGuest] = useAtom(isGuestAtom);
   const [friendsInfo, setFriendsInfo] = useState({});
 
   const completedTodos = useMemo(() => {
-    return locations.flatMap((location) =>
-      location.todos
-        ?.filter((todo) => todo.completed)
+    return locations.flatMap((location) => {
+      if (!location.todos || !Array.isArray(location.todos)) {
+        return [];
+      }
+      return location.todos
+        .filter((todo) => todo && todo.completed)
         .map((todo) => ({
           ...todo,
           locationId: location.id,
           locationAlias: location.alias,
           locationAddress: location.address,
-        })),
-    );
+        }));
+    });
   }, [locations]);
 
   useEffect(() => {
     const fetchFriendsInfo = async () => {
-      const friendsData = {};
-      for (const todo of completedTodos) {
-        if (todo.assignedBy !== userInfo.uid && !friendsData[todo.assignedBy]) {
-          try {
-            const friendInfo = await getUserInfo(todo.assignedBy);
-            friendsData[todo.assignedBy] = friendInfo;
-          } catch (error) {
-            console.error('Error fetching friend info:', error);
+      if (!isGuest) {
+        const friendsData = {};
+        for (const todo of completedTodos) {
+          if (
+            todo.assignedBy !== userInfo.uid &&
+            !friendsData[todo.assignedBy]
+          ) {
+            try {
+              const friendInfo = await firebaseService.getUserInfo(
+                todo.assignedBy,
+              );
+              friendsData[todo.assignedBy] = friendInfo;
+            } catch (error) {
+              console.error('Error fetching friend info:', error);
+            }
           }
         }
+        setFriendsInfo(friendsData);
       }
-      setFriendsInfo(friendsData);
     };
 
     fetchFriendsInfo();
-  }, [completedTodos, userInfo.uid]);
+  }, [completedTodos, userInfo.uid, isGuest]);
 
   const handleToggleComplete = async (locationId, todoId) => {
     try {
-      await updateTodo(locationId, todoId, { completed: false }, setLocations);
+      if (isGuest) {
+        await asyncStorageService.updateTodo(locationId, todoId, {
+          completed: false,
+        });
+      } else {
+        await firebaseService.updateTodo(locationId, todoId, {
+          completed: false,
+        });
+      }
+
+      setLocations((prevLocations) => {
+        return prevLocations.map((location) => {
+          if (location.id === locationId) {
+            return {
+              ...location,
+              todos: location.todos.map((todo) =>
+                todo.id === todoId ? { ...todo, completed: false } : todo,
+              ),
+            };
+          }
+          return location;
+        });
+      });
     } catch (error) {
       console.error('Error updating todo:', error);
     }
@@ -93,9 +127,9 @@ export default function CompletedTodo() {
           </Text>
         ) : (
           completedTodos.map((todo) => (
-            <View key={todo.id} style={styles.todoItem}>
+            <View key={todo?.id} style={styles.todoItem}>
               <TouchableOpacity
-                onPress={() => handleToggleComplete(todo.locationId, todo.id)}
+                onPress={() => handleToggleComplete(todo?.locationId, todo?.id)}
                 style={styles.checkBox}
               >
                 <Image
@@ -109,14 +143,14 @@ export default function CompletedTodo() {
                   <Text style={styles.todoLocationAlias}>
                     📍 {todo?.locationAlias}
                   </Text>
-                  {todo.locationAddress && (
+                  {todo?.locationAddress && (
                     <Text style={styles.todoLocationAddress}>
                       {' '}
                       - {todo?.locationAddress}
                     </Text>
                   )}
                 </View>
-                {todo.assignedBy !== userInfo.uid && (
+                {!isGuest && todo.assignedBy !== userInfo.uid && (
                   <View style={styles.todoFriend}>
                     <Text>✍🏻 </Text>
                     <View style={styles.friendTag}>
