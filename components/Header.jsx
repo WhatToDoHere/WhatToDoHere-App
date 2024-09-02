@@ -12,25 +12,19 @@ export default function Header({ userInfo }) {
         />
         <Text style={styles.whatToDoHere}>WhatToDoHere</Text>
       </Link>
-      {userInfo ? (
-        <TouchableOpacity
-          style={styles.profileIcon}
-          onPress={() => router.push({ pathname: '/home/users' })}
-        >
-          <Image
-            source={
-              userInfo.photoURL
-                ? { uri: userInfo.photoURL }
-                : require('../assets/icons/icon-user-default.png')
-            }
-            style={styles.profileImage}
-          />
-        </TouchableOpacity>
-      ) : (
-        <TouchableOpacity>
-          <Text style={styles.loginButton}>Log in</Text>
-        </TouchableOpacity>
-      )}
+      <TouchableOpacity
+        style={styles.profileIcon}
+        onPress={() => router.push({ pathname: '/home/users' })}
+      >
+        <Image
+          source={
+            userInfo.photoURL
+              ? { uri: userInfo.photoURL }
+              : require('../assets/icons/icon-user-default.png')
+          }
+          style={styles.profileImage}
+        />
+      </TouchableOpacity>
     </View>
   );
 }
