@@ -6,16 +6,22 @@ import { useAtom } from 'jotai';
 import { userInfoAtom } from '../atoms';
 
 import { getUserInfo } from '../services/firebaseService';
+import { GUEST_USER_KEY } from '../services/asyncStorageService';
 
 export default function TodoItem({ todo, onCheckBoxToggle }) {
+  const [userInfo] = useAtom(userInfoAtom);
   const [checked, setChecked] = useState(todo.completed);
   const [friendName, setFriendName] = useState('');
   const navigation = useNavigation();
-  const [userInfo] = useAtom(userInfoAtom);
 
   useEffect(() => {
     const fetchFriendName = async () => {
-      if (todo.assignedBy && userInfo && todo.assignedBy !== userInfo.uid) {
+      if (
+        todo.assignedBy &&
+        userInfo &&
+        todo.assignedBy !== userInfo.uid &&
+        todo.assignedBy !== GUEST_USER_KEY
+      ) {
         try {
           const friendInfo = await getUserInfo(todo.assignedBy);
           if (friendInfo && friendInfo.username) {
@@ -40,6 +46,7 @@ export default function TodoItem({ todo, onCheckBoxToggle }) {
   };
 
   const handleEditTodo = () => {
+    console.log(todo);
     navigation.navigate('todo/index', {
       mode: 'edit',
       locationId: todo.locationId,
