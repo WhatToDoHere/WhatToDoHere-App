@@ -9,14 +9,14 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
-import { router, Stack, useNavigation } from 'expo-router';
+import { Stack, useNavigation } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
 import * as AppleAuthentication from 'expo-apple-authentication';
 
 import { useAtom } from 'jotai';
-import { userInfoAtom, locationsAtom } from '../../../../atoms';
+import { userInfoAtom, locationsAtom, isGuestAtom } from '../../../../atoms';
 
 import { auth } from '../../../../firebaseConfig';
 import {
@@ -26,6 +26,8 @@ import {
   reauthenticateWithCredential,
 } from 'firebase/auth';
 import { deleteUserData } from '../../../../services/firebaseService';
+import { saveGuestUser } from '../../../../services/asyncStorageService';
+import { stopGeofencing } from '../../../../services/notificationService';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -33,6 +35,7 @@ export default function UserSettings() {
   const navigation = useNavigation();
   const [userInfo, setUserInfo] = useAtom(userInfoAtom);
   const [, setLocations] = useAtom(locationsAtom);
+  const [, setIsGuest] = useAtom(isGuestAtom);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const [request, response, promptAsync] = Google.useAuthRequest({
@@ -147,18 +150,22 @@ export default function UserSettings() {
 
       if (!user) throw new Error('사용자가 로그인되어 있지 않습니다.');
 
+      await stopGeofencing();
       await deleteUserData(user.uid);
       await deleteUser(user);
 
+      const { userData, locations } = await saveGuestUser();
+
+      setUserInfo(userData);
+      setLocations(locations);
+      setIsGuest(true);
+
       await AsyncStorage.removeItem('user');
-      setUserInfo(null);
-      setLocations([]);
 
       Alert.alert(
         '계정 삭제 완료',
-        '계정과 관련된 모든 데이터가 성공적으로 삭제되었습니다.',
+        '계정과 관련된 모든 데이터가 성공적으로 삭제되었습니다. 비회원 모드로 전환됩니다.',
       );
-      router.replace('/(auth)/signIn');
     } catch (error) {
       console.error('계정 삭제 오류:', error);
 
