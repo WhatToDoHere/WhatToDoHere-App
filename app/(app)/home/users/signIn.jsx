@@ -9,7 +9,7 @@ import {
   signInWithCredential,
   OAuthProvider,
 } from 'firebase/auth';
-import { auth } from '../../firebaseConfig';
+import { auth } from '../../../../firebaseConfig';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -73,14 +73,14 @@ export default function SignInScreen() {
     <View style={styles.container}>
       <View style={styles.logoContainer}>
         <Image
-          source={require('../../assets/icons/logo.png')}
+          source={require('../../../../assets/icons/logo.png')}
           style={styles.logoIcon}
         />
       </View>
       <Text style={styles.title}>WhatToDoHere</Text>
       <Pressable style={styles.googleLogin} onPress={handleGoogleSignIn}>
         <Image
-          source={require('../../assets/icons/icon-google.png')}
+          source={require('../../../../assets/icons/icon-google.png')}
           style={styles.googleIcon}
         />
         <Text style={[styles.text, styles.whiteText]}>Google로 로그인</Text>
@@ -92,13 +92,6 @@ export default function SignInScreen() {
         style={styles.appleLogin}
         onPress={handleAppleSignIn}
       />
-      <Pressable style={styles.guestLogin}>
-        <Image
-          source={require('../../assets/icons/icon-guest.png')}
-          style={styles.guestIcon}
-        />
-        <Text style={[styles.whiteText]}>Guest로 로그인</Text>
-      </Pressable>
     </View>
   );
 }
@@ -142,16 +135,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontSize: 19,
   },
-  guestLogin: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 265,
-    height: 44,
-    padding: 10,
-    borderRadius: 10,
-    backgroundColor: '#b4b4b4',
-  },
   text: {
     fontFamily: 'Opposit-Medium',
     fontSize: 19,
@@ -167,10 +150,5 @@ const styles = StyleSheet.create({
     width: 13,
     height: 13,
     marginRight: 6,
-  },
-  guestIcon: {
-    width: 17,
-    height: 17,
-    marginRight: 4,
   },
 });

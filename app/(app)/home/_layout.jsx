@@ -40,6 +40,10 @@ export default function AppLayout() {
         options={{ presentation: 'modal' }}
       />
       <Stack.Screen name="users/index" />
+      <Stack.Screen
+        name="users/signIn"
+        options={{ headerShown: false, presentation: 'modal' }}
+      />
       <Stack.Screen name="users/completedTodo" />
       <Stack.Screen name="users/friends" />
       <Stack.Screen name="users/addFriend" />

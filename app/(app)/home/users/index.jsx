@@ -11,20 +11,23 @@ import { Stack, useNavigation } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { useAtom } from 'jotai';
-import { userInfoAtom, locationsAtom } from '../../../../atoms';
+import { isGuestAtom, userInfoAtom, locationsAtom } from '../../../../atoms';
 
 import { auth } from '../../../../firebaseConfig';
 import { signOut } from 'firebase/auth';
 
 import { USER_MENU_ITEMS } from '../../../../constants/user';
+import { stopGeofencing } from '../../../../services/notificationService';
 
 export default function Profile() {
   const navigation = useNavigation();
+  const [isGuest] = useAtom(isGuestAtom);
   const [userInfo, setUserInfo] = useAtom(userInfoAtom);
   const [, setLocations] = useAtom(locationsAtom);
 
   const handleSignOut = async (setUserInfo) => {
     try {
+      await stopGeofencing();
       await signOut(auth);
       await AsyncStorage.removeItem('user');
       setUserInfo(null);
@@ -57,52 +60,72 @@ export default function Profile() {
         }}
       />
       <View style={styles.userHeader}>
-        {userInfo && (
-          <>
+        <Image
+          source={
+            userInfo && userInfo.photoURL
+              ? { uri: userInfo.photoURL }
+              : require('../../../../assets/icons/icon-user-default.png')
+          }
+          style={styles.userIcon}
+        />
+        {isGuest ? (
+          <TouchableOpacity
+            style={styles.loginButton}
+            onPress={() => navigation.navigate('users/signIn')}
+          >
+            <Text style={styles.loginText}>LogIn</Text>
             <Image
-              source={
-                userInfo.photoURL
-                  ? { uri: userInfo.photoURL }
-                  : require('../../../../assets/icons/icon-user-default.png')
-              }
-              style={styles.userIcon}
+              source={require('../../../../assets/icons/icon-login.png')}
+              style={styles.loginIcon}
             />
-            <Text style={styles.welcomeText}>
-              Hello, {userInfo.username} 👋
-            </Text>
-          </>
+          </TouchableOpacity>
+        ) : (
+          <Text style={styles.welcomeText}>Hello, {userInfo.username} 👋</Text>
         )}
       </View>
       <ScrollView>
         <View style={styles.contents}>
           <View style={styles.userMenu}>
-            {USER_MENU_ITEMS.map((item) => (
+            {USER_MENU_ITEMS.filter(
+              (item) => !isGuest || item.guestAccessible,
+            ).map((item) => (
               <Pressable
                 key={item.id}
                 onPress={() => {
-                  navigation.navigate(item.link);
+                  navigation.navigate(
+                    isGuest && item.guestLink ? item.guestLink : item.link,
+                  );
                 }}
                 style={styles.link}
               >
                 <View style={styles.menuItem}>
                   <Image source={item.icon} style={styles.menuIcon} />
-                  <Text style={styles.title}>{item.title}</Text>
+                  <View style={styles.menuTextContainer}>
+                    <Text style={styles.title}>{item.title}</Text>
+                    {isGuest && item.guestMessage && (
+                      <Text style={styles.guestMessage}>
+                        {item.guestMessage}
+                      </Text>
+                    )}
+                  </View>
                 </View>
               </Pressable>
             ))}
           </View>
-          <View style={styles.logout}>
-            <TouchableOpacity
-              onPress={() => handleSignOut(setUserInfo)}
-              style={styles.logoutButton}
-            >
-              <Text style={styles.logoutText}>Logout</Text>
-              <Image
-                source={require('../../../../assets/icons/icon-logout.png')}
-                style={styles.logoutIcon}
-              />
-            </TouchableOpacity>
-          </View>
+          {!isGuest && (
+            <View style={styles.logout}>
+              <TouchableOpacity
+                onPress={() => handleSignOut(setUserInfo)}
+                style={styles.logoutButton}
+              >
+                <Text style={styles.logoutText}>Logout</Text>
+                <Image
+                  source={require('../../../../assets/icons/icon-logout.png')}
+                  style={styles.logoutIcon}
+                />
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       </ScrollView>
     </View>
@@ -166,9 +189,37 @@ const styles = StyleSheet.create({
     height: 30,
     marginRight: 10,
   },
+  menuTextContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   title: {
     fontFamily: 'Pretendard-Regular',
     fontSize: 16,
+  },
+  guestMessage: {
+    fontFamily: 'Pretendard-Regular',
+    fontSize: 13,
+    color: '#909090',
+  },
+  loginButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: -20,
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+  },
+  loginText: {
+    fontFamily: 'Opposit-Bold',
+    fontSize: 24,
+    color: '#202020',
+  },
+  loginIcon: {
+    marginLeft: 5,
+    width: 24,
+    height: 24,
   },
   logout: {
     flexDirection: 'row',
