@@ -13,16 +13,13 @@ export default function AuthWrapper({ children }) {
   useEffect(() => {
     if (isLoading) return;
 
-    const inAuthGroup = segments[0] === '(auth)';
     const inAppGroup = segments[0] === '(app)';
     const inSetupUsername = segments[2] === 'setupUsername';
 
-    if (userInfo && !userInfo.username && !inSetupUsername) {
-      router.replace('/(app)/home/setupUsername');
-    } else if (userInfo && userInfo.username && !inAppGroup) {
+    if (!inAppGroup) {
       router.replace('/(app)/home');
-    } else if (!userInfo && !inAuthGroup) {
-      router.replace('/(auth)/signIn');
+    } else if (userInfo && !userInfo.username && !inSetupUsername) {
+      router.replace('/(app)/home/setupUsername');
     }
   }, [userInfo, isLoading, segments, router]);
 
