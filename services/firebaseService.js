@@ -1,5 +1,5 @@
 import * as ImageManipulator from 'expo-image-manipulator';
-import { firestore, storage } from '../firebaseConfig';
+import { auth, firestore, storage } from '../firebaseConfig';
 import {
   doc,
   getDoc,
@@ -15,9 +15,6 @@ import {
   query,
   arrayRemove,
   writeBatch,
-  startAt,
-  endAt,
-  orderBy,
 } from 'firebase/firestore';
 import {
   ref,
@@ -25,6 +22,7 @@ import {
   uploadBytes,
   getDownloadURL,
 } from 'firebase/storage';
+import { setupGeofencing } from './notificationService';
 
 export const saveUserToFirestore = async (user) => {
   try {
@@ -185,112 +183,73 @@ export const getInitialLocations = async (locationIds) => {
   }
 };
 
-export const getUserLocationCount = async (userId) => {
-  const userDocRef = doc(firestore, 'users', userId);
-  const userDoc = await getDoc(userDocRef);
-
-  if (userDoc.exists()) {
-    const userData = userDoc.data();
-
-    return userData.locations ? userData.locations.length : 0;
-  } else {
-    return 0;
-  }
-};
-
-export const addLocation = async (userId, locationData, updateLocations) => {
-  const userDocRef = doc(firestore, 'users', userId);
-
-  const newLocationId = doc(collection(firestore, 'locations')).id;
-  await setDoc(doc(firestore, 'locations', newLocationId), locationData);
-  await updateDoc(userDocRef, {
-    locations: arrayUnion(newLocationId),
-  });
-
-  updateLocations((prevLocations) => [
-    ...prevLocations,
-    { id: newLocationId, ...locationData },
-  ]);
-};
-
-export const updateLocation = async (
-  locationId,
-  locationData,
-  updateLocations,
-) => {
-  const locationDocRef = doc(firestore, 'locations', locationId);
-  await updateDoc(locationDocRef, locationData);
-
-  updateLocations((prevLocations) =>
-    prevLocations.map((location) =>
-      location.id === locationId ? { ...location, ...locationData } : location,
-    ),
-  );
-};
-
-export const addTodo = async (locationId, todoData, updateLocations) => {
+export const addLocation = async (userId, locationData) => {
   try {
-    const locationRef = doc(firestore, 'locations', locationId);
-    const todosCollectionRef = collection(locationRef, 'todos');
+    const userDocRef = doc(firestore, 'users', userId);
+    const newLocationId = doc(collection(firestore, 'locations')).id;
+    const newLocationData = { id: newLocationId, ...locationData };
 
-    const newTodoRef = await addDoc(todosCollectionRef, {
-      ...todoData,
-      completed: false,
-      createdAt: serverTimestamp(),
+    await setDoc(doc(firestore, 'locations', newLocationId), newLocationData);
+    await updateDoc(userDocRef, {
+      locations: arrayUnion(newLocationId),
     });
 
-    const newTodoId = newTodoRef.id;
-
-    updateLocations((prevLocations) => {
-      return prevLocations.map((location) => {
-        if (location.id === locationId) {
-          return {
-            ...location,
-            todos: [
-              ...(location.todos || []),
-              { id: newTodoId, ...todoData, completed: false },
-            ],
-          };
-        }
-        return location;
-      });
-    });
-
-    return newTodoId;
+    return newLocationData;
   } catch (error) {
-    console.error('Error adding todo:', error);
+    console.error('위치 추가 중 오류 발생:', error);
     throw error;
   }
 };
 
-export const updateTodo = async (
-  locationId,
-  todoId,
-  todoData,
-  updateLocations,
-) => {
+export const updateLocation = async (locationId, locationData) => {
   try {
-    const todoRef = doc(firestore, 'locations', locationId, 'todos', todoId);
-    await updateDoc(todoRef, todoData);
+    const locationDocRef = doc(firestore, 'locations', locationId);
 
-    updateLocations((prevLocations) => {
-      return prevLocations.map((location) => {
-        if (location.id === locationId) {
-          return {
-            ...location,
-            todos: location.todos.map((todo) => {
-              if (todo.id === todoId) {
-                return { ...todo, ...todoData };
-              }
-              return todo;
-            }),
-          };
-        }
-        return location;
-      });
-    });
+    const locationDoc = await getDoc(locationDocRef);
+    if (!locationDoc.exists()) {
+      throw new Error('Location not found');
+    }
+    const existingData = locationDoc.data();
+
+    const updatedData = {
+      ...existingData,
+      ...locationData,
+      todos: existingData.todos || [],
+    };
+
+    await updateDoc(locationDocRef, updatedData);
+
+    const todosCollectionRef = collection(locationDocRef, 'todos');
+    const todosSnapshot = await getDocs(todosCollectionRef);
+    const todos = todosSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    return {
+      id: locationId,
+      ...updatedData,
+      todos: todos,
+    };
   } catch (error) {
-    console.error('Error updating todo:', error);
+    console.error('위치 수정 중 오류 발생:', error);
+    throw error;
+  }
+};
+
+export const deleteLocation = async (userId, locationId) => {
+  try {
+    const userDocRef = doc(firestore, 'users', userId);
+    const locationDocRef = doc(firestore, 'locations', locationId);
+
+    await deleteDoc(locationDocRef);
+    await updateDoc(userDocRef, {
+      locations: arrayRemove(locationId),
+    });
+
+    return locationId;
+  } catch (error) {
+    console.error('위치 삭제 중 오류 발생:', error);
     throw error;
   }
 };
@@ -366,22 +325,54 @@ export const getTodosByLocationId = async (locationId) => {
   }
 };
 
-export const deleteTodo = async (locationId, todoId, updateLocations) => {
+export const addTodo = async (locationId, todoData) => {
   try {
-    const todoRef = doc(firestore, 'locations', locationId, 'todos', todoId);
-    await deleteDoc(todoRef);
+    const locationRef = doc(firestore, 'locations', locationId);
+    const todosCollectionRef = collection(locationRef, 'todos');
+    const userId = auth.currentUser?.uid;
 
-    updateLocations((prevLocations) => {
-      return prevLocations.map((location) => {
-        if (location.id === locationId) {
-          return {
-            ...location,
-            todos: location.todos.filter((todo) => todo.id !== todoId),
-          };
-        }
-        return location;
-      });
+    const newTodoRef = await addDoc(todosCollectionRef, {
+      ...todoData,
+      completed: false,
+      createdAt: serverTimestamp(),
     });
+
+    const newTodoId = newTodoRef.id;
+    const newTodo = { id: newTodoId, ...todoData, completed: false };
+
+    await setupGeofencing(userId);
+
+    return newTodo;
+  } catch (error) {
+    console.error('Error adding todo:', error);
+    throw error;
+  }
+};
+
+export const updateTodo = async (locationId, todoId, todoData) => {
+  try {
+    const userId = auth.currentUser?.uid;
+    const todoRef = doc(firestore, 'locations', locationId, 'todos', todoId);
+
+    await updateDoc(todoRef, todoData);
+    await setupGeofencing(userId);
+
+    return { id: todoId, ...todoData };
+  } catch (error) {
+    console.error('Error updating todo:', error);
+    throw error;
+  }
+};
+
+export const deleteTodo = async (locationId, todoId) => {
+  try {
+    const userId = auth.currentUser?.uid;
+    const todoRef = doc(firestore, 'locations', locationId, 'todos', todoId);
+
+    await deleteDoc(todoRef);
+    await setupGeofencing(userId);
+
+    return todoId;
   } catch (error) {
     console.error('Error deleting todo:', error);
     throw error;
@@ -468,7 +459,6 @@ export const getLocationsWithTodos = async (userId) => {
         }
       }
 
-      console.log('Locations with todos:', locationsWithTodos);
       return locationsWithTodos;
     } else {
       console.log('User document does not exist');
@@ -482,22 +472,6 @@ export const getLocationsWithTodos = async (userId) => {
 
 export const searchUsersByUsername = async (username) => {
   const usersRef = collection(firestore, 'users');
-  // const exactMatchQuery = query(usersRef, where('email', '==', email));
-  // const exactMatchSnapshot = await getDocs(exactMatchQuery);
-
-  // const lowerEmail = email.toLowerCase();
-  // const prefixMatchQuery = query(
-  //   usersRef,
-  //   where('email', '>=', lowerEmail),
-  //   where('email', '<=', lowerEmail + '\uf8ff'),
-  // );
-  // const prefixMatchSnapshot = await getDocs(prefixMatchQuery);
-
-  // const results = new Set([
-  //   ...exactMatchSnapshot.docs,
-  //   ...prefixMatchSnapshot.docs,
-  // ]);
-  // 대소문자 구분 검색
   const caseSensitiveQuery = query(
     usersRef,
     where('username', '>=', username),
@@ -505,7 +479,6 @@ export const searchUsersByUsername = async (username) => {
   );
   const caseSensitiveSnapshot = await getDocs(caseSensitiveQuery);
 
-  // 대소문자 구분 없는 검색
   const lowercaseUsername = username.toLowerCase();
   const caseInsensitiveQuery = query(
     usersRef,
@@ -514,7 +487,6 @@ export const searchUsersByUsername = async (username) => {
   );
   const caseInsensitiveSnapshot = await getDocs(caseInsensitiveQuery);
 
-  // 결과 합치기 및 중복 제거
   const uniqueResults = new Map();
 
   caseSensitiveSnapshot.docs.forEach((doc) => {
@@ -527,7 +499,6 @@ export const searchUsersByUsername = async (username) => {
     }
   });
 
-  // Map을 배열로 변환
   return Array.from(uniqueResults.values());
 };
 
@@ -582,35 +553,6 @@ export const getUserInfo = async (userId) => {
     }
   } catch (error) {
     console.error('Error fetching User info:', error);
-    throw error;
-  }
-};
-
-export const deleteLocation = async (userId, locationId, updateLocations) => {
-  try {
-    const userDocRef = doc(firestore, 'users', userId);
-    const locationDocRef = doc(firestore, 'locations', locationId);
-
-    const todosCollectionRef = collection(locationDocRef, 'todos');
-    const todosSnapshot = await getDocs(todosCollectionRef);
-    const deleteTodoPromises = todosSnapshot.docs.map((doc) =>
-      deleteDoc(doc.ref),
-    );
-    await Promise.all(deleteTodoPromises);
-
-    await deleteDoc(locationDocRef);
-
-    await updateDoc(userDocRef, {
-      locations: arrayRemove(locationId),
-    });
-
-    updateLocations((prevLocations) =>
-      prevLocations.filter((location) => location.id !== locationId),
-    );
-
-    console.log('위치 삭제 성공');
-  } catch (error) {
-    console.error('위치 삭제 중 오류:', error);
     throw error;
   }
 };
