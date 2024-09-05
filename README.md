@@ -26,7 +26,12 @@ WhatToDoHere는 <b>위치 기반 미리 알림</b>을 제공하는 React Native 
 - [**사용한 기술들**](#사용한-기술들)
 - [**시스템 아키텍처**](#시스템-아키텍처)
 - [**기능 소개**](#기능-소개)
-- [**개발 과정에서 고민한 부분들**](#개발-과정에서-고민한-부분들)
+- [**개발 과정 톺아보기**](#개발-과정-톺아보기)
+    - [**메인화면에 앱의 핵심 기증을 어떻게 잘 보여줄 수 있을까?**](#1-메인화면에-앱의-핵심-기능을-어떻게-잘-보여줄-수-있을까)
+    - [**Google 및 Apple 로그인 통합**](#2-google-및-apple-로그인-통합)
+    - [**다양한 옵션을 처리하는 할 일별 알림 로직 구현**](#3-다양한-옵션을-처리하는-할-일별-알림-로직-구현)
+    - [**사용자가 이전에 등록한 위치와 너무 근접한 위치를 등록하려 한다면?**](#4-사용자가-이전에-등록한-위치와-너무-근접한-위치를-등록하려-한다면)
+    - [**사용자가 꼭 로그인을 해야할까? 비회원 모드의 추가 구현**](#5-사용자가-꼭-로그인을-해야할까-비회원-모드의-추가-구현)
 - [**회고**](#회고)
 
 <br>
@@ -241,9 +246,11 @@ WhatToDoHere가 로그인 기능을 제공하게 된 베경에는 기획 단계�
 
 <br>
 
-# 개발 과정에서 고민한 부분들
+# 개발 과정 톺아보기
 
 약 3주라는 기간 동안 기획, 디자인, 개발까지 하나의 애플리케이션을 만들기 위한 전체적인 개발 프로세스를 혼자 겪으며 부딪혔던 난관들은 주제가 참 다양했습니다.<br>사용성 측면에서 메인화면부터 어떻게 구성해야할까 하는 고민이 먼저 있었고, 핵심 기능의 완성도를 위해 계속해서 기능의 옵션이나 기능 자체가 추가되는 경험도 하였습니다.<br><b>문제 발생 > 해결 방안 모색과 고민 > 합리적 판단</b>의 연속이었습니다. 이런 일련의 과정 속에서 제가 크게 고민했던 부분들과 프로젝트의 완성도에 크게 기여할 수 있었던 챌린지들을 몇 가지로 추려보았습니다.
+
+<br>
 
 ## 1. 메인화면에 앱의 핵심 기능을 어떻게 잘 보여줄 수 있을까?
 
@@ -299,7 +306,122 @@ WhatToDoHere의 핵심적인 아이덴티티는 수많은 작업 관리 애플�
 
 이처럼 위치 카드가 작업 추가/수정, 위치 수정 기능까지 핵심 기능을 대부분 포함하고 있지만 사용자가 기능을 단번에 알아볼 수 있도록 직관적인 UI를 지향했고, `expo-router`를 이용해 **Stack Navigation**을 구현함으로써 사용자에게 보다 부드러운 화면 전환을 제공할 수 있었습니다.
 
-## 2. 다양한 옵션을 처리하는 할 일별 알림 로직 구현
+<!-- UI 구현하면서 겪은 기술 챌린지 작성 -->
+
+<br>
+
+## 2. Google 및 Apple 로그인 통합
+
+
+초기에는 Google 로그인만을 구현했으나, App Store 가이드라인 준수를 위해 Apple 로그인을 추가로 구현했습니다. 그 이유는 Google 로그인시 Google은 사용자 이메일, 이름, 프로필 이미지 등을 제공합니다. 하지만 Apple은 이러한 개인 정보 요구에 매우 민감하며 사용자에게 개인 정보를 필수적으로 요구하는 것을 지양합니다. 사용자가 선택적으로 개인 정보를 제공할 수 있도록 하는 로그인 옵션을 제공해야했고, 그 방법이 바로 Apple은 로그인이라고 App Store는 안내하고 있었습니다. 따라서 저는 Apple 로그인을 추가 구현하기로 결정하였습니다. 이 과정에서 Firebase Authentication을 활용하여 두 인증 제공자를 통합했습니다.
+
+```javascript
+// Google 로그인 구현
+const handleGoogleSignIn = async () => {
+  const { id_token } = response.params;
+  const credential = GoogleAuthProvider.credential(id_token);
+  await signInWithCredential(auth, credential);
+};
+
+// Apple 로그인 구현
+const handleAppleSignIn = async () => {
+  const credential = await AppleAuthentication.signInAsync({
+    requestedScopes: [
+      AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+      AppleAuthentication.AppleAuthenticationScope.EMAIL,
+    ],
+  });
+
+  const { identityToken } = credential;
+  const provider = new OAuthProvider('apple.com');
+  const oauthCredential = provider.credential({ idToken: identityToken });
+  await signInWithCredential(auth, oauthCredential);
+};
+```
+
+이 접근 방식을 통해 Firebase의 단일 인증 시스템 내에서 다양한 인증 제공자를 효율적으로 관리할 수 있었습니다.
+
+### 2-1. Apple 로그인 유저에게는 이메일이 없다! 사용자 검색을 어떻게 하지?
+
+Apple 로그인 도입 후, 이메일 기반 사용자 검색의 한계에 직면했습니다. Apple 사용자의 이메일 정보가 선택적으로 제공되는 문제를 해결하기 위해, 고유 사용자명 기반의 식별 시스템을 구현했습니다.
+
+```javascript
+const handleSetUsername = async () => {
+  try {
+    await updateUsername(userInfo.uid, username, username.toLowerCase());
+    setUserInfo((prevUserInfo) => ({
+      ...prevUserInfo,
+      username,
+      lowercaseUsername: username.toLowerCase(),
+    }));
+  } catch (error) {
+    console.error('Error setting username:', error);
+  }
+};
+```
+
+이 시스템은 사용자에게 직접 고유 아이디를 입력받아 데이터베이스에 저장하고, 이를 기반으로 사용자 간 상호작용을 가능하게 했습니다.
+
+### 2-2. 동적 라우팅 및 사용자 경험 개선
+
+사용자 이름 설정 프로세스를 원활하게 만들기 위해, Expo Router를 활용한 동적 라우팅 시스템을 구현했습니다.
+
+```javascript
+useEffect(() => {
+  if (isLoading) return;
+
+  const inAppGroup = segments[0] === '(app)';
+  const inSetupUsername = segments[2] === 'setupUsername';
+
+  if (!inAppGroup) {
+    router.replace('/(app)/home');
+  } else if (userInfo && !userInfo.username && !inSetupUsername) {
+    router.replace('/(app)/home/setupUsername');
+  }
+}, [userInfo, isLoading, segments, router]);
+```
+
+이 시스템은 사용자의 로그인 상태와 사용자명 설정 여부를 확인하여 적절한 화면으로 자동 리다이렉트합니다, 이를 통해 원활한 온보딩 경험을 제공할 수 있었습니다.
+
+### 2-3. 재사용 가능한 컴포넌트 개발
+
+사용자 이름 설정 및 수정 과정에서의 일관된 사용자 경험을 위해, 커스텀 `ValidatedTextInput` 컴포넌트를 개발했습니다.
+
+
+<div align="center">
+  <img width="350" alt="Reminder" src="./assets/images/readme/validatedInput.gif"><br>
+</div> <br>
+
+
+```javascript
+<ValidatedTextInput
+  value={username}
+  onChangeText={setUsername}
+  placeholder="사용자 이름 입력"
+  validateInput={validateInput}
+  onValidationChange={handleValidationChange}
+  maxLength={10}
+/>
+```
+
+이 컴포넌트는 실시간 유효성 검사와 시각적 피드백을 제공하여, 사용자가 즉각적으로 입력의 유효성을 확인할 수 있게 했습니다.
+
+### 2-4. 상태 관리 최적화
+
+Jotai를 활용하여 전역 상태 관리를 구현했습니다. 이는 특히 인증 상태와 사용자 정보를 앱 전체에서 일관되게 관리하는 데 유용했습니다.
+
+```javascript
+const [userInfo, setUserInfo] = useAtom(userInfoAtom);
+const [isLoading, setIsLoading] = useAtom(loadingAtom);
+```
+
+이러한 접근 방식은 컴포넌트 간 상태 공유를 간소화하고, 인증 로직의 복잡성을 줄이는 데 기여했습니다.
+
+이러한 기술적 해결책들을 통해, 다양한 인증 제공자를 지원하면서도 일관된 사용자 경험을 제공하는 강력한 인증 시스템을 구축할 수 있었습니다. 특히 Apple 로그인 추가로 인한 기술적 도전을 창의적으로 해결함으로써, 앱의 기능성과 사용자 경험을 크게 향상시켰습니다.
+
+<br>
+
+## 3. 다양한 옵션을 처리하는 할 일별 알림 로직 구현
 
 WhatToDoHere 서비스는 결국 사용자에게 작업 알림을 제공하는 것이 근본적인 목표입니다. 따라서 알림 기능을 정교하게 구현하는 것은 매우 중요했습니다. <br><br> 초기 기획단계에서 생각한 알림 기능은 GPS정보 활용만을 전제로 하고 있었습니다. 하지만 GPS만으로는 제가 목표로하는 위치 정확도를 구현하기에 한계가 있었습니다. 제가 생각한 아이디어는 우리가 이전에 방문했던 위치를 다시 방문했다는 사실의 근거가 될 수 있는 정보는 **이전에 접속했던 네트워크에 다시 접속한 사실이 될 수 있지 않을까?** 였습니다. <br><br>
 그래서 제가 기획 단계에 정의한 알림 기능은 다음과 같습니다.
@@ -309,7 +431,7 @@ WhatToDoHere 서비스는 결국 사용자에게 작업 알림을 제공하는 �
 
 GPS와 WiFi 정보를 조합하여 알림 기능을 구현하자는 목표 하에 위치 추적 기능을 구체화해보았습니다.
 
-### 2-1. 위치 기반 애플리케이션의 핵심 과제: 배터리 효율성과 Geofencing
+### 3-1. 위치 기반 애플리케이션의 핵심 과제: 배터리 효율성과 Geofencing
 
 실시간 위치 기반 애플리케이션은 당연하게도 백그라운드 위치 추적이 불가피합니다. 처음에는 사용자의 현재 위치 정보를 사용하기 위해 일정 시간 간격으로 위치를 확인하고자 했습니다. 하지만 이러한 지속적인 위치 정보 수집은 배터리를 빨리 소모시킨다는 **치명적인 문제**가 있었습니다. <br> 이를 해결하기 위해 접하게 된 개념이 바로 Geofencing입니다. Geofencing은 위치 기반 애플리케이션에서 배터리 효율을 위해 이미 널리 채택되고 있는 기술이었습니다.
 
@@ -332,7 +454,7 @@ GPS와 WiFi 정보를 조합하여 알림 기능을 구현하자는 목표 하�
 
 이러한 이유로 WhatToDoHere에서는 백그라운드 위치 추적에 있어 Geofencing 개념을 도입하기로 결정하였고, 이는 Expo SDK가 지원하는 `expo-loation` 라이브러리를 이용하여 비교적 간편한 API를 통해 구현할 수 있었습니다.
 
-### 2-2. Geofence와 WiFi정보를 어떻게 결합해서 위치의 정확성을 구현할까?
+### 3-2. Geofence와 WiFi정보를 어떻게 결합해서 위치의 정확성을 구현할까?
 
 Geofencing 을 이용하여 테스트 알림까지 구현 한 후에 문득 떠오른 생각은 **WiFi 정보를 어떻게 결합해서 알림을 보내지?** 였습니다. <br><br>
 초기 기획에서는 할 일별 알림 설정에 대한 옵션을 **특정 위치에 도착/출발** 옵션만 제공하는 방향으로 단순하게 가져갔었습니다. <br>
@@ -356,7 +478,7 @@ WhatToDoHere의 차별성과 사용성을 생각했을 때, 처음 추가된 옵
 GPS와 WiFi 정보가 둘 중 하나라도 일치하면 알림을 제공한다는 것은 위치 정확성과 거리가 멉니다. 또한 조건이 포괄적이어서 알림 로직을 구현함에 있어서도 둘 중 하나의 정보를 체크해야한다면 반드시 두 가지 정보를 모두 확인해야하므로 성능적으로도 좋지 않다는 판단을 했습니다. <br>실제 위치 정보의 정확성을 확보하려면 Geofencing과 더불어 WiFi 값까지 정확히 일치해야할 것입니다. <br> 하지만 위치 마다 WiFi 정보가 존재하지 않을 수 있고(사용자가 등록하지 않은 경우), 사용자가 포괄적인 범위에서 알림을 받고 싶을 수도 있습니다. <br>
 이런 경우 최선의 결정은 사용자에게 옵션을 주는 것이 적합하다고 판단하여, 기능을 추가하게 되었습니다.
 
-### 2-3. 사용자에게 옵션을 제공하자!
+### 3-3. 사용자에게 옵션을 제공하자!
 
 <div align="center">
   <table>
@@ -502,7 +624,7 @@ if (distance > 300) {
 await BackgroundFetch.setMinimumIntervalAsync(nextInterval);
 ```
 
-### 2-4. 같은 알림이 반복해서 울린다?
+### 3-4. 같은 알림이 반복해서 울린다?
 
 <div align="center">
   <img width="350" alt="Reminder" src="./assets/images/readme/multipleReminder.gif"><br>
@@ -549,7 +671,7 @@ const handleLocationEvent = async (locationId, userId, eventType) => {
 
 <br/>
 
-## 3. 사용자가 이전에 등록한 위치와 너무 근접한 위치를 등록하려 한다면
+## 4. 사용자가 이전에 등록한 위치와 너무 근접한 위치를 등록하려 한다면
 
 위치 등록 기능 구현 단계에서 먼저 떠올릴 수 있었던 가정은 **'사용자가 특정 위치를 등록하고 같은 위치를 또 등록하려고 하면 어떡하지?'** 더 나아가 같은 위치가 아니더라도, **'기본 설정된 위치의 반경 내에 또 다른 위치를 등록하려고 하면?'** 이었습니다.
 
@@ -589,8 +711,9 @@ d = R ⋅ c
 <br>
 
 이 공식을 사용하여 사용자의 현재 위치와 기존에 등록된 위치 간의 거리를 계산하고, 300m 기본 임계값을 사용하여 근접성을 판단하게 됩니다. 또한 사용자가 위치 수정 시 수정할 위치와 현재 위치의 거리를 계산하여 현재 위치와 근접하다면 WiFi정보를 불러오도록 하였습니다. <br>(기존에는 위치 등록시 항상 현재 위치의 WiFi 네트워크 정보를 불러오도록 하여, 현재 위치가 아닌 위치를 등록해도 사용자가 있는 현재 위치의 WiFi 정보를 저장하던 로직을 수정)
+<br>
 
-## 4. 사용자가 꼭 로그인을 해야할까? 비회원 모드의 추가 구현
+## 5. 사용자가 꼭 로그인을 해야할까? 비회원 모드의 추가 구현
 
 WhatToDoHere 앱의 초기 기획 단계에서는 친구와의 할 일 공유 기능을 위해 로그인이 필수적이라고 생각했습니다. 그래서 앱 실행 시 로그인 화면부터 보이도록 구현했습니다. 하지만 개발 과정에서 "위치 등록", "할 일 관리" 등의 기본 기능은 로컬에서도 충분히 사용 가능하지 않을까 하는 의문이 들었습니다. <br>
 그러나 이미 로그인 기반으로 많은 기능을 구현한 상태였기 때문에, 우선 전체적인 기능 구현을 완료하는 것을 목표로 삼고 로컬 기능 구현은 후순위로 미뤘습니다. 하지만 예상대로 앱스토어 심사 과정에서 "로그인 없이도 사용자가 일부 기능을 사용할 수 있게 해야 한다"는 피드백을 받았습니다.
