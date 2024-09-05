@@ -570,11 +570,12 @@ const handleLocationEvent = async (locationId, userId, eventType) => {
 <br>
 
 <div align="center">
-  <img width="500" alt="Reminder" src="https://github.com/user-attachments/assets/1fbfc420-5c83-427b-90b0-aab4f6378265"><br>
+  <img width="500" alt="Reminder" src="https://github.com/user-attachments/assets/1fbfc420-5c83-427b-90b0-aab4f6378265">
+  <p>
+  <span>이미지 출처: </span>
+  <a href="https://en.wikipedia.org/wiki/Great-circle_distance">Great-circle distance - 위키백과</a>
+</p>
 </div>
-
-<span>이미지 출처: </span>
-<a href="https://en.wikipedia.org/wiki/Great-circle_distance">Great-circle distance - 위키백과</a>
 
 <br>
 
@@ -588,6 +589,65 @@ d = R ⋅ c
 <br>
 
 이 공식을 사용하여 사용자의 현재 위치와 기존에 등록된 위치 간의 거리를 계산하고, 300m 기본 임계값을 사용하여 근접성을 판단하게 됩니다. 또한 사용자가 위치 수정 시 수정할 위치와 현재 위치의 거리를 계산하여 현재 위치와 근접하다면 WiFi정보를 불러오도록 하였습니다. <br>(기존에는 위치 등록시 항상 현재 위치의 WiFi 네트워크 정보를 불러오도록 하여, 현재 위치가 아닌 위치를 등록해도 사용자가 있는 현재 위치의 WiFi 정보를 저장하던 로직을 수정)
+
+## 4. 사용자가 꼭 로그인을 해야할까? 비회원 모드의 추가 구현
+
+WhatToDoHere 앱의 초기 기획 단계에서는 친구와의 할 일 공유 기능을 위해 로그인이 필수적이라고 생각했습니다. 그래서 앱 실행 시 로그인 화면부터 보이도록 구현했습니다. 하지만 개발 과정에서 "위치 등록", "할 일 관리" 등의 기본 기능은 로컬에서도 충분히 사용 가능하지 않을까 하는 의문이 들었습니다. <br>
+그러나 이미 로그인 기반으로 많은 기능을 구현한 상태였기 때문에, 우선 전체적인 기능 구현을 완료하는 것을 목표로 삼고 로컬 기능 구현은 후순위로 미뤘습니다. 하지만 예상대로 앱스토어 심사 과정에서 "로그인 없이도 사용자가 일부 기능을 사용할 수 있게 해야 한다"는 피드백을 받았습니다.
+
+<div align="center">
+  <img width="1000" alt="Reminder" src="https://github.com/user-attachments/assets/fabea3ad-c4fd-4246-991c-2276280bbb23">
+  <p>App store 1차 제출 후 Reject 결과 일부<br>사용자가 계정 기반이 아닌 앱의 기능에 자유롭게 접근할 수 있도록 앱을 수정하라</p>
+</div>
+
+
+### 4-1. 비회원 모드 구현을 위한 데이터 구조 설계
+비회원 모드를 추가하기 위해, 기존에 인증 정보 저장용으로만 사용하던 AsyncStorage를 적극 활용하기로 했습니다. 비회원일 때는 AsyncStorage로 데이터를 관리하고, 로그인 시 Firestore로 데이터를 이관하는 방식을 채택했습니다.
+데이터의 일관성을 유지하기 위해 Firestore의 데이터 구조를 그대로 AsyncStorage에 적용했습니다. 이를 통해 로그인 상태와 관계없이 동일한 데이터 구조를 사용할 수 있었습니다.
+
+```js
+// AsyncStorage에 저장되는 위치 정보 구조
+const locationData = [
+  {
+    id: 1,
+    alias: "Home",
+    latitude: 37.7749,
+    longitude: -122.4194,
+    // ...
+    todos: {
+      [
+        {
+          "todoId": 1,
+          // ... 기타 할 일 관련 필드
+        }
+      ],
+    },
+  },
+  // ...
+];
+
+// AsyncStorage에 저장
+await AsyncStorage.setItem('guestLocations', JSON.stringify(locationData));
+```
+### 4-2. 데이터 동기화 및 마이그레이션 로직
+데이터 구조의 결정 후에는 로그인 상태에 따라 데이터를 AsyncStorage 또는 Firestore와 동기화하는 로직을 구현했습니다. 특히 로그인 시 AsyncStorage의 데이터를 Firestore로 이관하는 과정에서 다음과 같은 시나리오를 고려했습니다.
+
+1. 비회원 사용자가 앱 실행 시: 초기 기본 데이터 구성 (Data Seeding)
+2. 비회원 사용자가 최초 로그인 시: 모든 로컬 데이터(위치, 할 일)를 Firebase로 이관 및 AsyncStorage의 비회원 데이터 초기화
+3. 로그인 사용자가 로그아웃 시: 초기 기본 데이터 구성 (Data Seeding), 비회원 전환
+4. 비회원 사용자가 재로그인 시: 변경된 데이터만 선별적 이관
+5. 비회원 사용자가 앱 종료 후 재실행: AsyncStorage의 기존 데이터 사용
+
+이와 같은 시나리오를 설정하여 사용자의 로그인 이력에 따라 다른 이관 로직을 적용했습니다. 재로그인 시 기본 데이터가 반복해서 이관되는 것을 방지하기 위해, 사용자의 이전 로그인 여부를 확인하고 이에 따라 이관 로직을 조정했습니다. <br>
+
+### 4-3. 시스템 아키텍처 및 사용자 경험 개선
+비회원 모드를 추가하면서 전체적인 시스템 아키텍처가 변경되었습니다. 데이터 흐름뿐만 아니라 사용자 경험 측면에서도 큰 변화가 있었습니다:
+
+1. 유연한 진입점: 사용자는 로그인 없이도 앱의 기본 기능을 즉시 사용할 수 있게 되었습니다.
+2. 데이터 일관성: AsyncStorage와 Firestore 간의 데이터 구조 통일로, 로그인/로그아웃 시 끊김 없는 경험을 제공합니다.
+3. 선택적 기능 접근: 친구와의 할 일 공유 등 로그인이 필요한 기능은 명확히 구분하여 제시합니다.
+
+<br>
 
 <!--
 ## 3. 로컬에서 사용하던 유저가 로그인을 하면?
