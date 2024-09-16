@@ -5,7 +5,10 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "ios": {
+        "buildArtifactPaths": ["ios/build/*"]
+      }
     },
     "development-simulator": {
       "developmentClient": true,
@@ -28,6 +31,9 @@
         "EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID": "EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID",
         "EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID": "EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID",
         "EXPO_PUBLIC_GOOGLE_PLACES_API_KEY": "EXPO_PUBLIC_GOOGLE_PLACES_API_KEY"
+      },
+      "ios": {
+        "buildArtifactPaths": ["ios/build/*"]
       }
     }
   },
