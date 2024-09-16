@@ -4,7 +4,7 @@ import { Stack } from 'expo-router';
 import { useAtom } from 'jotai';
 import { currentLocationAtom } from '../../../atoms';
 
-import { requestAllPermissions } from '../../../utils/permission';
+import { requestForegroundLocationPermission } from '../../../utils/permission';
 import { getCurrentLocation } from '../../../utils/location';
 
 export default function AppLayout() {
@@ -15,9 +15,9 @@ export default function AppLayout() {
   }, []);
 
   const setupPermissionsAndLocation = async () => {
-    const permissions = await requestAllPermissions();
+    const hasForegroundPermission = await requestForegroundLocationPermission();
 
-    if (permissions.foregroundLocation) {
+    if (hasForegroundPermission) {
       const location = await getCurrentLocation();
       if (location) {
         setCurrentLocation(location);

@@ -34,6 +34,7 @@ import {
   getFullAddress,
   isNearCurrentLocation,
 } from '../../../../utils/location';
+import { requestBackgroundLocationPermission } from '../../../../utils/permission';
 import * as firebaseService from '../../../../services/firebaseService';
 import * as asyncStorageService from '../../../../services/asyncStorageService';
 
@@ -57,6 +58,10 @@ export default function LocationForm() {
   const [isLoadingWifi, setIsLoadingWifi] = useState(false);
 
   const mapRef = useRef(null);
+
+  useEffect(() => {
+    requestBackgroundLocationPermission();
+  }, []);
 
   useEffect(() => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);

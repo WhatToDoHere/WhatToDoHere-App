@@ -16,6 +16,7 @@ import { todoAtom } from '../../../../atoms';
 
 import SwitchSelector from '../../../../components/SwitchSelector';
 import TimePicker from '../../../../components/TimePicker';
+import { requestNotificationPermission } from '../../../../utils/permission';
 
 export default function SetReminderDetails() {
   const navigation = useNavigation();
@@ -35,6 +36,10 @@ export default function SetReminderDetails() {
   );
 
   const [previewMessage, setPreviewMessage] = useState('');
+
+  useEffect(() => {
+    requestNotificationPermission();
+  }, []);
 
   useEffect(() => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
