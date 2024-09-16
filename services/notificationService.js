@@ -212,7 +212,6 @@ const startGeofencing = async (userId) => {
       .filter(Boolean);
 
     if (geofences.length === 0) {
-      console.log('No valid geofences to set up');
       return;
     }
 
@@ -225,7 +224,18 @@ const startGeofencing = async (userId) => {
 
 const setupGeofencing = async (userId) => {
   try {
-    console.log('Setting up geofencing for user:', userId);
+    const { status: backgroundStatus } =
+      await Location.getBackgroundPermissionsAsync();
+    if (backgroundStatus !== 'granted') {
+      return;
+    }
+
+    const { status: notificationStatus } =
+      await Notifications.getPermissionsAsync();
+    if (notificationStatus !== 'granted') {
+      return;
+    }
+
     const isGeofencingRegistered =
       await TaskManager.isTaskRegisteredAsync(GEOFENCING_TASK_NAME);
 
